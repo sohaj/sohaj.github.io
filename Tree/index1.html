@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Sohaj Singh Brar | UX Designer</title>
+  <meta name="description" content="Sohaj is an Experience Designer with clients like Monotype, Apple, Google, Universal Studios, Starbucks. He loves designing user centric products and services that are technically feasible and boost business">
+  <meta name="keywords" content="Sohaj, Singh, Brar, SohajBrar, SohajSinghBrar, UX Design, User, Experience, Human, Computer, Interaction, Design, User research, Monotype, Indian, Institute, technology, UX Guy, Interface, Roorkee">
+  <meta name="author" content="Sohaj Singh Brar">
+  <meta property="og:title" content="Sohaj Singh Brar | UX Designer" />
+  <meta property="og:url" content="http://sohajsinghbrar.com/" />
+  <meta property="og:description" content="Sohaj is an Experience Designer who has worked with clients like Monotype, Apple, Google, Universal Studios, Starbucks. He loves designing user centric products and services that are technically feasible and boost business">
+  <meta property="og:image" content="http://sohajsinghbrar.com/img/snippet.png?1">
+  <meta property="og:type" content="website" />
+  <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;" />
+  <link href="css/bootstrap.css" rel="stylesheet">
+  <!-- Custom CSS -->
+  <link href="css/freelancer.css" rel="stylesheet">
+  <link rel="shortcut icon" href="img/favicon2.png">
+  <!-- Custom Fonts -->
+  <link href="font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+  <link href="http://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
+  <link href="http://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Merriweather:300,300i,400,400i,700,700i,900,900i" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Abril+Fatface" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Grand Hotel|Cookie|Handlee|Merienda+One|Oregano|Rancho|Sacramento" rel="stylesheet">
+  <script src="https://use.fontawesome.com/13de8d1bac.js"></script>
+  <style>
+    ::selection {
+      color: black;
+      background: #fdff30;
+    }
+  </style>
+  <style>
+    .node {
+      cursor: pointer;
+    }
+
+    .node circle {
+      fill: #C2A6F0;
+      stroke: #000;
+      stroke-width: 2px;
+    }
+
+    .node text {
+      font: 12px sans-serif;
+    }
+
+    .link {
+      fill: none;
+      stroke: #ccc;
+      stroke-width: 2px;
+    }
+  </style>
+
+</head>
+
+<body>
+  <h1>Family Tree</h1>
+  <!-- load the d3.js library -->
+  <script src="http://d3js.org/d3.v3.min.js"></script>
+
+  <script>
+    var treeData = [{
+      "name": "Sohaj Singh Brar",
+      "parent": "null",
+
+      "children": [{
+          "name": "Jarnail Singh Brar (Father)",
+          "parent": "Top Level",
+          "children": [{
+              "name": "Karnail Singh Brar (Grandfather)",
+              "children": [{
+                  "name": "Gurbaksh Singh Brar (GreatGrandfather)",
+
+                },
+                {
+                  "name": "Paramjit Kaur Brar (GreatGrandmother)",
+                }
+              ]
+            },
+            {
+              "name": "Damanjit Kaur Brar (Grandmother)",
+              "children": [{
+                  "name": "Simranjeet Singh (GreatGrandfather)",
+
+                },
+                {
+                  "name": "Jasjit Kaur (GreatGrandmother)",
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Jaswinder Kaur (mother)",
+          "parent": "Top Level",
+          "children": [{
+              "name": "Uttam Singh Mann (Grandfather)",
+              "children": [{
+                  "name": "Gurpreet Singh Mann (GreatGrandfather)",
+
+                },
+                {
+                  "name": "Baljeet Kaur Mann (GreatGrandmother)",
+                }
+              ]
+            },
+            {
+              "name": "Manjit Kaur Mann (Grandmother)",
+              "children": [{
+                  "name": "Parvartan Singh Sekhon (GreatGrandfather)",
+
+                },
+                {
+                  "name": "Rajpreet Kaur Sekhon (GreatGrandmother)",
+                }
+              ]
+            }
+          ]
+        },
+      ]
+    }];
+
+
+    // ************** Generate the tree diagram	 *****************
+    var margin = {
+        top: 20,
+        right: 120,
+        bottom: 20,
+        left: 120
+      },
+      width = 960 - margin.right - margin.left,
+      height = 500 - margin.top - margin.bottom;
+
+    var i = 0,
+      duration = 750,
+      root;
+
+    var tree = d3.layout.tree()
+      .size([height, width]);
+
+    var diagonal = d3.svg.diagonal()
+      .projection(function(d) {
+        return [d.y, d.x];
+      });
+
+    var svg = d3.select("body").append("svg")
+      .attr("width", width + margin.right + margin.left)
+      .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    root = treeData[0];
+    root.x0 = height / 2;
+    root.y0 = 0;
+
+    update(root);
+
+    d3.select(self.frameElement).style("height", "500px");
+
+    function update(source) {
+
+      // Compute the new tree layout.
+      var nodes = tree.nodes(root).reverse(),
+        links = tree.links(nodes);
+
+      // Normalize for fixed-depth.
+      nodes.forEach(function(d) {
+        d.y = d.depth * 180;
+      });
+
+      // Update the nodes…
+      var node = svg.selectAll("g.node")
+        .data(nodes, function(d) {
+          return d.id || (d.id = ++i);
+        });
+
+      // Enter any new nodes at the parent's previous position.
+      var nodeEnter = node.enter().append("g")
+        .attr("class", "node")
+        .attr("transform", function(d) {
+          return "translate(" + source.y0 + "," + source.x0 + ")";
+        })
+        .on("click", click);
+
+      nodeEnter.append("circle")
+        .attr("r", 1e-6)
+        .style("fill", function(d) {
+          return d._children ? "A6F0AB" : "#C2A6F0";
+        });
+
+      nodeEnter.append("text")
+        .attr("x", function(d) {
+          return d.children || d._children ? -13 : 13;
+        })
+        .attr("dy", ".35em")
+        .attr("text-anchor", function(d) {
+          return d.children || d._children ? "end" : "start";
+        })
+        .text(function(d) {
+          return d.name;
+        })
+        .style("fill-opacity", 1e-6);
+
+      // Transition nodes to their new position.
+      var nodeUpdate = node.transition()
+        .duration(duration)
+        .attr("transform", function(d) {
+          return "translate(" + d.y + "," + d.x + ")";
+        });
+
+      nodeUpdate.select("circle")
+        .attr("r", 10)
+        .style("fill", function(d) {
+          return d._children ? "A6F0AB" : "#C2A6F0";
+        });
+
+      nodeUpdate.select("text")
+        .style("fill-opacity", 1);
+
+      // Transition exiting nodes to the parent's new position.
+      var nodeExit = node.exit().transition()
+        .duration(duration)
+        .attr("transform", function(d) {
+          return "translate(" + source.y + "," + source.x + ")";
+        })
+        .remove();
+
+      nodeExit.select("circle")
+        .attr("r", 1e-6);
+
+      nodeExit.select("text")
+        .style("fill-opacity", 1e-6);
+
+      // Update the links…
+      var link = svg.selectAll("path.link")
+        .data(links, function(d) {
+          return d.target.id;
+        });
+
+      // Enter any new links at the parent's previous position.
+      link.enter().insert("path", "g")
+        .attr("class", "link")
+        .attr("d", function(d) {
+          var o = {
+            x: source.x0,
+            y: source.y0
+          };
+          return diagonal({
+            source: o,
+            target: o
+          });
+        });
+
+      // Transition links to their new position.
+      link.transition()
+        .duration(duration)
+        .attr("d", diagonal);
+
+      // Transition exiting nodes to the parent's new position.
+      link.exit().transition()
+        .duration(duration)
+        .attr("d", function(d) {
+          var o = {
+            x: source.x,
+            y: source.y
+          };
+          return diagonal({
+            source: o,
+            target: o
+          });
+        })
+        .remove();
+
+      // Stash the old positions for transition.
+      nodes.forEach(function(d) {
+        d.x0 = d.x;
+        d.y0 = d.y;
+      });
+    }
+
+    // Toggle children on click.
+    function click(d) {
+      if (d.children) {
+        d._children = d.children;
+        d.children = null;
+      } else {
+        d.children = d._children;
+        d._children = null;
+      }
+      update(d);
+    }
+  </script>
+
+  <div class="col-button-dwnld2 span_12"><a href="https://framer.cloud/KVhSG/" target="_blank"><button type="button" class="btn btn-lg btn-outline">Interactive Family Timeline<i class="fa fa-external-link" aria-hidden="true"></i></button></a><br><br></div>
+  <div class="col-button-dwnld2 span_12"><a href="http://sohajsinghbrar.com/sohaj_table.html" target="_blank"><button type="button" class="btn btn-lg btn-outline">Interactive Family Table<i class="fa fa-external-link" aria-hidden="true"></i></button></a><br><br></div>
+
+</body>
+
+</html>

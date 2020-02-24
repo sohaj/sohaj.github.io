@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="sorttable.js"></script>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css">
+<script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+<script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+<style>
+th {
+    border-bottom: 1px solid #d6d6d6;
+}
+
+tr:nth-child(even) {
+    background: #e9e9e9;
+}
+</style>
+
+<style>
+table {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+td, th {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+}
+
+tr:nth-child(even) {
+    background-color: #dddddd;
+}
+</style>
+</head>
+<body>
+
+<div data-role="page" id="pageone">
+  <div data-role="header">
+    <h1>Family Table</h1>
+  </div>
+
+  <div data-role="main" class="ui-content">
+    <form>
+      <input id="filterTable-input" data-type="search" placeholder="Search...">
+    </form>
+    <table data-role="table" data-mode="columntoggle" class="ui-responsive ui-shadow sortable" id="myTable" data-filter="true" data-input="#filterTable-input">
+      <thead>
+        <tr>
+          <th data-priority="1">Last Name</th>
+          <th>First Name</th>
+          <th>Middle Name</th>
+          <th data-priority="2">Date of Birth</th>
+          <th data-priority="3">Date of Death</th>
+          <th data-priority="4">Location</th>
+          <th data-priority="5">Connections (To myself)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Brar</td>
+          <td>Sohaj</td>
+          <td>Singh</td>
+          <td>1991</td>
+          <td>-</td>
+          <td>Chandigarh Punjab</td>
+          <td>Me</td>
+        </tr>
+          <tr>
+            <td>Brar</td>
+            <td>Sumail</td>
+            <td>Singh</td>
+            <td>1989</td>
+            <td>-</td>
+            <td>Chandigarh Punjab</td>
+            <td>Brother</td>
+        </tr>
+          <tr>
+            <td>Brar</td>
+            <td>Jarnail</td>
+            <td>Singh</td>
+            <td>1952</td>
+            <td>-</td>
+            <td>Rodey, Punjab</td>
+            <td>Father</td>
+        </tr>
+          <tr>
+            <td>-</td>
+            <td>Jaswinder</td>
+            <td>Kaur</td>
+            <td>1960</td>
+            <td>-</td>
+            <td>Moga, Punjab</td>
+            <td>Mother</td>
+        </tr>
+          <tr>
+            <td>Brar</td>
+            <td>Karnail</td>
+            <td>Singh</td>
+            <td>1930</td>
+            <td>1990</td>
+            <td>Moga, Punjab</td>
+            <td>Grandfather(p)</td>
+        </tr>
+          <tr>
+            <td>Brar</td>
+            <td>Damanjit</td>
+            <td>Kaur</td>
+            <td>1933</td>
+            <td>2003</td>
+            <td>Jalandhar, Punjab</td>
+            <td>Grandmother(p)</td>
+        </tr>
+          <tr>
+            <td>-</td>
+            <td>Jasjit</td>
+            <td>Kaur</td>
+            <td>1916</td>
+            <td>1977</td>
+            <td>Patiala, Punjab</td>
+            <td>GreatGrandmother(p,m)</td>
+        </tr>
+
+    <tr>
+      <td>-</td>
+      <td>Simranjeet</td>
+      <td>Singh</td>
+      <td>1911</td>
+      <td>1971</td>
+      <td>Bathinda, Punjab</td>
+      <td>GreatGrandfather(p,m)</td>
+        </tr>
+
+    <tr>
+      <td>Brar</td>
+      <td>Paramjeet</td>
+      <td>Kaur</td>
+      <td>1914</td>
+      <td>1950</td>
+      <td>Moga, Punjab</td>
+      <td>GreatGrandmother(p,p)</td>
+        </tr>
+
+        <tr>
+          <td>Brar</td>
+          <td>Gurbaksh</td>
+          <td>Singh</td>
+          <td>1910</td>
+          <td>1970</td>
+          <td>Moga, Punjab</td>
+          <td>GreatGrandfather(p,p)</td>
+        </tr>
+        <tr>
+          <td>Mann</td>
+          <td>Uttam</td>
+          <td>Singh</td>
+          <td>1933</td>
+          <td>2016</td>
+          <td>Jagron, Punjab</td>
+          <td>Grandfather(m)</td>
+        </tr>
+        <tr>
+          <td>-</td>
+          <td>Manjit</td>
+          <td>Kaur</td>
+          <td>1932</td>
+          <td>-</td>
+          <td>Jagron, Punjab</td>
+          <td>Grandmother(m)</td>
+        </tr>
+        <tr>
+          <td>Mann</td>
+          <td>Baljeet</td>
+          <td>Kaur</td>
+          <td>1916</td>
+          <td>1987</td>
+          <td>Patiala, Punjab</td>
+          <td>GreatGrandmother(m,p)</td>
+        </tr>
+        <tr>
+          <td>Mann</td>
+          <td>Gurpreet</td>
+          <td>Singh</td>
+          <td>1912</td>
+          <td>1971</td>
+          <td>Jagron, Punjab</td>
+          <td>GreatGrandfather(m,p)</td>
+        </tr>
+        <tr>
+          <td>Sekhon</td>
+          <td>Rajpreet</td>
+          <td>Kaur</td>
+          <td>1912</td>
+          <td>1983</td>
+          <td>Moga, Punjab</td>
+          <td>GreatGrandmother(m,m)</td>
+        </tr>
+        <tr>
+          <td>Sekhon</td>
+          <td>Parvartan</td>
+          <td>Singh</td>
+          <td>1911</td>
+          <td>1973</td>
+          <td>Moga, Punjab</td>
+          <td>GreatGrandfather(m,m)</td>
+        </tr>
+
+      </tbody>
+    </table>
+
+  </div>
+
+</div>
+
+</body>
+</html>
