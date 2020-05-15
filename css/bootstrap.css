@@ -6912,6 +6912,40 @@ a.list-group-item-danger.active:focus {
     height: 0;
     visibility: hidden;
 }*/
+
+.col-summary-14 {
+/*display:inline-block; */
+  /*  margin-left: 2%;
+    padding-left: 15px;
+    padding-right: 15px; */
+    min-height: 1px;
+    text-align: center;
+    display: block;
+    color: #ffffff;
+}
+
+@media (min-width: 500px) {
+  .col-summary-14 {
+    padding-top: 20px;
+    width: 100%;
+  }
+}
+@media (min-width: 768px) {
+  .col-summary-14 {
+    float: left;
+    width: 33%;
+  }
+}
+@media (min-width: 1200px) {
+  .col-summary-14 {
+    float: left;
+    width: 33%;
+  }
+}
+
+
+
+
 .col:first-child {
     margin-left: 0;
     padding-right: 75px;
