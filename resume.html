@@ -67,6 +67,10 @@ $(document).ready(function(){
 </head>
 
 <body id="page-top" class="index">
+
+  <div id="fb-root"></div>
+<script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v7.0&appId=1750512005202538&autoLogAppEvents=1"></script>
+
   <!-- Load Facebook SDK for JavaScript -->
       <div id="fb-root"></div>
       <script>
@@ -122,9 +126,6 @@ $(document).ready(function(){
         <ul class="nav navbar-nav navbar-right">
           <li class="hidden">
             <a href="#page-top"></a>
-          </li>
-          <li class="page-scroll">
-            <a href="#portfolio">Resume</a>
           </li>
           <li class="page-scroll">
             <a href="#portfolio">Work</a>
@@ -226,139 +227,50 @@ $(document).ready(function(){
         opacity: 1;
       }
     }
-  </style><br><br>
+  </style>
   <!-- Portfolio Grid Section -->
-<div>
-  <h10 style="text-transform: capitalize; color:#9E9E9E; font-size:1.5em; font-weight:600; text-align:center;">Companies I worked for</h10><br><br>
-<img src="img/brand1.png" class="img-responsive" alt="">
-<img src="img/brand3.png" class="img-responsive" alt=""></div>
-  <br><br>
   </div>
-  <section id="portfolio">
-    <div class="container1">
+
+  <!-- About Section -->
+  <section class="success1" id="about">
+    <div class="container">
       <div class="row">
         <div class="col-lg-12 text-center">
-          <h2>Work</h2>
-          <hr class="star-primary">
-
-
-          <h10>How I approach design challenges</h10>
-          <br>
-          <div class="col-sm-4 portfolio-item" onclick="window.open('https://medium.com/@sohajsinghbrar/flipfont-app-5833356d6e20', '_blank');" style="padding: 25px; cursor: pointer;">
-            <div class="aboutimgbox">
-              <img src="img/cover_flipfont.png" class="img-responsive" alt="">
-            <br>
-            <div class="descriptiontext">
-              <h10><span style="opacity: 0.4" ;>Role: </span><span style="" ;>Interaction / UI</span></h10>
-              <h4>
-              <span>
-              <a href="https://medium.com/@sohajsinghbrar/flipfont-5833356d6e20" target="_blank">Personalize smart phone by changing the system fonts</a>
-              </span>
-            </h4>
-            </div>
-          </div>
-        </div>
-        <div class="col-sm-4 portfolio-item" onclick="window.open('https://uxplanet.org/how-to-prototype-connected-devices-a0c16e844f1f', '_blank');" style="padding: 25px; cursor: pointer;">
-            <div class="aboutimgbox">
-              <img src="img/cover_lock3.jpg" class="img-responsive" height="100%" alt="">
-            <br>
-            <div class="descriptiontext">
-              <h10><span style="opacity: 0.4" ;>Role: </span><span style="" ;>Connected device prototyping</span></h10>
-              <h4>
-              <span>
-              <a href="https://uxplanet.org/how-to-prototype-connected-devices-a0c16e844f1f" target="_blank">Open the door lock just with your face</a>
-              </span>
-              </h4>
-            </div>
-          </div>
-        </div>
-        <div class="col-sm-4 portfolio-item" onclick="window.open('https://medium.com/@sohajsinghbrar/airline-experience-for-business-class-travelers-94329d72056f', '_blank');" style="padding: 25px; cursor: pointer;">
-            <div class="aboutimgbox">
-              <img src="img/cover_xair.gif" class="img-responsive" alt="">
-            <br>
-            <div class="descriptiontext">
-              <h10><span style="opacity: 0.4" ;>Role: </span><span style="" ;>Experience design</span></h10>
-              <h4>
-              <span>
-              <a href="https://medium.com/@sohajsinghbrar/airline-experience-for-business-travelers-94329d72056f" target="_blank">Designing airline experience for business travellers</a>
-              </span>
-              </h4>
-            </div>
-          </div>
-          </div>
-          <div class="col-sm-4 portfolio-item" onclick="window.open('https://medium.com/@sohajsinghbrar/bart-kiosk-redesign-91f38b54c6d', '_blank');" style="padding: 25px; cursor: pointer;">
-            <div class="aboutimgbox">
-              <img src="img/cover_bart.jpg" class="img-responsive" alt="">
-            <br>
-            <div class="descriptiontext">
-              <h10><span style="opacity: 0.4" ;>Role: </span><span style="" ;>User Interface / User-Testing</span></h10>
-              <h4>
-              <span>
-              <a href="https://medium.muz.li/bart-kiosk-redesign-91f38b54c6d" target="_blank">Bart kiosk redesign</a>
-              </span>
-              </h4>
-            </div>
-          </div>
-          </div>
-          <div class="col-sm-4 portfolio-item" onclick="window.open('https://medium.com/@sohajsinghbrar/framer-practice-saving-money-app-7869488e4831', '_blank');" style="padding: 25px; cursor: pointer;">
-              <div class="aboutimgbox">
-              <img src="img/cover_piggy.png" class="img-responsive" alt="">
-            <br>
-            <div class="descriptiontext">
-              <h10><span style="opacity: 0.4" ;>Role: </span><span style="" ;>Prototyping in Framer JS</span></h10>
-              <h4>
-              <span>
-              <a href="https://medium.com/@sohajsinghbrar/designing-and-prototyping-a-full-app-in-framer-7869488e4831" target="_blank">Piggy app helps save more money by behavioural change</a>
-              </span>
-              </h4>
-            </div>
-          </div>
-          </div>
-          <!-- Added for new project, add content here-->
-          <div class="col-sm-4 portfolio-item" onclick="window.open('https://medium.com/@sohajsinghbrar/circular-journey-e437f3e3ce47', '_blank');" style="padding: 25px; cursor: pointer;">
-              <div class="aboutimgbox">
-              <img src="img/cover_circular.png" class="img-responsive" alt="">
-            </a><br>
-            <div class="descriptiontext">
-              <h10><span style="opacity: 0.4" ;>Role: </span><span style="" ;>Interaction across platforms</span></h10>
-              <h4>
-              <span>
-              <a href="https://uxdesign.cc/how-to-use-double-diamond-process-in-ux-practice-e437f3e3ce47" target="_blank">Book tickets for circular journeys via kiosk, smart phone and website</a>
-              </span>
-              </h4>
-            </div>
-          </div>
-          </div>
-          <a href="http://sohajsinghbrar.com/Portfolio.pdf" target="_blank" class="btn btn-lg btn-outline">
-             Download Portfolio <i class="fa fa-download" aria-hidden="true"></i>
-           </a> &emsp;
-          <a href="https://medium.com/@sohajsinghbrar/more-projects-153f291277d7" target="_blank" class="btn btn-lg btn-outline">
-             More in UX <i class="fa fa-external-link" aria-hidden="true"></i>
-             </a>
-
-                       <br><br><br><br><br><br>
-          <div class="container" style="font-size: 4.5vh; line-height: 1.5;">
-            <script src="js/nda.js"></script>
-            <FORM>The majority of my work is <span onClick="passWord()" style="border-bottom: 10px solid #fdff30; display: inline-block; line-height: 0.65;">under NDA</span>. Please reach out to me to access patented projects</FORM>
-            <br>
-            <div class="col-button-dwnld2 span_12"><button type="button" class="btn btn-lg btn-outline" onClick="passWord()">NDA Projects  <i class="fa fa-lock" aria-hidden="true"></i></button></a><br><br></div>
-          </div>
+          <h2>About</h2>
+          <hr class="star-light">
         </div>
       </div>
-      <br><br>
-
-
-    </div>
-    </div>
-  </div>
-
-  </section>
-    <!--</div> -->
-    <!--<div class="row"> <div class="col-button-dwnld2 span_12"><a href="Design_Portfolio.pdf" target="_blank"><button type="button" class="btn btn-lg btn-outline"></i>Download Portfolio</button>
+      <header id="headerbottom">
+        <div class="row" display="inline">
+          <br><br>
+          <!--<img src="img/design_journey.png" class="img-responsive" alt="">
             -->
-    <!-- Blog Section -->
+          <div class="col-lg-4 col-lg-offset-0">
+            <a href="https://www.linkedin.com/in/sohajsinghbrar/" target="_blank">
+            <img class="img-responsive aboutimgbox" align="left" src="./img/about6.png" alt="">
+          </a>
+          </div>
+          <div class="col-lg-13" style="font-family: 'Merriweather', serif;  text-align: left; line-height: 1.8;">
+              I believe in thinking empathetically and sharing ideas humbly.
+  <br><br>
+  I am an Experience Designer and Product Strategist with 6+ yrs of experience. I thrive in the strategic and concept phases of new product and service innovation, from research and insights, to ideation and product planning, to rapid prototyping and testing. I know when to look at the bigger picture and when to give attention to details.
+  <br><br>
+  I was the founding member of the Product Innovation team at Monotype where I worked in Messaging, AR, Automobiles, and Font Discovery. While serving as Senior UX Designer & Solutions Innovator, I lead multi-disciplinary teams for cross-media products and services. I filed 5 patent applications in instant messaging, brand engagement and decision-making domains. 
+  <br><br>
+  I love designing user-centric products & services while looking at the feasibility of the technology and viability of the business. I am an amateur Machine Learner, and emerging fields like voice interaction, AR, chatbots intrigues me. Therefore, it’s the intersection of business, design, and technology that drives my curiosity.
+  <br><br>
+  Let’s build something better, together!
 
+            <br><br>
+            <a href="mailto:sohaj.1991@gmail.com?subject=Hello from SohajSinghBrar.com" target="_blank" class="btn btn-lg btn-outline">
+               Email Me
+               </a>
+            <br><br><br>
+          </div>
+        </div>
 
+    </div>
+  </section>
 
   <section class="success" id="resume">
     <div class="container">
@@ -446,75 +358,7 @@ Designed and developed several other experimental projects focussed in augmented
    </div><br>
   </section>
 
-  <section id="blog">
-    <div class="container1">
-      <div class="row">
-        <div class="col-lg-12 text-center">
-          <div class="container" style="font-size: 5.5vh; line-height: 1.5;">
-          </div>
-          <h2>Blogs</h2>
-          <hr class="star-primary">
-          <h10>My thoughts on Design & Technology</h10>
-          <br>
-          <div class="col-sm-4 portfolio-item" onclick="window.open('https://medium.com/@sohajsinghbrar/how-to-get-into-interaction-design-ixd-6abe778cb8b8', '_blank');" style="padding: 25px; cursor: pointer; text-align: left;">
-            <div class="aboutimgbox">
-            <div style="padding: 35px;">
-              <h4>10 steps to Interaction Design (IxD)</h4>
-              <p style="font-size: 15px;">Are you transitioning from visual design, psychology or computer science or any other field into IxD, UX or HCI? Then this post is for you...</p>
-              <br>
-                <h6>READ MORE →</h6>
-            </div>
-          </div>
-          </div>
-          <div class="col-sm-4 portfolio-item" onclick="window.open('https://uxdesign.cc/how-to-land-ux-design-job-32ee9375daf0', '_blank');" style="padding: 25px; cursor: pointer; text-align: left;">
-            <div class="aboutimgbox">
-            <div style="padding: 35px;">
-              <h4>How to land a UX design job</h4>
-              <p style="font-size: 15px;">What matters to you? The very first step is to figure out what matters to you the most while looking for a job. What is your story?...</p>
-              <br>
-                <h6>READ MORE →</h6>
-            </div>
-          </div>
-          </div>
-          <div class="col-sm-4 portfolio-item" onclick="window.open('https://uxdesign.cc/impact-of-chatbots-personal-assistants-on-uxd-2072ab749b5', '_blank');" style="padding: 25px; cursor: pointer; text-align: left;">
-            <div class="aboutimgbox">
-            <div style="padding: 35px;">
-              <h4>3 Effects of Chatbots & Assistants on UX</h4>
-              <p style="font-size: 15px;">It was a part of UX designers’ job to minimalize the interface and information and assist the user to perform the needed task in the minimum time...</p>
-              <br>
-                <h6>READ MORE →</h6>
-            </div>
-          </div>
-          </div>
-          <div class="col-sm-4 portfolio-item" onclick="window.open('https://uxdesign.cc/camera-innovation-concept-2018-84319afdf310', '_blank');" style="padding: 25px; cursor: pointer; text-align: left;">
-            <div class="aboutimgbox">
-            <div style="padding: 35px;">
-              <h4>Camera Innovation Concept - 2018</h4>
-              <p style="font-size: 15px;">Quick design-thinking exercise for built-in camera based on existing technologies; & building a business model around it...</p>
-              <br>
-                <h6>READ MORE →</h6>
-            </div>
-          </div>
-          </div>
-          <div class="col-sm-4 portfolio-item" onclick="window.open('https://medium.com/@sohajsinghbrar/solving-daily-problem-of-picking-your-outfit-8a1daf0a80f9', '_blank');" style="padding: 25px; cursor: pointer; text-align: left;">
-            <div class="aboutimgbox">
-            <div style="padding: 35px;">
-              <h4>Daily problem of picking an outfit</h4>
-              <p style="font-size: 15px;">Case Study: Creating experience of mobile app that manages your wardrobe and suggests you outfits with creative match-making using AI</p>
-              <br>
-                <h6>READ MORE →</h6>
-            </div>
-          </div>
-          </div>
-          <br>
-        </div>
-        <br><br>
-        <div class="col-button-dwnld2 span_12"><a href="https://medium.com/@sohajsinghbrar" target="_blank"><button type="button" class="btn btn-lg btn-outline">View all blog posts <i class="fa fa-external-link" aria-hidden="true"></i></button></a></div>
-      </div>
 
-    </div>
-
-  </section>
 
 <br><br>
   <div class="container" style="font-size: 4.5vh; line-height: 1.5; text-align: center;">
@@ -526,25 +370,7 @@ Designed and developed several other experimental projects focussed in augmented
 <br><br>
   </div>
 
-<div style="background-color: #272727">
-  <br>
-  <div class="container">
-    <div class="row">
-      <div class="col-summary-14">
-      <div style="font-size: 56px; font-weight: 900;"> 4 </div> <div style="font-style: 14px; font-weight: 400; margin-top: -10px;"> Cities </div>
-    </div>
-    <div class="col-summary-14">
-      <div style="font-size: 56px; font-weight: 900;"> 20+ </div> <div style="font-style: 14px; font-weight: 400; margin-top: -10px;"> Products </div>
-    </div>
-    <div class="col-summary-14">
-      <div style="font-size: 56px; font-weight: 900;"> 5 </div><div style="font-style: 14px; font-weight: 400; margin-top: -10px;"> Patent Applications</div>
-    </div>
 
-      </div>
-
-      </div>
-      <br><br>
-    </div>
 
 
   <!-- About Section -->
@@ -672,6 +498,7 @@ Let’s build something better, together!
 
       <!-- Added for new project, add content here-->
       <div class="col-sm-4 portfolio-item">
+
         <a href="#portfolioModal10" class="portfolio-link" data-toggle="modal">
           <div class="caption">
             <div class="caption-content">
@@ -1061,225 +888,7 @@ Let’s build something better, together!
       </div>
     </div>
   </div>
-  <!--
-         <div class="portfolio-modal modal fade" id="portfolioModal8" tabindex="-1" role="dialog" aria-hidden="true">
-             <div class="modal-content">
-                 <div class="close-modal" data-dismiss="modal">
-                     <div class="lr">
-                         <div class="rl">
-                         </div>
-                     </div>
-                 </div>
-                 <div class="container">
-                     <div class="row">
-                         <div class="col-lg-8 col-lg-offset-2">
-                             <div class="modal-body">
-                                 <h2 style="text-transform: initial; font-weight:400; font-size:4em; font-family: 'Abril Fatface', cursive;">Auto Personalisation</h2><br>
-         <h2 style="text-transform: capitalize; color:#b5b5b5; font-size:1.5em; font-weight:300;">Personalising your car dashboard.</h2>
-                                 <hr class="star-primary">
-                                  <img src="img/portfolio/auto_cover.jpg" class="img-responsive img-centered" alt="">
-                                  <h1>Objective</h1><br>
-                                  <p>People are willing to pay top dollar for customisation of their cars which is a very tedious process. Still the customers and OEM’s pay lot of attention to it. So, we thought to provide a better solution to customise the car with contextual and personalised information while keeping the legibility intact.</p> <br>
-                                  <h1>About</h1><br>
-                                  <p>‘Auto Personalisation’ is a service provided by Monotype that will let the customers personalise their car dashboards. This personalisation can help OEM’s to improve their customer engagement a great deal.</p> <br>
 
-                                  <h1>My Role</h1><br>
-                                  <p>To create the experience of dashboard and centre console in the automobiles and direct the video concept of the idea.</p> <br>
-
-                                  <h1>Monetisation</h1><br>
-                                  <p>All the themes will be branded. For e.g. the Star Wars theme can have lightsaber or famous quotes, Or Louis Vuitton can have their brand font, logo and brand colour as elements to create a brand engagement theme which is useful and engaging to the customer as well.</p> <br>
-
-         <img src="img/portfolio/auto1.jpeg" class="img-responsive img-centered" alt="">	<br>
-
-         <h1>How it works</h1><br>
-                                  <p>For connected cars, the experience will be as simple as connecting the phone via bluetooth and can be downloaded from the Themes app for a few dollars and can be flashed on to the screen with a click of a button. For non-connected cars, the themes will be available and can be accessed from the car dashboard.</p> <br>
-
-         <img src="img/portfolio/auto2.jpeg" class="img-responsive img-centered" alt="">	<br>
-
-         <h1>Rough sketches</h1><br>
-         <figure>
-                                  <img src="img/portfolio/auto3.jpeg" class="img-responsive img-centered" alt="">
-                                  <figcaption>The dashboard themes can be changed as simple as changing a wallpaper of the cell phone</figcaption>
-                                  </figure> <br>
-         <figure>
-         <img src="img/portfolio/auto4.jpeg" class="img-responsive img-centered" alt="">
-         <figcaption>Brands like Star Wars, Boston Red Sox etc. can provide customised content to the fan while doing seamless branding on the car dashboard</figcaption>
-         </figure> <br>
-
-         <h1>Final Concepts</h1><br>
-         <iframe width= 100% height="400" src="https://www.youtube.com/embed/Kc4sDqbjhzY" frameborder="0" allowfullscreen></iframe><br><br><br>
-         <iframe width= 100% height="400" src="https://www.youtube.com/embed/iX_c3ngTIGM" frameborder="0" allowfullscreen></iframe> <br><br><br>
-
-         <iframe width= 100% height="400" src="https://www.youtube.com/embed/qLf5CyQ74Wk" frameborder="0" allowfullscreen></iframe><br><br><br>
-
-         <img src="img/portfolio/auto_concept1.jpeg" class="img-responsive img-centered" alt=""> <br>
-         <img src="img/portfolio/auto_concept2.jpeg" class="img-responsive img-centered" alt=""> <br>
-         <img src="img/portfolio/auto_concept3.jpeg" class="img-responsive img-centered" alt=""> <br>
-         <img src="img/portfolio/auto_concept4.jpeg" class="img-responsive img-centered" alt=""> <br>
-         <img src="img/portfolio/auto_concept5.jpeg" class="img-responsive img-centered" alt=""> <br>
-         <img src="img/portfolio/auto_concept6.jpeg" class="img-responsive img-centered" alt=""> <br>
-         <img src="img/portfolio/auto_concept7.jpeg" class="img-responsive img-centered" alt=""> <br>
-
-                                 <button type="button" class="btn btn-lg btn-outline" data-dismiss="modal">Close</button>
-                             </div>
-                         </div>
-                     </div>
-                 </div>
-             </div>
-         </div>
-         -->
-  <!--
-         <div class="container">
-         <div class="row">
-          <div class="col-lg-8 col-lg-offset-2">
-              <div class="modal-body">
-                  <h2 style="text-transform: initial; font-weight:400; font-size:4em; font-family: 'Abril Fatface', cursive;">Font Discovery</h2><br>
-         <h2 style="text-transform: capitalize; color:#b5b5b5; font-size:1.5em; font-weight:300;">Making font discovery simpler and smarter<h2>
-         <hr class="star-primary">
-                  <img src="img/cover-pic-fontdiscovery.jpg" class="img-responsive img-centered" alt="">
-                  <iframe width= 100% height="400" src="https://www.youtube.com/embed/Rc4_PPQltDI" frameborder="0" allowfullscreen></iframe><br>
-         <iframe src="https://marvelapp.com/i40hjbg?emb=1" width=100% height="600" allowTransparency="true" frameborder="0"></iframe>
-                  <br><br><br><br>
-                  <button type="button" class="btn btn-lg btn-outline" data-dismiss="modal">Close</button>
-              </div>
-          </div>
-         </div>
-         </div>
-         </div>
-         </div>
-         -->
-  <!--
-         <div class="container">
-             <div class="row">
-                 <div class="col-lg-8 col-lg-offset-2">
-                     <div class="modal-body">
-                         <h2 style="text-transform: initial; font-weight:400; font-size:4em; font-family: 'Abril Fatface', cursive;">Enhancing User Posts</h2><br>
-         <h2 style="text-transform: capitalize; color:#b5b5b5; font-size:1.5em; font-weight:300;">Creating value for picture lovers</h2>
-         <hr class="star-primary">
-                         <img src="img/portfolio/cover-pic-MIS.jpg" class="img-responsive img-centered" alt="">
-                          <h1>About</h1><br>
-         <br>
-                         <p style="text-align: left; ">Many millennials love posting pictures on social networking sites. But most of them don’t know much about photography and how to use creative tools like Ps etc. to add text creatively. the application will allow the user to creatively post pictures with quotes in different font styles.
-         </p><br><br>
-         <h1>My Role</h1><br>
-         <br>
-                         <p style="text-align: left; ">Researching the existing procreative apps (like instagram, aviary etc.), their market and finding potential revenue sources; and Designing the app</p><br><br>
-         <h1>Research</h1><br>
-         <br>
-                         <p style="text-align: left; ">Market insights were gathered to understand the problem with the existing products and also during the creation process. I analyzed and tested few apps in this domain like Word Swag, Aviary, Phonto, Instagram, typic, Over, Word Dream etc. The whole research lead to the following conclusions:<br><br>
-
-         1. Top 2 Social networks (Facebook and Twitter) today are predominantly text based which is slowly moving towards more personalized content (pictures, videos etc.)<br><br>
-         2. Millennials want to stand out by being more creative among their peers<br><br>
-         3. The creation process in existing platforms are too cumbersome to use.<br><br>
-
-         Find research on existing similar products <a href='https://drive.google.com/file/d/0Bz1bBuHRYw65azYtOUVYQ00tZjQ/view'> <u>here</u></a>.</p><br><br>
-
-         <figure>
-         <img src="./img/portfolio/EnhancingUserPost_Research1.png" class="img-responsive img-centered" alt="Owlie Project Interview Report">
-         <br>
-         <figure>
-         <img src="./img/portfolio/EnhancingUserPost_Research2.png" class="img-responsive img-centered" alt="Owlie Project Interview Report">
-         <br>
-
-
-         <h1>User Flow</h1><br>
-         <br>
-                         <p style="text-align: left; ">Other than writing just a typical textual posts on social networking sites, user will click on our Icon sdk to trigger mobile app (on mobile) and chrome extension on Web. On our platform, user types the same post in the natural language that uses NLP to search for contextual image. After clicking create he gets three options with contextual filters, quotes, fonts with image which user can select to post on any social networking site. Its 4 click process! (atmost)</p><br><br>
-
-         <img src="./img/portfolio/EnhancingUserPost_UserFlow1.png" class="img-responsive img-centered" alt="Owlie Project Interview Report">
-         <br>
-         <img src="./img/portfolio/EnhancingUserPost_UserFlow2.png" class="img-responsive img-centered" alt="Owlie Project Interview Report">
-         <br>
-         <img src="./img/portfolio/EnhancingUserPost_UserFlow3.png" class="img-responsive img-centered" alt="Owlie Project Interview Report">
-         <br>
-         <img src="./img/portfolio/EnhancingUserPost_UserFlow4.png" class="img-responsive img-centered" alt="Owlie Project Interview Report">
-         <br>
-         <h1>How we earn</h1><br>
-         <br>
-                         <p style="text-align: left; ">In this quick 4 click process, brands are involved in two ways:<br><br>
-
-         1. InDirect Branding: On first click process where user selects images, there will be a couple of higher quality images that stand out of other images which makes user click on them. These images carry brand impression<br><br>
-         2. Direct Branding: After third click, where three final options are provided, one out of these three creatives are branded with Brand FavIcon or Logo along with them. This impression is carried to the social network as well.</p><br><br>
-
-
-         <img src="./img/portfolio/EnhancingUserPost_BrandFlow1.png" class="img-responsive img-centered" alt="Owlie Project Interview Report"><br>
-         <img src="./img/portfolio/EnhancingUserPost_BrandFlow2.png" class="img-responsive img-centered" alt="Owlie Project Interview Report"><br>
-         <img src="./img/portfolio/EnhancingUserPost_BrandFlow3.png" class="img-responsive img-centered" alt="Owlie Project Interview Report"><br>
-         <h1>Final Product</h1><br>
-         <img src="./img/portfolio/EnhancingUserPost_Final Product1.png" class="img-responsive img-centered" alt="Owlie Project Interview Report"><br>
-         <img src="./img/portfolio/EnhancingUserPost_Final Product2.png" class="img-responsive img-centered" alt="Owlie Project Interview Report"><br>
-         <img src="./img/portfolio/EnhancingUserPost_Final Product3.png" class="img-responsive img-centered" alt="Owlie Project Interview Report"><br>
-         <img src="./img/portfolio/EnhancingUserPost_Final Product4.png" class="img-responsive img-centered" alt="Owlie Project Interview Report"><br>
-
-                         <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Close</button>
-                     </div>
-                 </div>
-             </div>
-         </div>
-         </div>
-         </div>
-         -->
-  <!--
-         <div class="portfolio-modal modal fade" id="portfolioModal5" tabindex="-1" role="dialog" aria-hidden="true">
-             <div class="modal-content">
-                 <div class="close-modal" data-dismiss="modal">
-                     <div class="lr">
-                         <div class="rl">
-                         </div>
-                     </div>
-                 </div>
-
-                 <div class="container">
-                     <div class="row">
-                         <div class="col-lg-8 col-lg-offset-2">
-                             <div class="modal-body">
-                                 <h2 style="text-transform: initial; font-weight:400; font-size:4em; font-family: 'Abril Fatface', cursive;">Map Based Property Search</h2><br>
-         <h2 style="text-transform: capitalize; color:#b5b5b5; font-size:1.5em; font-weight:300;">Visual aid to buying/renting/selling apartmnets</h2>
-                                 <hr class="star-primary">
-                                 <img src="img/portfolio/CF_cover.png" class="img-responsive img-centered" alt="">
-                                 <h1>About</h1><br>
-                                 <p>The project is based on map based visual search for buying/renting apartments rather than typical list based search.</p><br>
-         <h1>My Role</h1><br>
-                                 <p>Ideate, conceptualise and design a map based search for buying/renting apartment in major cities of India.</p><br>
-
-         <h1>Zoom Level Ideation</h1><br>
-         <img src="img/portfolio/CF_Zoom1.png" class="img-responsive img-centered" alt="">
-                                 <br>
-         <img src="img/portfolio/CF_Zoom2.png" class="img-responsive img-centered" alt="">
-                                 <br>
-
-
-         <h1>Wireframing</h1><br>
-         <img src="img/portfolio/CF_wire1.png" class="img-responsive img-centered" alt="">
-                                 <br>
-         <img src="img/portfolio/CF_wire2.png" class="img-responsive img-centered" alt="">
-                                 <br>
-         <img src="img/portfolio/CF_wire3.png" class="img-responsive img-centered" alt="">
-                                 <br>
-         <img src="img/portfolio/CF_wire4.png" class="img-responsive img-centered" alt="">
-                                 <br>
-
-
-         <h1>Final Designs</h1><br>
-         <img src="img/portfolio/CF_finaldesign1.jpg" class="img-responsive img-centered" alt="">
-                                 <br>
-         <img src="img/portfolio/CF_finaldesign2.jpg" class="img-responsive img-centered" alt="">
-                                 <br>
-         <img src="img/portfolio/CF_finaldesign3.png" class="img-responsive img-centered" alt="">
-                                 <br>
-         <img src="img/portfolio/CF_finaldesign4.jpg" class="img-responsive img-centered" alt="">
-                                 <br>
-         <img src="img/portfolio/map.jpg" class="img-responsive img-centered" alt="">
-                                 <br>
-
-                                 <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Close</button>
-                             </div>
-                         </div>
-                     </div>
-                 </div>
-             </div>
-         </div>
-         -->
   <div class="portfolio-modal modal fade" id="portfolioModal6" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-content">
       <div class="close-modal" data-dismiss="modal">

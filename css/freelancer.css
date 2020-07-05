@@ -63,8 +63,8 @@ h4 {
 
 h1, h2 {
   text-transform: initial;
-  font-family: "Open Sans", Montserrat, "Helvetica Neue", Helvetica, Arial, sans-serif;
-  font-weight: 700;
+  font-family: "Merriweather", "Open Sans", Montserrat, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-weight: 900;
 }
 
 hr.star-light, hr.star-primary {
