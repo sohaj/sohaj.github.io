@@ -6948,7 +6948,6 @@ a.list-group-item-danger.active:focus {
 
 .col:first-child {
     margin-left: 0;
-    padding-right: 75px;
 }
 .col {
     margin-left: 2%;
@@ -6989,6 +6988,7 @@ a.list-group-item-danger.active:focus {
 @media (min-width: 1200px) {
   .col-lg-offset-14 {
     width: 66%;
+    padding-right: 75px;
   }
 }
 .col-lg-offset-15 {

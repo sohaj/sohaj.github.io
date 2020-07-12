@@ -4,12 +4,15 @@
  * For details, see http://www.apache.org/licenses/LICENSE-2.0.
  */
 
+ .clear {
+     clear: both;
+ }
 body {
   overflow-x: hidden;
 }
 
 p {
-  font-size: 18px;
+  font-size: 15px;
   font-family: 'Merriweather', serif;
 }
 
@@ -212,7 +215,8 @@ header .intro-text .skills {
     transition: all .3s;
   }
   .navbar-fixed-top.navbar-shrink {
-    padding: 10px 0;
+    /* padding: 10px 0;
+    */
   }
   .navbar-fixed-top.navbar-shrink .navbar-brand {
     font-size: 2em;
@@ -264,12 +268,12 @@ section h3 {
 
 section.success {
   color: #262626;
-  background: #e6e0d5;
+  background: #f3f1ed;
 }
 
 section.success1 {
   color: #262626;
-  background: #f3f1ed;
+  background: #ffffff;
 }
 
 section.success a, section.success a:hover, section.success a:focus, section.success a:active, section.success a.active {
@@ -776,7 +780,7 @@ footer .footer-below {
   overflow: hidden;
   min-height: 375px;
   position: relative;
-  background: #e6e0d5;
+  background: #f3f1ed;
 }
 
 #testimonial4 .carousel-inner {
@@ -1086,12 +1090,12 @@ svg>polygon {
 }
 
 .descriptiontext a {
-  background-image: linear-gradient(180deg,transparent 75%,#fdff30 0);
+  /* background-image: linear-gradient(180deg,transparent 75%,#fdff30 0); */
   background-size: 0% 100%;
 }
 
 .descriptiontext {
-padding: 15px 35px 0px 35px;
+padding: 15px 15px 0px 15px;
 width: 100%;
 margin-bottom: 50px;
 display: inline-block;

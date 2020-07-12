@@ -17,7 +17,7 @@ $(function() {
 
 /* Floating label headings for the contact form */
 $(function() {
-
+	
     $("body").on("input propertychange", ".floating-label-form-group", function(e) {
         $(this).toggleClass("floating-label-form-group-with-value", !! $(e.target).val());
     }).on("focus", ".floating-label-form-group", function() {
@@ -36,15 +36,6 @@ $('body').scrollspy({
 $('.navbar-collapse ul li a').click(function() {
     $('.navbar-toggle:visible').click();
 });
-
-$('.myvideo').hover(function toggleControls() {
-  alerts('testing');
-  if (this.hasAttribute("controls")) {
-      this.removeAttribute("controls")
-  } else {
-      this.setAttribute("controls", "controls")
-  }
-})
 
 
 /* $('.bxslider').bxSlider({
