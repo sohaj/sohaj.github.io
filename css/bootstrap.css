@@ -6921,7 +6921,7 @@ a.list-group-item-danger.active:focus {
     min-height: 1px;
     text-align: center;
     display: block;
-    color: #ffffff;
+    color: #262626;
 }
 
 @media (min-width: 500px) {
