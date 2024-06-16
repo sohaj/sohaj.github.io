@@ -29,6 +29,11 @@
   <link href="https://fonts.googleapis.com/css?family=Montserrat:400,400i,500,500i,700,700i&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css?family=Playfair+Display:400,700,900&display=swap" rel="stylesheet">
   <script src="https://use.fontawesome.com/13de8d1bac.js"></script>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Coding with Robby</title>
+  <link rel="stylesheet" href="css/style.css" />
   <!--videomodal-->
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
@@ -231,13 +236,24 @@ $(document).ready(function(){
         opacity: 1;
       }
     }
-  </style><br><br>
+  </style>
   <!-- Portfolio Grid Section -->
-<div>
-  <h10 style="text-transform: capitalize; color:#9E9E9E; font-size:1.5em; font-weight:600; text-align:center;">Companies I worked for</h10><br><br>
-<img src="img/brand1.png" class="img-responsive" alt="">
-<img src="img/brand2.png" class="img-responsive" alt=""></div>
-  <br><br>
+  <div class="logos">
+    <div class="logos-slide">
+      <img src="img/Help-Full.png">
+      <img src="img/logos/Indigo.png" />
+      <img src="img/logos/Meta.png" />
+      <img src="img/logos/Monotype.png" />
+      <img src="img/logos/Oracle.png" />
+      <img src="img/logos/Red-dot1.png" />
+      <img src="img/logos/SFdesignWeek.png" />
+    </div>
+  </div>
+
+  <script>
+    var copy = document.querySelector(".logos-slide").cloneNode(true);
+    document.querySelector(".logos").appendChild(copy);
+  </script>
   </div>
   <section id="portfolio">
     <div class="container1">
