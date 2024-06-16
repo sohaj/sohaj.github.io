@@ -1,7 +1,7 @@
 ﻿document.addEventListener('DOMContentLoaded', function(){
 		Typed.new('#typed', {
 			stringsElement: document.getElementById('typed-strings'),
-			backDelay: 1000,
+			backDelay: 2500,
 			loop: true,
 		});
 	});
