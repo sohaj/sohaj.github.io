@@ -125,7 +125,7 @@ header {
   background: url("../img/cover_flower.png") no-repeat right top fixed;
   /* background-color: #000; */
   background-size: cover;
-  text-align: center;
+  text-align: left;
 }
 
 @media(min-width:768px) {
