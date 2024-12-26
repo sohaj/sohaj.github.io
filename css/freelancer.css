@@ -122,7 +122,7 @@ hr.star-primary:after {
 header {
   position: relative;
   width: 100%;
-  background: url("../img/cover_flower.png") no-repeat right top fixed;
+  background: url("../img/cover_presentation.jpg") no-repeat right top fixed;
   /* background-color: #000; */
   background-size: cover;
   text-align: left;
