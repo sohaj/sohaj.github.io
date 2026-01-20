@@ -1,0 +1,17 @@
+# Cloudflare Worker Configuration
+# Alternative: Use Wrangler CLI for deployment
+# Install: npm install -g wrangler
+# Deploy: wrangler deploy
+
+name = "sohaj-chat-api"
+main = "chat-worker.js"
+compatibility_date = "2024-01-01"
+
+# Environment variables (set these in Cloudflare dashboard or use wrangler secret)
+# Don't commit your actual API key!
+# Run: wrangler secret put GROQ_API_KEY
+# Run: wrangler secret put ALLOWED_ORIGIN
+
+[vars]
+ALLOWED_ORIGIN = "https://sohajsinghbrar.com"
+
