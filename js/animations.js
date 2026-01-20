@@ -11,9 +11,52 @@
     initNavbarScroll();
     initSmoothScroll();
     initScrollReveal();
+    initMobileMenu();
     // Portrait animation now controlled by typed.js in typewriter.js
     // initPortraitScrollAnimation();
   });
+
+  /* ============================================
+     MOBILE MENU - FULLSCREEN OVERLAY
+     ============================================ */
+  function initMobileMenu() {
+    const menuToggle = document.getElementById('mobile-menu-toggle');
+    const menuOverlay = document.getElementById('mobile-menu-overlay');
+    const menuClose = document.getElementById('mobile-menu-close');
+    const menuLinks = document.querySelectorAll('.mobile-menu-link');
+    
+    if (!menuToggle || !menuOverlay) return;
+    
+    // Open menu
+    menuToggle.addEventListener('click', function() {
+      menuToggle.classList.add('active');
+      menuOverlay.classList.add('active');
+      document.body.classList.add('menu-open');
+    });
+    
+    // Close menu - close button
+    if (menuClose) {
+      menuClose.addEventListener('click', closeMenu);
+    }
+    
+    // Close menu - clicking on a link
+    menuLinks.forEach(function(link) {
+      link.addEventListener('click', closeMenu);
+    });
+    
+    // Close menu - pressing Escape
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && menuOverlay.classList.contains('active')) {
+        closeMenu();
+      }
+    });
+    
+    function closeMenu() {
+      menuToggle.classList.remove('active');
+      menuOverlay.classList.remove('active');
+      document.body.classList.remove('menu-open');
+    }
+  }
 
   /* ============================================
      PAGE LOADER - STAGGERED LETTER FADE

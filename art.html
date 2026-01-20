@@ -82,49 +82,46 @@ $(document).ready(function(){
 });
 </script>
 
+</head>
+<body>
   <!-- Navigation -->
   <nav class="navbar navbar-default navbar-fixed-top">
     <div class="container-fluid nav-container">
-      <!-- Brand and toggle get grouped for better mobile display -->
-      <div class="navbar-header page-scroll">
-        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-               <span class="icon-bar"></span>
-               <span class="icon-bar"></span>
-               <span class="icon-bar"></span>
-               </button>
-        <div class="navbar-brand" a href="#page-top">
-          <div class="navbar-nav">
-          <a href="index.html" style="font-size: 13px; letter-spacing: 1px;">Sohaj Singh Brar</a>
-        </div>
-        </div>
+      <!-- Mobile menu toggle (left side) -->
+      <button type="button" class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Open menu">
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+      </button>
+      
+      <!-- Brand name (center on mobile) -->
+      <div class="navbar-brand">
+        <a href="index.html">Sohaj Singh Brar</a>
       </div>
-      <!-- Collect the nav links, forms, and other content for toggling -->
-      <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-        <ul class="nav navbar-nav navbar-right">
-          <li class="hidden">
-            <a href="#page-top"></a>
-          </li>
-          <li class="page-scroll">
-            <a href="index.html#portfolio">Work</a>
-          </li>
-
-          <li class="page-scroll">
-            <a href="about.html">About</a>
-          </li>
-          <li class="page-scroll">
-            <a href="index.html#blog">Blog</a>
-          </li>
-          <li class="page-scroll">
-            <a href="art.html">Art</a>
-          </li>
-        </ul>
-      </div>
-      <!-- /.navbar-collapse -->
+      
+      <!-- Desktop nav links (right side) -->
+      <ul class="nav navbar-nav navbar-right desktop-nav">
+        <li><a href="index.html#portfolio">Work</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="index.html#blog">Blog</a></li>
+        <li class="active"><a href="art.html">Art</a></li>
+      </ul>
     </div>
-    <!-- /.container-fluid -->
   </nav>
-</head>
-<body>
+  
+  <!-- Full-screen mobile menu overlay -->
+  <div class="mobile-menu-overlay" id="mobile-menu-overlay">
+    <button class="mobile-menu-close" id="mobile-menu-close" aria-label="Close menu">
+      <span></span>
+      <span></span>
+    </button>
+    <nav class="mobile-menu-nav">
+      <a href="index.html#portfolio" class="mobile-menu-link">Work</a>
+      <a href="about.html" class="mobile-menu-link">About</a>
+      <a href="index.html#blog" class="mobile-menu-link">Blog</a>
+      <a href="art.html" class="mobile-menu-link">Art</a>
+    </nav>
+  </div>
   <!-- Page Loader -->
   <div class="page-loader" id="page-loader">
     <div class="page-loader-content">
