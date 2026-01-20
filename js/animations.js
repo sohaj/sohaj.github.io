@@ -6,55 +6,14 @@
 (function() {
   'use strict';
 
-  // Initialize theme BEFORE DOM loads to prevent flash
-  initTheme();
-
   document.addEventListener('DOMContentLoaded', function() {
     initPageLoader();
     initNavbarScroll();
     initSmoothScroll();
-    initThemeToggle();
     initScrollReveal();
     // Portrait animation now controlled by typed.js in typewriter.js
     // initPortraitScrollAnimation();
   });
-
-  /* ============================================
-     THEME TOGGLE
-     ============================================ */
-  function initTheme() {
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'light') {
-      document.documentElement.setAttribute('data-theme', 'light');
-    }
-  }
-
-  function initThemeToggle() {
-    const toggleBtn = document.getElementById('theme-toggle');
-    if (!toggleBtn) return;
-
-    toggleBtn.addEventListener('click', function() {
-      const currentTheme = document.documentElement.getAttribute('data-theme');
-      
-      // Mark as manual override so auto time-based theme doesn't override
-      localStorage.setItem('theme-manual', 'true');
-      
-      if (currentTheme === 'light') {
-        document.documentElement.removeAttribute('data-theme');
-        localStorage.setItem('theme', 'dark');
-      } else {
-        document.documentElement.setAttribute('data-theme', 'light');
-        localStorage.setItem('theme', 'light');
-      }
-    });
-  }
-  
-  // Reset manual override to return to auto time-based theme
-  // Call this function to clear the manual preference: resetThemeToAuto()
-  window.resetThemeToAuto = function() {
-    localStorage.removeItem('theme-manual');
-    location.reload();
-  };
 
   /* ============================================
      PAGE LOADER - STAGGERED LETTER FADE
