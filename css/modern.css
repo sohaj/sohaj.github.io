@@ -266,22 +266,45 @@ p {
   background: rgba(255, 255, 255, 0.98) !important;
 }
 
-/* Navbar container - edge to edge with consistent padding */
+/* Navbar container - edge to edge with consistent padding matching hero */
 .navbar.navbar-fixed-top .container,
 .navbar.navbar-fixed-top .container-fluid,
-.navbar.navbar-fixed-top .nav-container {
+.navbar.navbar-fixed-top .nav-container,
+.nav-container,
+.navbar.navbar-default.navbar-fixed-top .container-fluid.nav-container,
+nav.navbar .container-fluid {
   width: 100% !important;
-  max-width: none !important;
+  max-width: 100% !important;
   padding-left: 5% !important;
   padding-right: 5% !important;
   padding-top: 0 !important;
   padding-bottom: 0 !important;
   margin: 0 !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
   display: flex !important;
   align-items: center !important;
   justify-content: space-between !important;
   flex-wrap: nowrap !important;
   box-sizing: border-box !important;
+  text-align: left !important;
+}
+
+/* Ensure navbar itself is full width */
+.navbar.navbar-default.navbar-fixed-top {
+  left: 0 !important;
+  right: 0 !important;
+  width: 100% !important;
+}
+
+/* Override Bootstrap's negative margins for navbar content */
+.container-fluid > .navbar-header,
+.container-fluid > .navbar-collapse,
+.navbar > .container-fluid > .navbar-header,
+.navbar > .container-fluid > .navbar-collapse,
+.navbar.navbar-default > .container-fluid > .navbar-brand {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
 }
 
 .navbar-header {
@@ -297,12 +320,21 @@ p {
 
 .navbar .navbar-brand,
 .navbar > .container .navbar-brand,
-.navbar > .container-fluid .navbar-brand {
+.navbar > .container-fluid .navbar-brand,
+.navbar.navbar-default > .container-fluid .navbar-brand,
+nav.navbar .navbar-brand,
+.nav-container > .navbar-brand {
   padding: 18px 0 !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
   margin: 0 !important;
   margin-left: 0 !important;
+  margin-right: 0 !important;
   height: auto !important;
   float: none !important;
+  position: relative !important;
+  left: 0 !important;
+  transform: none !important;
 }
 
 .navbar .navbar-brand a {
@@ -370,9 +402,22 @@ p {
 @media (max-width: 991px) {
   .navbar.navbar-fixed-top .container,
   .navbar.navbar-fixed-top .container-fluid,
-  .navbar.navbar-fixed-top .nav-container {
+  .navbar.navbar-fixed-top .nav-container,
+  .nav-container,
+  .navbar.navbar-default.navbar-fixed-top .container-fluid.nav-container,
+  nav.navbar .container-fluid {
     padding-left: 4% !important;
     padding-right: 4% !important;
+    margin: 0 !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+  
+  .hero-wrapper {
+    padding-left: 4% !important;
+    padding-right: 4% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
   }
   
   .navbar-nav > li > a {
@@ -384,17 +429,36 @@ p {
 @media (max-width: 767px) {
   .navbar.navbar-fixed-top .container,
   .navbar.navbar-fixed-top .container-fluid,
-  .navbar.navbar-fixed-top .nav-container {
+  .navbar.navbar-fixed-top .nav-container,
+  .nav-container,
+  .navbar.navbar-default.navbar-fixed-top .container-fluid.nav-container,
+  nav.navbar .container-fluid {
     padding-left: 5% !important;
     padding-right: 5% !important;
+    margin: 0 !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
     flex-wrap: nowrap !important;
     justify-content: space-between !important;
   }
   
-  .navbar .navbar-brand {
+  .hero-wrapper {
+    padding-left: 5% !important;
+    padding-right: 5% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+  
+  .navbar .navbar-brand,
+  .navbar > .container-fluid .navbar-brand,
+  .navbar.navbar-default > .container-fluid .navbar-brand,
+  nav.navbar .navbar-brand {
     padding: 14px 0 !important;
+    padding-left: 0 !important;
     position: static !important;
     transform: none !important;
+    margin-left: 0 !important;
+    left: 0 !important;
   }
   
   /* Hide old Bootstrap collapse menu */
@@ -683,7 +747,11 @@ header#headerImg::after {
   width: 100%;
   max-width: none;
   margin: 0;
+  margin-left: 0;
+  margin-right: 0;
   padding: 120px 5% 60px;
+  padding-left: 5%;
+  padding-right: 5%;
   display: grid;
   grid-template-columns: 1.4fr 1fr;
   gap: 60px;
@@ -695,6 +763,9 @@ header#headerImg::after {
 .hero-text {
   position: relative;
   z-index: 2;
+  padding-left: 0;
+  margin-left: 0;
+  text-align: left;
 }
 
 .hero-description {
@@ -837,7 +908,10 @@ img.portrait-state {
   .hero-wrapper {
     grid-template-columns: 1fr;
     gap: 40px;
-    padding: 120px 4% 60px;
+    padding-top: 120px;
+    padding-bottom: 60px;
+    padding-left: 4%;
+    padding-right: 4%;
     text-align: center;
   }
   
@@ -869,7 +943,10 @@ img.portrait-state {
 
 @media (max-width: 767px) {
   .hero-wrapper {
-    padding: 100px 5% 40px;
+    padding-top: 100px;
+    padding-bottom: 40px;
+    padding-left: 5%;
+    padding-right: 5%;
     gap: 30px;
   }
   
@@ -2005,6 +2082,11 @@ header .container p {
   right: 10%;
 }
 
+[data-achievement="awards"] .award-item-6 {
+  bottom: 50%;
+  right: 5%;
+}
+
 /* Mobile responsive for all spread sections */
 @media (max-width: 768px) {
   /* Reduce image sizes on mobile */
@@ -2058,12 +2140,21 @@ header .container p {
     right: 5%;
   }
   
+  [data-achievement="awards"] .award-item-6 {
+    right: 3%;
+    bottom: 45%;
+  }
+  
   [data-achievement="publications"] .item-1 {
     left: 5%;
   }
   
   [data-achievement="publications"] .item-2 {
     right: 5%;
+  }
+  
+  [data-achievement="publications"] .floating-item img {
+    width: 140px;
   }
 }
 
@@ -2093,6 +2184,11 @@ header .container p {
   transition-delay: 0.5s;
 }
 
+.floating-item.item-6,
+.floating-item.award-item-6 {
+  transition-delay: 0.6s;
+}
+
 /* Emoji/Icon Styles */
 .mentor-icon,
 .award-icon,
@@ -2112,6 +2208,22 @@ header .container p {
   border-radius: 8px;
   border: 1px solid var(--color-border);
   white-space: nowrap;
+}
+
+/* Publication logo images */
+[data-achievement="publications"] .floating-item img {
+  width: 220px;
+  height: auto;
+  object-fit: contain;
+  filter: brightness(0.9);
+  opacity: 0.9;
+  transition: all 0.4s ease;
+}
+
+[data-achievement="publications"] .floating-item:hover img {
+  filter: brightness(1);
+  opacity: 1;
+  transform: scale(1.05);
 }
 
 /* Parallax float animation */
@@ -2184,6 +2296,12 @@ header .container p {
   animation-delay: 0.3s;
 }
 
+.achievement-block.in-view .floating-item.item-6,
+.achievement-block.in-view .floating-item.award-item-6 {
+  animation: float-slow 5s ease-in-out infinite;
+  animation-delay: 0.8s;
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .achievement-block {
@@ -2211,4 +2329,78 @@ header .container p {
   }
 }
 
+/* ============================================
+   FINAL ALIGNMENT OVERRIDE
+   Ensures navbar and hero content are perfectly aligned
+   ============================================ */
+
+/* Force navbar container alignment - standalone nav-container */
+nav.navbar.navbar-default.navbar-fixed-top > .nav-container {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  padding-left: 5% !important;
+  padding-right: 5% !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  margin: 0 !important;
+  box-sizing: border-box !important;
+}
+
+/* Force navbar brand to start at left edge of container */
+nav.navbar.navbar-default.navbar-fixed-top > .nav-container > .navbar-brand {
+  margin: 0 !important;
+  margin-left: 0 !important;
+  padding: 18px 0 !important;
+  padding-left: 0 !important;
+  position: relative !important;
+  left: 0 !important;
+  transform: none !important;
+  flex-shrink: 0 !important;
+}
+
+/* Force hero wrapper alignment */
+header#headerImg > .hero-wrapper {
+  padding-left: 5% !important;
+  padding-right: 5% !important;
+  margin: 0 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+/* Force hero text to start at left edge */
+header#headerImg > .hero-wrapper > .hero-text {
+  margin: 0 !important;
+  margin-left: 0 !important;
+  padding-left: 0 !important;
+}
+
+/* Tablet alignment override */
+@media (max-width: 991px) {
+  nav.navbar.navbar-default.navbar-fixed-top > .nav-container {
+    padding-left: 4% !important;
+    padding-right: 4% !important;
+  }
+  
+  header#headerImg > .hero-wrapper {
+    padding-left: 4% !important;
+    padding-right: 4% !important;
+  }
+}
+
+/* Mobile alignment override */
+@media (max-width: 767px) {
+  nav.navbar.navbar-default.navbar-fixed-top > .nav-container {
+    padding-left: 5% !important;
+    padding-right: 5% !important;
+  }
+  
+  header#headerImg > .hero-wrapper {
+    padding-left: 5% !important;
+    padding-right: 5% !important;
+  }
+}
 
