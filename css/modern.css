@@ -2396,6 +2396,22 @@ header#headerImg > .hero-wrapper > .hero-text {
   nav.navbar.navbar-default.navbar-fixed-top > .nav-container {
     padding-left: 5% !important;
     padding-right: 5% !important;
+    justify-content: center !important;
+    position: relative !important;
+  }
+  
+  /* Center the brand name on mobile */
+  nav.navbar.navbar-default.navbar-fixed-top > .nav-container > .navbar-brand {
+    position: absolute !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    margin: 0 !important;
+  }
+  
+  /* Keep hamburger on left */
+  nav.navbar.navbar-default.navbar-fixed-top > .nav-container > .mobile-menu-toggle {
+    position: absolute !important;
+    left: 5% !important;
   }
   
   header#headerImg > .hero-wrapper {
