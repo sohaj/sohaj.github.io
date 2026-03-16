@@ -506,6 +506,317 @@
       .footer .container { flex-direction: column; text-align: center; }
     }
 
+    /* ── LANG TOGGLE ── */
+    .lang-toggle {
+      width: 40px; height: 40px; border-radius: 50%;
+      border: 1px solid var(--color-border); background: transparent;
+      color: var(--color-text); cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.3s var(--ease-out); font-size: 0.75rem; font-weight: 700;
+    }
+    .lang-toggle:hover { border-color: var(--color-primary); }
+
+    /* ── SCREENSHOTS ── */
+    .screenshots { padding: 80px 0; }
+    .screenshots-scroll {
+      display: flex; gap: 24px; overflow-x: auto; padding: 20px 0 30px;
+      scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+    .screenshots-scroll::-webkit-scrollbar { display: none; }
+    .phone-frame {
+      flex-shrink: 0; width: 260px; scroll-snap-align: center;
+      background: var(--color-bg-card); border: 1px solid var(--color-border);
+      border-radius: 32px; padding: 12px; transition: transform 0.3s var(--ease-out);
+    }
+    .phone-frame:hover { transform: translateY(-8px); }
+    .phone-screen {
+      width: 100%; aspect-ratio: 9/19.5; border-radius: 22px;
+      overflow: hidden; background: var(--color-bg-cream);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--color-text-muted); font-size: 0.85rem;
+    }
+    .phone-screen img { width: 100%; height: 100%; object-fit: cover; }
+
+    /* ── HUKAMNAMA LIVE ── */
+    .hukamnama-live { padding: 100px 0; }
+    .hukamnama-card {
+      background: linear-gradient(135deg, var(--color-bg-card), var(--color-bg-white));
+      border: 1px solid var(--color-border); border-radius: var(--radius-xl);
+      padding: 48px; position: relative; overflow: hidden;
+    }
+    .hukamnama-card::before {
+      content: ''; position: absolute; top: -50%; right: -30%;
+      width: 80%; height: 200%;
+      background: radial-gradient(circle, rgba(232,196,74,0.05) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .hukamnama-meta {
+      display: flex; align-items: center; gap: 12px;
+      margin-bottom: 28px; flex-wrap: wrap;
+    }
+    .hukamnama-live-dot {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 4px 14px; border-radius: var(--radius-full);
+      background: rgba(232,196,74,0.1); font-size: 0.8rem;
+      color: var(--color-primary); font-weight: 600;
+    }
+    .hukamnama-live-dot .livedot {
+      width: 6px; height: 6px; background: var(--color-primary);
+      border-radius: 50%; animation: pulse 2s infinite;
+    }
+    .hukamnama-ang {
+      font-size: 0.85rem; color: var(--color-text-muted);
+    }
+    .hukamnama-gurmukhi {
+      font-size: clamp(1.3rem, 2.5vw, 1.8rem); line-height: 2;
+      color: var(--color-primary); margin-bottom: 24px; font-weight: 500;
+    }
+    .hukamnama-english {
+      font-size: 1rem; color: var(--color-text-secondary);
+      line-height: 1.8; font-style: italic; max-width: 800px;
+    }
+    .hukamnama-footer {
+      margin-top: 24px; padding-top: 20px;
+      border-top: 1px solid var(--color-border-light);
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;
+    }
+    .hukamnama-writer { font-size: 0.88rem; color: var(--color-text-muted); }
+    .hukamnama-loading {
+      text-align: center; padding: 60px 0;
+      color: var(--color-text-muted); font-size: 0.95rem;
+    }
+
+    /* ── GLOBE SIMRAN ── */
+    .simran-section { padding: 100px 0; position: relative; }
+    .simran-wrapper {
+      display: flex; flex-direction: column; align-items: center; gap: 32px;
+    }
+    .globe-container {
+      position: relative; width: 100%; max-width: 550px;
+      aspect-ratio: 1; margin: 0 auto;
+    }
+    #globeViz { width: 100%; height: 100%; border-radius: 50%; }
+    .globe-aura {
+      position: absolute; top: 50%; left: 50%;
+      width: 110%; height: 110%; transform: translate(-50%,-50%);
+      border-radius: 50%; pointer-events: none;
+      background: radial-gradient(circle, rgba(184,146,44,0.25) 0%, rgba(184,146,44,0.08) 40%, transparent 70%);
+      opacity: 0; transition: opacity 0.8s;
+    }
+    .globe-aura.active {
+      opacity: 1;
+      animation: aura-breathe 3s ease-in-out infinite;
+    }
+    @keyframes aura-breathe {
+      0%,100% { transform: translate(-50%,-50%) scale(1); opacity: 0.6; }
+      50% { transform: translate(-50%,-50%) scale(1.08); opacity: 1; }
+    }
+    .floating-text {
+      position: absolute; pointer-events: none; white-space: nowrap;
+      color: var(--color-primary); font-weight: 500;
+      animation: float-out 3s ease-out forwards;
+    }
+    @keyframes float-out {
+      0% { opacity: 0; transform: translate(-50%,-50%) scale(0.8); }
+      10% { opacity: 0.7; }
+      40% { opacity: 0.5; }
+      100% { opacity: 0; transform: translate(-50%, -180px) scale(0.6); }
+    }
+    .simran-controls { text-align: center; }
+    .simran-btn {
+      display: inline-flex; align-items: center; gap: 10px;
+      padding: 16px 40px; border-radius: var(--radius-full);
+      border: none; cursor: pointer; font-family: var(--font-body);
+      font-size: 1rem; font-weight: 600; transition: all 0.3s var(--ease-out);
+    }
+    .simran-btn.start {
+      background: var(--color-primary); color: var(--color-primary-text);
+      box-shadow: 0 4px 20px rgba(232,196,74,0.25);
+    }
+    .simran-btn.start:hover { box-shadow: 0 8px 30px rgba(232,196,74,0.4); transform: translateY(-2px); }
+    .simran-btn.stop {
+      background: rgba(248,113,113,0.15); color: #f87171;
+      border: 1px solid rgba(248,113,113,0.3);
+    }
+    .simran-btn.stop:hover { background: rgba(248,113,113,0.25); }
+    .simran-timer {
+      font-size: 2rem; font-weight: 700; color: var(--color-primary);
+      font-variant-numeric: tabular-nums; min-height: 2.5rem;
+    }
+    .simran-label {
+      font-size: 0.9rem; color: var(--color-text-muted); margin-top: 4px;
+    }
+
+    /* ── REVIEWS ── */
+    .reviews { padding: 80px 0; }
+    .reviews-scroll {
+      display: flex; gap: 20px; overflow-x: auto; padding: 10px 0 20px;
+      scroll-snap-type: x mandatory; scrollbar-width: none;
+    }
+    .reviews-scroll::-webkit-scrollbar { display: none; }
+    .review-card {
+      flex-shrink: 0; width: 320px; scroll-snap-align: start;
+      background: var(--color-bg-white); border: 1px solid var(--color-border-light);
+      border-radius: var(--radius-lg); padding: 28px;
+      transition: all 0.3s var(--ease-out);
+    }
+    .review-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+    .review-stars { color: #FBBF24; font-size: 1rem; margin-bottom: 12px; letter-spacing: 2px; }
+    .review-text {
+      font-size: 0.92rem; color: var(--color-text-secondary);
+      line-height: 1.6; margin-bottom: 16px; min-height: 72px;
+    }
+    .review-author {
+      display: flex; align-items: center; gap: 10px;
+    }
+    .review-avatar {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: var(--color-primary); color: var(--color-primary-text);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 0.85rem;
+    }
+    .review-name { font-size: 0.88rem; font-weight: 600; }
+    .review-device { font-size: 0.75rem; color: var(--color-text-muted); }
+
+    /* ── SOCIAL PROOF ── */
+    .social-proof {
+      padding: 48px 0; text-align: center;
+      border-top: 1px solid var(--color-border-light);
+      border-bottom: 1px solid var(--color-border-light);
+    }
+    .proof-avatars {
+      display: flex; justify-content: center; margin-bottom: 16px;
+    }
+    .proof-avatar {
+      width: 40px; height: 40px; border-radius: 50%;
+      border: 3px solid var(--color-bg);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 0.75rem; margin-left: -10px;
+      color: #fff;
+    }
+    .proof-avatar:first-child { margin-left: 0; }
+    .proof-text {
+      font-size: 1.1rem; font-weight: 600;
+    }
+    .proof-text span { color: var(--color-primary); }
+    .proof-sub { font-size: 0.9rem; color: var(--color-text-muted); margin-top: 4px; }
+
+    /* ── BLOG ARTICLES ── */
+    .blog { padding: 80px 0; }
+    .blog-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;
+    }
+    .blog-card {
+      background: var(--color-bg-white); border: 1px solid var(--color-border-light);
+      border-radius: var(--radius-lg); padding: 32px 28px;
+      transition: all 0.3s var(--ease-out);
+    }
+    .blog-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+    .blog-tag {
+      display: inline-block; font-size: 0.75rem; font-weight: 600;
+      color: var(--color-primary); text-transform: uppercase;
+      letter-spacing: 0.06em; margin-bottom: 12px;
+    }
+    .blog-card h3 { font-size: 1.15rem; font-weight: 600; margin-bottom: 10px; }
+    .blog-card p {
+      font-size: 0.9rem; color: var(--color-text-secondary); line-height: 1.7;
+    }
+
+    /* ── SHARE FAB ── */
+    .share-fab {
+      position: fixed; bottom: 24px; right: 24px; z-index: 90;
+      display: flex; flex-direction: column; align-items: flex-end; gap: 10px;
+    }
+    .share-fab-items {
+      display: flex; flex-direction: column; gap: 8px;
+      opacity: 0; transform: translateY(10px); pointer-events: none;
+      transition: all 0.3s var(--ease-out);
+    }
+    .share-fab.open .share-fab-items { opacity: 1; transform: translateY(0); pointer-events: all; }
+    .fab-btn {
+      width: 48px; height: 48px; border-radius: 50%; border: none;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: all 0.3s var(--ease-out); font-size: 1.2rem;
+      box-shadow: var(--shadow-md);
+    }
+    .fab-btn:hover { transform: scale(1.1); }
+    .fab-main {
+      width: 56px; height: 56px; border-radius: 50%; border: none;
+      background: var(--color-primary); color: var(--color-primary-text);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; font-size: 1.3rem; box-shadow: 0 4px 20px rgba(232,196,74,0.3);
+      transition: all 0.3s var(--ease-out);
+    }
+    .fab-main:hover { transform: scale(1.05); }
+    .fab-whatsapp { background: #25D366; color: #fff; }
+    .fab-twitter { background: var(--color-bg-white); color: var(--color-text); border: 1px solid var(--color-border); }
+    .fab-copy { background: var(--color-bg-white); color: var(--color-text); border: 1px solid var(--color-border); }
+    .copy-toast {
+      position: fixed; bottom: 100px; right: 24px; z-index: 91;
+      background: var(--color-primary); color: var(--color-primary-text);
+      padding: 10px 20px; border-radius: var(--radius-full);
+      font-size: 0.88rem; font-weight: 600; opacity: 0;
+      transform: translateY(10px); transition: all 0.3s;
+      pointer-events: none;
+    }
+    .copy-toast.show { opacity: 1; transform: translateY(0); }
+
+    /* ── EMAIL CAPTURE ── */
+    .email-capture { padding: 60px 0; }
+    .capture-card {
+      background: linear-gradient(135deg, var(--color-bg-card), var(--color-bg-white));
+      border: 1px solid var(--color-border); border-radius: var(--radius-xl);
+      padding: 48px; text-align: center;
+    }
+    .capture-card h3 { font-size: 1.4rem; font-weight: 700; margin-bottom: 8px; }
+    .capture-card p {
+      font-size: 0.95rem; color: var(--color-text-secondary); margin-bottom: 24px;
+    }
+    .capture-form {
+      display: flex; gap: 12px; max-width: 460px; margin: 0 auto; flex-wrap: wrap; justify-content: center;
+    }
+    .capture-input {
+      flex: 1; min-width: 220px; padding: 14px 20px;
+      border-radius: var(--radius-full); border: 1px solid var(--color-border);
+      background: var(--color-bg); color: var(--color-text);
+      font-family: var(--font-body); font-size: 0.95rem; outline: none;
+      transition: border-color 0.3s;
+    }
+    .capture-input:focus { border-color: var(--color-primary); }
+    .capture-submit {
+      padding: 14px 28px; border-radius: var(--radius-full); border: none;
+      background: var(--color-primary); color: var(--color-primary-text);
+      font-family: var(--font-body); font-size: 0.95rem; font-weight: 600;
+      cursor: pointer; transition: all 0.3s var(--ease-out);
+    }
+    .capture-submit:hover { background: var(--color-primary-hover); }
+
+    /* ── QR CODE ── */
+    .qr-section {
+      display: flex; align-items: center; justify-content: center;
+      gap: 40px; flex-wrap: wrap;
+    }
+    .qr-box {
+      width: 140px; height: 140px; padding: 10px;
+      background: #fff; border-radius: var(--radius-md);
+    }
+    .qr-box svg { width: 100%; height: 100%; }
+    .qr-label { font-size: 0.8rem; color: var(--color-text-muted); text-align: center; margin-top: 8px; }
+
+    /* ── RESPONSIVE ADDITIONS ── */
+    @media (max-width: 768px) {
+      .phone-frame { width: 220px; }
+      .hukamnama-card { padding: 28px 20px; }
+      .globe-container { max-width: 320px; }
+      .review-card { width: 280px; }
+      .blog-grid { grid-template-columns: 1fr; }
+      .qr-box { display: none; }
+      .qr-label { display: none; }
+      .share-fab { bottom: 16px; right: 16px; }
+      .simran-section { padding: 60px 0; }
+    }
+
     /* ── ANIMATIONS ── */
     .fade-up {
       opacity: 0;
@@ -531,6 +842,7 @@
         Sikh AI
       </a>
       <div class="nav-actions">
+        <button class="lang-toggle" onclick="toggleLang()" aria-label="Toggle language" id="langBtn">EN</button>
         <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
           <span id="themeIcon">&#9789;</span>
         </button>
@@ -550,10 +862,10 @@
       </div>
       <div class="hero-badge fade-up">
         <span class="dot"></span>
-        Available on Google Play
+        <span data-i18n="heroBadge">Available on Google Play</span>
       </div>
-      <h1 class="fade-up">Your Daily Companion<br>for <span class="gradient">Sikhi</span></h1>
-      <p class="fade-up">Daily Hukamnama, Gurbani Quotes, Nitnem with audio, Simran, live Kirtan from Golden Temple, Sikh Calendar, and AI — all in one free app.</p>
+      <h1 class="fade-up"><span data-i18n="heroTitle">Your Daily Companion<br>for </span><span class="gradient" data-i18n="heroSikhi">Sikhi</span></h1>
+      <p class="fade-up" data-i18n="heroDesc">Daily Hukamnama, Gurbani Quotes, Nitnem with audio, Simran, live Kirtan from Golden Temple, Sikh Calendar, and AI — all in one free app.</p>
       <div class="hero-actions fade-up">
         <a href="https://play.google.com/store/apps/details?id=com.anhadapp" class="btn-primary" target="_blank" rel="noopener">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M3.609 1.814L13.792 12 3.61 22.186a.996.996 0 01-.61-.92V2.734a1 1 0 01.609-.92zm10.89 10.893l2.302 2.302-10.937 6.333 8.635-8.635zm3.199-3.199l2.807 1.626a1 1 0 010 1.732l-2.807 1.626L15.206 12l2.492-2.492zM5.864 2.658L16.8 8.99l-2.302 2.302-8.634-8.634z"/></svg>
@@ -569,16 +881,73 @@
     <div class="container">
       <div class="stats-grid">
         <div class="stat-item fade-up">
-          <h3>5K+</h3>
-          <p>Downloads</p>
+          <h3><span data-count="5000" data-suffix="K+" data-divide="1000">0</span></h3>
+          <p data-i18n="statDownloads">Downloads</p>
         </div>
         <div class="stat-item fade-up">
-          <h3>&#9733; 5.0</h3>
-          <p>Play Store Rating</p>
+          <h3>&#9733; <span data-count="50" data-suffix="" data-divide="10" data-decimals="1">0</span></h3>
+          <p data-i18n="statRating">Play Store Rating</p>
         </div>
         <div class="stat-item fade-up">
-          <h3>Free</h3>
-          <p>No Ads, No Fees</p>
+          <h3 data-i18n="statFree">Free</h3>
+          <p data-i18n="statNoAds">No Ads, No Fees</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Screenshots Carousel -->
+  <section class="screenshots">
+    <div class="container">
+      <div class="section-label fade-up" data-i18n="screenshotsLabel">&#9670; See it in Action</div>
+      <h2 class="section-title fade-up" data-i18n="screenshotsTitle">Designed with care,<br>built for your daily practice</h2>
+      <div class="screenshots-scroll">
+        <div class="phone-frame fade-up"><div class="phone-screen" id="ss1">Screenshot 1</div></div>
+        <div class="phone-frame fade-up"><div class="phone-screen" id="ss2">Screenshot 2</div></div>
+        <div class="phone-frame fade-up"><div class="phone-screen" id="ss3">Screenshot 3</div></div>
+        <div class="phone-frame fade-up"><div class="phone-screen" id="ss4">Screenshot 4</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Live Hukamnama -->
+  <section class="hukamnama-live" id="hukamnama">
+    <div class="container">
+      <div class="section-label fade-up" data-i18n="hukamnamaLabel">&#9670; Live from Sri Darbar Sahib</div>
+      <h2 class="section-title fade-up" data-i18n="hukamnamaTitle">Today's Hukamnama</h2>
+      <div class="hukamnama-card fade-up" id="hukamnamaCard">
+        <div class="hukamnama-loading" id="hukamnamaLoading" data-i18n="hukamnamaLoading">Loading today's Hukamnama...</div>
+        <div id="hukamnamaContent" style="display:none">
+          <div class="hukamnama-meta">
+            <div class="hukamnama-live-dot"><span class="livedot"></span> LIVE</div>
+            <div class="hukamnama-ang" id="hukamAng"></div>
+          </div>
+          <div class="hukamnama-gurmukhi" id="hukamGurmukhi"></div>
+          <div class="hukamnama-english" id="hukamEnglish"></div>
+          <div class="hukamnama-footer">
+            <div class="hukamnama-writer" id="hukamWriter"></div>
+            <a href="https://play.google.com/store/apps/details?id=com.anhadapp" class="btn-secondary" style="padding:10px 24px;font-size:0.85rem" target="_blank" rel="noopener" data-i18n="hukamnamaCta">Read Full Hukamnama in App</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Globe Simran Experience -->
+  <section class="simran-section" id="simran">
+    <div class="container">
+      <div class="section-label fade-up" data-i18n="simranLabel">&#9670; Experience Simran</div>
+      <h2 class="section-title fade-up" data-i18n="simranTitle">Meditate with the world</h2>
+      <p class="section-subtitle fade-up" data-i18n="simranSubtitle">An interactive Naam Simran experience. Start a session and feel connected to Sikhs meditating across the globe.</p>
+      <div class="simran-wrapper fade-up">
+        <div class="globe-container">
+          <div class="globe-aura" id="globeAura"></div>
+          <div id="globeViz"></div>
+        </div>
+        <div class="simran-controls">
+          <div class="simran-timer" id="simranTimer"></div>
+          <div class="simran-label" id="simranLabel"></div>
+          <button class="simran-btn start" id="simranBtn" onclick="toggleSimran()" data-i18n="simranStart">Begin Simran</button>
         </div>
       </div>
     </div>
@@ -587,9 +956,9 @@
   <!-- Features -->
   <section class="features" id="features">
     <div class="container">
-      <div class="section-label fade-up">&#9670; Features</div>
-      <h2 class="section-title fade-up">Everything for your<br>Sikhi journey</h2>
-      <p class="section-subtitle fade-up">A thoughtfully designed app that brings the richness of Gurbani and Sikh traditions to your fingertips.</p>
+      <div class="section-label fade-up" data-i18n="featuresLabel">&#9670; Features</div>
+      <h2 class="section-title fade-up" data-i18n="featuresTitle">Everything for your<br>Sikhi journey</h2>
+      <p class="section-subtitle fade-up" data-i18n="featuresSubtitle">A thoughtfully designed app that brings the richness of Gurbani and Sikh traditions to your fingertips.</p>
 
       <div class="features-grid">
 
@@ -645,6 +1014,57 @@
     </div>
   </section>
 
+  <!-- User Reviews -->
+  <section class="reviews">
+    <div class="container">
+      <div class="section-label fade-up" data-i18n="reviewsLabel">&#9670; Reviews</div>
+      <h2 class="section-title fade-up" data-i18n="reviewsTitle">Loved by the Sangat</h2>
+      <div class="reviews-scroll">
+        <div class="review-card fade-up">
+          <div class="review-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+          <div class="review-text">Very nice app for all updates about daily gurudwara hukamanas and very good feature of Chardikala AI so that we can question everything about gurbani.</div>
+          <div class="review-author"><div class="review-avatar">G</div><div><div class="review-name">Garry Johar</div><div class="review-device">Samsung Galaxy M15 5G</div></div></div>
+        </div>
+        <div class="review-card fade-up">
+          <div class="review-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+          <div class="review-text">I don't see this type of applications at any Play Store. This is a very wonderful app. I love this app, it connects me from Waheguru.</div>
+          <div class="review-author"><div class="review-avatar">A</div><div><div class="review-name">Arti Keswani</div><div class="review-device">POCO M6 Plus 5G</div></div></div>
+        </div>
+        <div class="review-card fade-up">
+          <div class="review-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+          <div class="review-text">Best app! Waheguru Ji. Everything you need for your Sikhi journey in one place.</div>
+          <div class="review-author"><div class="review-avatar">J</div><div><div class="review-name">Jaspinder Singh Bedi</div><div class="review-device">Motorola moto e(7) power</div></div></div>
+        </div>
+        <div class="review-card fade-up">
+          <div class="review-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+          <div class="review-text">Great app for Sikhi! Beautiful design and very useful daily features. Highly recommended.</div>
+          <div class="review-author"><div class="review-avatar">J</div><div><div class="review-name">Jyoti Sachdev</div><div class="review-device">Redmi Note 14 Pro 5G</div></div></div>
+        </div>
+        <div class="review-card fade-up">
+          <div class="review-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+          <div class="review-text">Very nice app. All the features a Sikh needs in daily life.</div>
+          <div class="review-author"><div class="review-avatar">H</div><div><div class="review-name">Harwinder Singh</div><div class="review-device">Vivo Y29 5G</div></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Social Proof -->
+  <section class="social-proof fade-up">
+    <div class="container">
+      <div class="proof-avatars">
+        <div class="proof-avatar" style="background:#D4A03A">G</div>
+        <div class="proof-avatar" style="background:#8B6914">A</div>
+        <div class="proof-avatar" style="background:#B8922C">J</div>
+        <div class="proof-avatar" style="background:#5C4409">M</div>
+        <div class="proof-avatar" style="background:#DAA520">H</div>
+        <div class="proof-avatar" style="background:#7A5C00">D</div>
+      </div>
+      <div class="proof-text" data-i18n="proofText">Join <span>5,000+</span> Sikhs worldwide</div>
+      <div class="proof-sub" data-i18n="proofSub">Growing every day through the power of Sangat</div>
+    </div>
+  </section>
+
   <!-- Gurbani Highlight -->
   <section class="highlight">
     <div class="container">
@@ -656,19 +1076,78 @@
     </div>
   </section>
 
-  <!-- CTA -->
-  <section class="cta">
+  <!-- SEO Blog Articles -->
+  <section class="blog" id="learn">
     <div class="container">
-      <div class="cta-inner fade-up">
-        <h2>Begin your journey today</h2>
-        <p>Join thousands who start their day with Hukamnama, Gurbani, and Simran through Sikh AI.</p>
-        <a href="https://play.google.com/store/apps/details?id=com.anhadapp" class="btn-primary" target="_blank" rel="noopener">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M3.609 1.814L13.792 12 3.61 22.186a.996.996 0 01-.61-.92V2.734a1 1 0 01.609-.92zm10.89 10.893l2.302 2.302-10.937 6.333 8.635-8.635zm3.199-3.199l2.807 1.626a1 1 0 010 1.732l-2.807 1.626L15.206 12l2.492-2.492zM5.864 2.658L16.8 8.99l-2.302 2.302-8.634-8.634z"/></svg>
-          Download on Google Play
-        </a>
+      <div class="section-label fade-up" data-i18n="blogLabel">&#9670; Learn</div>
+      <h2 class="section-title fade-up" data-i18n="blogTitle">Explore Sikhi</h2>
+      <p class="section-subtitle fade-up" data-i18n="blogSubtitle">Deepen your understanding of Sikh traditions and daily practice.</p>
+      <div class="blog-grid">
+        <div class="blog-card fade-up">
+          <div class="blog-tag">Gurbani</div>
+          <h3 data-i18n="blog1Title">What is Hukamnama?</h3>
+          <p data-i18n="blog1Text">Hukamnama is the daily divine order read from Sri Guru Granth Sahib Ji at Sri Darbar Sahib, Amritsar. Every morning, the Granthi Singh opens the Holy Scripture at random and reads the first shabad on the left page. This becomes the Hukam (command) for the entire Sikh community for that day. It offers spiritual guidance, comfort, and direction for daily life. Sikh AI delivers this Hukamnama to your phone every morning with full Gurmukhi text, English translation, and meaning.</p>
+        </div>
+        <div class="blog-card fade-up">
+          <div class="blog-tag">Daily Practice</div>
+          <h3 data-i18n="blog2Title">How to do Nitnem daily</h3>
+          <p data-i18n="blog2Text">Nitnem is the daily recitation of five Banis prescribed for every Sikh: Japji Sahib, Jaap Sahib, and Tav-Prasad Savaiye in the morning (Amrit Vela), Rehras Sahib in the evening, and Sohila Sahib before sleep. Consistent Nitnem practice builds spiritual discipline and keeps you connected to the Guru's teachings throughout the day. Sikh AI provides all Nitnem Banis with professional audio so you can read along or listen during your commute.</p>
+        </div>
+        <div class="blog-card fade-up">
+          <div class="blog-tag">Meditation</div>
+          <h3 data-i18n="blog3Title">What is Naam Simran?</h3>
+          <p data-i18n="blog3Text">Naam Simran is the meditative remembrance of Waheguru's name — the core spiritual practice in Sikhi. By repeating "Waheguru" with focused devotion, the mind stills and connects with the Divine. Guru Nanak Dev Ji emphasized Naam Simran as the path to inner peace and spiritual liberation. Ideally practiced during Amrit Vela (early morning hours before dawn), it brings clarity, calm, and Chardi Kala (eternal optimism). Sikh AI's Simran feature includes a 3D globe showing Sikhs meditating worldwide, a session timer, and soothing audio.</p>
+        </div>
       </div>
     </div>
   </section>
+
+  <!-- Email Capture -->
+  <section class="email-capture">
+    <div class="container">
+      <div class="capture-card fade-up">
+        <h3 data-i18n="captureTitle">Stay connected</h3>
+        <p data-i18n="captureDesc">Get notified when new features drop. No spam, only updates.</p>
+        <form class="capture-form" action="https://formspree.io/f/xpwzgkqo" method="POST">
+          <input type="email" name="email" class="capture-input" placeholder="your@email.com" required>
+          <button type="submit" class="capture-submit" data-i18n="captureBtn">Notify Me</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA with QR -->
+  <section class="cta">
+    <div class="container">
+      <div class="cta-inner fade-up">
+        <h2 data-i18n="ctaTitle">Begin your journey today</h2>
+        <p data-i18n="ctaDesc">Join thousands who start their day with Hukamnama, Gurbani, and Simran through Sikh AI.</p>
+        <div class="qr-section">
+          <a href="https://play.google.com/store/apps/details?id=com.anhadapp" class="btn-primary" target="_blank" rel="noopener">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M3.609 1.814L13.792 12 3.61 22.186a.996.996 0 01-.61-.92V2.734a1 1 0 01.609-.92zm10.89 10.893l2.302 2.302-10.937 6.333 8.635-8.635zm3.199-3.199l2.807 1.626a1 1 0 010 1.732l-2.807 1.626L15.206 12l2.492-2.492zM5.864 2.658L16.8 8.99l-2.302 2.302-8.634-8.634z"/></svg>
+            <span data-i18n="ctaBtn">Download on Google Play</span>
+          </a>
+          <div>
+            <div class="qr-box">
+              <svg viewBox="0 0 29 29" xmlns="http://www.w3.org/2000/svg"><path d="M0 0h7v1h-7zM8 0h1v1h-1zM10 0h3v1h-3zM14 0h1v1h-1zM16 0h2v1h-2zM19 0h3v1h-3zM22 0h7v1h-7zM0 1h1v1h-1zM6 1h1v1h-1zM8 1h2v1h-2zM12 1h1v1h-1zM15 1h1v1h-1zM18 1h1v1h-1zM22 1h1v1h-1zM28 1h1v1h-1zM0 2h1v1h-1zM2 2h3v1h-3zM6 2h1v1h-1zM9 2h1v1h-1zM11 2h2v1h-2zM14 2h2v1h-2zM17 2h1v1h-1zM20 2h1v1h-1zM22 2h1v1h-1zM24 2h3v1h-3zM28 2h1v1h-1zM0 3h1v1h-1zM2 3h3v1h-3zM6 3h1v1h-1zM8 3h1v1h-1zM10 3h1v1h-1zM13 3h3v1h-3zM17 3h1v1h-1zM19 3h2v1h-2zM22 3h1v1h-1zM24 3h3v1h-3zM28 3h1v1h-1zM0 4h1v1h-1zM2 4h3v1h-3zM6 4h1v1h-1zM8 4h1v1h-1zM11 4h1v1h-1zM14 4h1v1h-1zM16 4h1v1h-1zM19 4h2v1h-2zM22 4h1v1h-1zM24 4h3v1h-3zM28 4h1v1h-1zM0 5h1v1h-1zM6 5h1v1h-1zM9 5h2v1h-2zM13 5h1v1h-1zM15 5h4v1h-4zM22 5h1v1h-1zM28 5h1v1h-1zM0 6h7v1h-7zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h1v1h-1zM16 6h1v1h-1zM18 6h1v1h-1zM20 6h1v1h-1zM22 6h7v1h-7zM9 7h1v1h-1zM12 7h1v1h-1zM14 7h1v1h-1zM16 7h1v1h-1zM18 7h1v1h-1zM20 7h1v1h-1zM0 8h2v1h-2zM3 8h1v1h-1zM5 8h3v1h-3zM9 8h2v1h-2zM12 8h3v1h-3zM16 8h2v1h-2zM19 8h2v1h-2zM22 8h1v1h-1zM25 8h1v1h-1zM27 8h2v1h-2z" fill="#000"/></svg>
+            </div>
+            <div class="qr-label" data-i18n="qrLabel">Scan to download</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Share FAB -->
+  <div class="share-fab" id="shareFab">
+    <div class="share-fab-items">
+      <button class="fab-btn fab-whatsapp" onclick="shareWhatsApp()" title="Share on WhatsApp">&#128172;</button>
+      <button class="fab-btn fab-twitter" onclick="shareTwitter()" title="Share on X">&#120143;</button>
+      <button class="fab-btn fab-copy" onclick="copyLink()" title="Copy link">&#128279;</button>
+    </div>
+    <button class="fab-main" onclick="toggleShare()">&#8599;</button>
+  </div>
+  <div class="copy-toast" id="copyToast">Link copied!</div>
 
   <!-- Footer -->
   <footer class="footer">
@@ -684,24 +1163,126 @@
     </div>
   </footer>
 
+  <!-- Globe.GL -->
+  <script src="js/three.min.js"></script>
+  <script src="js/globe.gl.min.js"></script>
+
   <script>
+    /* ── THEME ── */
     function toggleTheme() {
       const html = document.documentElement;
-      const current = html.getAttribute('data-theme');
-      const next = current === 'dark' ? 'light' : 'dark';
+      const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
       html.setAttribute('data-theme', next);
       localStorage.setItem('sikhai-theme', next);
-      document.getElementById('themeIcon').innerHTML = next === 'dark' ? '&#9789;' : '&#9788;';
+      document.getElementById('themeIcon').innerHTML = next === 'dark' ? '\u263D' : '\u2600';
+      if (window._globe) {
+        const bg = next === 'dark' ? '#010101' : '#FAFAFA';
+        window._globe.scene().background = new THREE.Color(bg);
+      }
     }
-
     (function() {
-      const saved = localStorage.getItem('sikhai-theme');
-      if (saved) {
-        document.documentElement.setAttribute('data-theme', saved);
-        document.getElementById('themeIcon').innerHTML = saved === 'dark' ? '&#9789;' : '&#9788;';
+      const s = localStorage.getItem('sikhai-theme');
+      if (s) {
+        document.documentElement.setAttribute('data-theme', s);
+        document.getElementById('themeIcon').innerHTML = s === 'dark' ? '\u263D' : '\u2600';
       }
     })();
 
+    /* ── LANGUAGE ── */
+    const i18n = {
+      en: {
+        heroBadge: 'Available on Google Play', heroTitle: 'Your Daily Companion<br>for ', heroSikhi: 'Sikhi',
+        heroDesc: 'Daily Hukamnama, Gurbani Quotes, Nitnem with audio, Simran, live Kirtan from Golden Temple, Sikh Calendar, and AI \u2014 all in one free app.',
+        statDownloads: 'Downloads', statRating: 'Play Store Rating', statFree: 'Free', statNoAds: 'No Ads, No Fees',
+        screenshotsLabel: '\u25C6 See it in Action', screenshotsTitle: 'Designed with care,<br>built for your daily practice',
+        hukamnamaLabel: '\u25C6 Live from Sri Darbar Sahib', hukamnamaTitle: "Today's Hukamnama",
+        hukamnamaLoading: "Loading today's Hukamnama...", hukamnamaCta: 'Read Full Hukamnama in App',
+        simranLabel: '\u25C6 Experience Simran', simranTitle: 'Meditate with the world',
+        simranSubtitle: 'An interactive Naam Simran experience. Start a session and feel connected to Sikhs meditating across the globe.',
+        simranStart: 'Begin Simran', simranStop: 'End Session',
+        featuresLabel: '\u25C6 Features', featuresTitle: 'Everything for your<br>Sikhi journey',
+        featuresSubtitle: 'A thoughtfully designed app that brings the richness of Gurbani and Sikh traditions to your fingertips.',
+        reviewsLabel: '\u25C6 Reviews', reviewsTitle: 'Loved by the Sangat',
+        proofText: 'Join <span>5,000+</span> Sikhs worldwide', proofSub: 'Growing every day through the power of Sangat',
+        blogLabel: '\u25C6 Learn', blogTitle: 'Explore Sikhi', blogSubtitle: 'Deepen your understanding of Sikh traditions and daily practice.',
+        blog1Title: 'What is Hukamnama?',
+        blog1Text: 'Hukamnama is the daily divine order read from Sri Guru Granth Sahib Ji at Sri Darbar Sahib, Amritsar. Every morning, the Granthi Singh opens the Holy Scripture at random and reads the first shabad on the left page. This becomes the Hukam (command) for the entire Sikh community for that day. It offers spiritual guidance, comfort, and direction for daily life. Sikh AI delivers this Hukamnama to your phone every morning with full Gurmukhi text, English translation, and meaning.',
+        blog2Title: 'How to do Nitnem daily',
+        blog2Text: 'Nitnem is the daily recitation of five Banis prescribed for every Sikh: Japji Sahib, Jaap Sahib, and Tav-Prasad Savaiye in the morning (Amrit Vela), Rehras Sahib in the evening, and Sohila Sahib before sleep. Consistent Nitnem practice builds spiritual discipline and keeps you connected to the Guru\u2019s teachings throughout the day. Sikh AI provides all Nitnem Banis with professional audio so you can read along or listen during your commute.',
+        blog3Title: 'What is Naam Simran?',
+        blog3Text: 'Naam Simran is the meditative remembrance of Waheguru\u2019s name \u2014 the core spiritual practice in Sikhi. By repeating \u201CWaheguru\u201D with focused devotion, the mind stills and connects with the Divine. Guru Nanak Dev Ji emphasized Naam Simran as the path to inner peace and spiritual liberation. Ideally practiced during Amrit Vela (early morning hours before dawn), it brings clarity, calm, and Chardi Kala (eternal optimism). Sikh AI\u2019s Simran feature includes a 3D globe showing Sikhs meditating worldwide, a session timer, and soothing audio.',
+        captureTitle: 'Stay connected', captureDesc: 'Get notified when new features drop. No spam, only updates.', captureBtn: 'Notify Me',
+        ctaTitle: 'Begin your journey today', ctaDesc: 'Join thousands who start their day with Hukamnama, Gurbani, and Simran through Sikh AI.',
+        ctaBtn: 'Download on Google Play', qrLabel: 'Scan to download'
+      },
+      pa: {
+        heroBadge: 'Google Play \u0A24\u0A47 \u0A09\u0A2A\u0A32\u0A2C\u0A27', heroTitle: '\u0A38\u0A3F\u0A71\u0A16\u0A40 \u0A32\u0A08 \u0A24\u0A41\u0A39\u0A3E\u0A21\u0A3E \u0A30\u0A4B\u0A1C\u0A3C\u0A3E\u0A28\u0A3E \u0A38\u0A3E\u0A25\u0A40<br>', heroSikhi: '\u0A38\u0A3F\u0A71\u0A16\u0A40',
+        heroDesc: '\u0A30\u0A4B\u0A1C\u0A3C\u0A3E\u0A28\u0A3E \u0A39\u0A41\u0A15\u0A2E\u0A28\u0A3E\u0A2E\u0A3E, \u0A17\u0A41\u0A30\u0A2C\u0A3E\u0A23\u0A40 \u0A15\u0A4B\u0A1F\u0A38, \u0A28\u0A3F\u0A24\u0A28\u0A47\u0A2E, \u0A38\u0A3F\u0A2E\u0A30\u0A28, \u0A15\u0A40\u0A30\u0A24\u0A28, \u0A38\u0A3F\u0A71\u0A16 \u0A15\u0A48\u0A32\u0A47\u0A02\u0A21\u0A30, \u0A05\u0A24\u0A47 AI \u2014 \u0A38\u0A2D \u0A07\u0A71\u0A15 \u0A2E\u0A41\u0A2B\u0A3C\u0A24 \u0A10\u0A2A \u0A35\u0A3F\u0A71\u0A1A\u0964',
+        statDownloads: '\u0A21\u0A3E\u0A0A\u0A28\u0A32\u0A4B\u0A21\u0A38', statRating: 'Play Store \u0A30\u0A47\u0A1F\u0A3F\u0A70\u0A17', statFree: '\u0A2E\u0A41\u0A2B\u0A3C\u0A24', statNoAds: '\u0A15\u0A4B\u0A08 \u0A07\u0A36\u0A24\u0A3F\u0A39\u0A3E\u0A30 \u0A28\u0A39\u0A40\u0A02',
+        screenshotsLabel: '\u25C6 \u0A10\u0A2A \u0A26\u0A47\u0A16\u0A4B', screenshotsTitle: '\u0A2A\u0A3F\u0A06\u0A30 \u0A28\u0A3E\u0A32 \u0A21\u0A3F\u0A1C\u0A3C\u0A3E\u0A07\u0A28 \u0A15\u0A40\u0A24\u0A3E',
+        hukamnamaLabel: '\u25C6 \u0A38\u0A4D\u0A30\u0A40 \u0A26\u0A30\u0A2C\u0A3E\u0A30 \u0A38\u0A3E\u0A39\u0A3F\u0A2C \u0A24\u0A4B\u0A02', hukamnamaTitle: '\u0A05\u0A71\u0A1C \u0A26\u0A3E \u0A39\u0A41\u0A15\u0A2E\u0A28\u0A3E\u0A2E\u0A3E',
+        hukamnamaLoading: '\u0A39\u0A41\u0A15\u0A2E\u0A28\u0A3E\u0A2E\u0A3E \u0A32\u0A4B\u0A21 \u0A39\u0A4B \u0A30\u0A3F\u0A39\u0A3E \u0A39\u0A48...', hukamnamaCta: '\u0A10\u0A2A \u0A35\u0A3F\u0A71\u0A1A \u0A2A\u0A42\u0A30\u0A3E \u0A39\u0A41\u0A15\u0A2E\u0A28\u0A3E\u0A2E\u0A3E \u0A2A\u0A5C\u0A4B',
+        simranLabel: '\u25C6 \u0A38\u0A3F\u0A2E\u0A30\u0A28 \u0A26\u0A3E \u0A05\u0A28\u0A41\u0A2D\u0A35', simranTitle: '\u0A26\u0A41\u0A28\u0A40\u0A06 \u0A28\u0A3E\u0A32 \u0A38\u0A3F\u0A2E\u0A30\u0A28 \u0A15\u0A30\u0A4B',
+        simranSubtitle: '\u0A07\u0A71\u0A15 \u0A07\u0A70\u0A1F\u0A30\u0A10\u0A15\u0A1F\u0A3F\u0A35 \u0A28\u0A3E\u0A2E \u0A38\u0A3F\u0A2E\u0A30\u0A28 \u0A05\u0A28\u0A41\u0A2D\u0A35\u0964 \u0A38\u0A48\u0A36\u0A28 \u0A36\u0A41\u0A30\u0A42 \u0A15\u0A30\u0A4B \u0A05\u0A24\u0A47 \u0A26\u0A41\u0A28\u0A40\u0A06 \u0A2D\u0A30 \u0A26\u0A47 \u0A38\u0A3F\u0A71\u0A16\u0A3E\u0A02 \u0A28\u0A3E\u0A32 \u0A1C\u0A41\u0A5C\u0A4B\u0964',
+        simranStart: '\u0A38\u0A3F\u0A2E\u0A30\u0A28 \u0A36\u0A41\u0A30\u0A42 \u0A15\u0A30\u0A4B', simranStop: '\u0A38\u0A48\u0A36\u0A28 \u0A2C\u0A70\u0A26 \u0A15\u0A30\u0A4B',
+        featuresLabel: '\u25C6 \u0A2B\u0A3C\u0A40\u0A1A\u0A30\u0A1C\u0A3C', featuresTitle: '\u0A24\u0A41\u0A39\u0A3E\u0A21\u0A40 \u0A38\u0A3F\u0A71\u0A16\u0A40 \u0A2F\u0A3E\u0A24\u0A30\u0A3E \u0A32\u0A08<br>\u0A38\u0A2D \u0A15\u0A41\u0A1D',
+        featuresSubtitle: '\u0A07\u0A71\u0A15 \u0A38\u0A4B\u0A1A-\u0A38\u0A2E\u0A1D \u0A15\u0A47 \u0A21\u0A3F\u0A1C\u0A3C\u0A3E\u0A07\u0A28 \u0A15\u0A40\u0A24\u0A40 \u0A10\u0A2A \u0A1C\u0A4B \u0A17\u0A41\u0A30\u0A2C\u0A3E\u0A23\u0A40 \u0A05\u0A24\u0A47 \u0A38\u0A3F\u0A71\u0A16 \u0A30\u0A35\u0A3E\u0A07\u0A24\u0A3E\u0A02 \u0A28\u0A42\u0A70 \u0A24\u0A41\u0A39\u0A3E\u0A21\u0A47 \u0A39\u0A71\u0A25 \u0A35\u0A3F\u0A71\u0A1A \u0A32\u0A3F\u0A06\u0A02\u0A26\u0A40 \u0A39\u0A48\u0964',
+        reviewsLabel: '\u25C6 \u0A30\u0A3F\u0A35\u0A3F\u0A0A\u0A1C\u0A3C', reviewsTitle: '\u0A38\u0A70\u0A17\u0A24 \u0A26\u0A41\u0A06\u0A30\u0A3E \u0A2A\u0A3F\u0A06\u0A30\u0A3E',
+        proofText: '<span>5,000+</span> \u0A38\u0A3F\u0A71\u0A16\u0A3E\u0A02 \u0A28\u0A3E\u0A32 \u0A1C\u0A41\u0A5C\u0A4B', proofSub: '\u0A38\u0A70\u0A17\u0A24 \u0A26\u0A40 \u0A24\u0A3E\u0A15\u0A24 \u0A28\u0A3E\u0A32 \u0A39\u0A30 \u0A30\u0A4B\u0A1C\u0A3C \u0A35\u0A27 \u0A30\u0A3F\u0A39\u0A3E \u0A39\u0A48',
+        blogLabel: '\u25C6 \u0A38\u0A3F\u0A71\u0A16\u0A4B', blogTitle: '\u0A38\u0A3F\u0A71\u0A16\u0A40 \u0A2C\u0A3E\u0A30\u0A47 \u0A1C\u0A3E\u0A23\u0A4B', blogSubtitle: '\u0A38\u0A3F\u0A71\u0A16 \u0A30\u0A35\u0A3E\u0A07\u0A24\u0A3E\u0A02 \u0A05\u0A24\u0A47 \u0A30\u0A4B\u0A1C\u0A3C\u0A3E\u0A28\u0A3E \u0A05\u0A2D\u0A3F\u0A06\u0A38 \u0A28\u0A42\u0A70 \u0A21\u0A42\u0A70\u0A18\u0A3E \u0A38\u0A2E\u0A1D\u0A4B\u0964',
+        blog1Title: '\u0A39\u0A41\u0A15\u0A2E\u0A28\u0A3E\u0A2E\u0A3E \u0A15\u0A40 \u0A39\u0A48?',
+        blog2Title: '\u0A28\u0A3F\u0A24\u0A28\u0A47\u0A2E \u0A15\u0A3F\u0A35\u0A47\u0A02 \u0A15\u0A30\u0A40\u0A0F?',
+        blog3Title: '\u0A28\u0A3E\u0A2E \u0A38\u0A3F\u0A2E\u0A30\u0A28 \u0A15\u0A40 \u0A39\u0A48?',
+        captureTitle: '\u0A1C\u0A41\u0A5C\u0A47 \u0A30\u0A39\u0A4B', captureDesc: '\u0A28\u0A35\u0A47\u0A02 \u0A2B\u0A3C\u0A40\u0A1A\u0A30 \u0A06\u0A09\u0A23 \u0A24\u0A47 \u0A38\u0A42\u0A1A\u0A28\u0A3E \u0A2A\u0A4D\u0A30\u0A3E\u0A2A\u0A24 \u0A15\u0A30\u0A4B\u0964', captureBtn: '\u0A38\u0A42\u0A1A\u0A3F\u0A24 \u0A15\u0A30\u0A4B',
+        ctaTitle: '\u0A05\u0A71\u0A1C \u0A39\u0A40 \u0A06\u0A2A\u0A23\u0A40 \u0A2F\u0A3E\u0A24\u0A30\u0A3E \u0A36\u0A41\u0A30\u0A42 \u0A15\u0A30\u0A4B',
+        ctaDesc: '\u0A39\u0A1C\u0A3C\u0A3E\u0A30\u0A3E\u0A02 \u0A38\u0A3F\u0A71\u0A16\u0A3E\u0A02 \u0A28\u0A3E\u0A32 \u0A1C\u0A41\u0A5C\u0A4B \u0A1C\u0A4B \u0A39\u0A30 \u0A30\u0A4B\u0A1C\u0A3C \u0A39\u0A41\u0A15\u0A2E\u0A28\u0A3E\u0A2E\u0A3E, \u0A17\u0A41\u0A30\u0A2C\u0A3E\u0A23\u0A40, \u0A05\u0A24\u0A47 \u0A38\u0A3F\u0A2E\u0A30\u0A28 \u0A28\u0A3E\u0A32 \u0A36\u0A41\u0A30\u0A42 \u0A15\u0A30\u0A26\u0A47 \u0A39\u0A28\u0964',
+        ctaBtn: 'Google Play \u0A24\u0A4B\u0A02 \u0A21\u0A3E\u0A0A\u0A28\u0A32\u0A4B\u0A21 \u0A15\u0A30\u0A4B', qrLabel: '\u0A38\u0A15\u0A48\u0A28 \u0A15\u0A30\u0A4B'
+      }
+    };
+    let currentLang = localStorage.getItem('sikhai-lang') || 'en';
+    function toggleLang() {
+      currentLang = currentLang === 'en' ? 'pa' : 'en';
+      localStorage.setItem('sikhai-lang', currentLang);
+      applyLang();
+    }
+    function applyLang() {
+      document.getElementById('langBtn').textContent = currentLang === 'en' ? 'EN' : '\u0A2A\u0A70';
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (i18n[currentLang][key]) el.innerHTML = i18n[currentLang][key];
+      });
+    }
+    if (currentLang !== 'en') applyLang();
+
+    /* ── ANIMATED STATS COUNTER ── */
+    function animateCount(el) {
+      const target = parseInt(el.dataset.count);
+      const divisor = parseInt(el.dataset.divide) || 1;
+      const suffix = el.dataset.suffix || '';
+      const decimals = parseInt(el.dataset.decimals) || 0;
+      const duration = 1500;
+      const start = performance.now();
+      function tick(now) {
+        const progress = Math.min((now - start) / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        const current = Math.round(eased * target);
+        const display = decimals > 0 ? (current / divisor).toFixed(decimals) : (divisor > 1 ? Math.round(current / divisor) : current);
+        el.textContent = display + suffix;
+        if (progress < 1) requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
+    }
+    const statsObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          animateCount(entry.target);
+          statsObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.5 });
+    document.querySelectorAll('[data-count]').forEach(el => statsObserver.observe(el));
+
+    /* ── FADE-UP OBSERVER ── */
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry, i) => {
         if (entry.isIntersecting) {
@@ -710,8 +1291,146 @@
         }
       });
     }, { threshold: 0.1 });
-
     document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+    /* ── LIVE HUKAMNAMA ── */
+    (async function loadHukamnama() {
+      const today = new Date().toISOString().slice(0,10);
+      const cached = localStorage.getItem('sikhai-hukamnama');
+      let data;
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (parsed._date === today) { data = parsed; }
+      }
+      if (!data) {
+        try {
+          const res = await fetch('https://api.gurbaninow.com/v2/hukamnama/today');
+          data = await res.json();
+          data._date = today;
+          localStorage.setItem('sikhai-hukamnama', JSON.stringify(data));
+        } catch(e) {
+          document.getElementById('hukamnamaLoading').textContent = '\u0A38\u0A4B\u0A1A\u0A48 \u0A38\u0A4B\u0A1A\u0A3F \u0A28 \u0A39\u0A4B\u0A35\u0A08 \u0A1C\u0A47 \u0A38\u0A4B\u0A1A\u0A40 \u0A32\u0A16 \u0A35\u0A3E\u0A30 \u2016';
+          return;
+        }
+      }
+      const lines = (data.hukamnama || []).filter(l => l.line && l.line.gurmukhi);
+      const gurmukhiText = lines.slice(0,4).map(l => l.line.gurmukhi.unicode).join(' ');
+      const englishText = lines.slice(0,4).map(l => l.line.translation && l.line.translation.english ? l.line.translation.english.default : '').filter(Boolean).join(' ');
+      const info = data.hukamnamainfo || {};
+      document.getElementById('hukamAng').textContent = 'Ang ' + (info.pageno || '') + (info.raag ? ' \u00B7 ' + info.raag.english : '');
+      document.getElementById('hukamGurmukhi').textContent = gurmukhiText;
+      document.getElementById('hukamEnglish').textContent = englishText;
+      document.getElementById('hukamWriter').textContent = info.writer ? info.writer.english : '';
+      document.getElementById('hukamnamaLoading').style.display = 'none';
+      document.getElementById('hukamnamaContent').style.display = 'block';
+    })();
+
+    /* ── 3D GLOBE ── */
+    (function initGlobe() {
+      const theme = document.documentElement.getAttribute('data-theme');
+      const bg = theme === 'dark' ? '#010101' : '#FAFAFA';
+      const container = document.getElementById('globeViz');
+      if (!container || typeof Globe === 'undefined') return;
+      const globe = Globe()
+        .globeImageUrl('https://unpkg.com/three-globe/example/img/earth-day.jpg')
+        .bumpImageUrl('https://unpkg.com/three-globe/example/img/earth-topology.png')
+        .backgroundImageUrl('')
+        .showAtmosphere(true)
+        .atmosphereColor('#D4A853')
+        .atmosphereAltitude(0.2)
+        .pointsData(generateDots(80))
+        .pointLat('lat').pointLng('lng')
+        .pointAltitude(0.01).pointRadius(0.3)
+        .pointColor(() => 'rgba(255,212,74,0.9)')
+        .pointsMerge(true)
+        (container);
+      globe.scene().background = new THREE.Color(bg);
+      globe.controls().autoRotate = true;
+      globe.controls().autoRotateSpeed = 0.5;
+      globe.controls().enableZoom = false;
+      globe.pointOfView({ lat: 30, lng: 78, altitude: 2.3 });
+      window._globe = globe;
+      function onResize() {
+        const w = container.clientWidth, h = container.clientHeight;
+        globe.width(w); globe.height(h);
+      }
+      window.addEventListener('resize', onResize);
+      setTimeout(onResize, 100);
+    })();
+    function generateDots(n) {
+      const dots = [];
+      const hotspots = [{lat:30.8,lng:75.8},{lat:28.6,lng:77.2},{lat:51.5,lng:-0.1},{lat:43.7,lng:-79.4},{lat:34,lng:-118},{lat:1.3,lng:103.8},{lat:-33.8,lng:151.2},{lat:49.2,lng:-123.1}];
+      for (let i = 0; i < n; i++) {
+        const h = hotspots[i % hotspots.length];
+        dots.push({ lat: h.lat + (Math.random()-0.5)*8, lng: h.lng + (Math.random()-0.5)*8 });
+      }
+      return dots;
+    }
+
+    /* ── SIMRAN SESSION ── */
+    let simranActive = false, simranStart = 0, simranInterval = null, particleInterval = null;
+    function toggleSimran() {
+      simranActive = !simranActive;
+      const btn = document.getElementById('simranBtn');
+      const aura = document.getElementById('globeAura');
+      if (simranActive) {
+        simranStart = Date.now();
+        btn.className = 'simran-btn stop';
+        btn.textContent = i18n[currentLang].simranStop;
+        aura.classList.add('active');
+        simranInterval = setInterval(updateTimer, 1000);
+        particleInterval = setInterval(spawnParticle, 2200);
+        updateTimer();
+      } else {
+        btn.className = 'simran-btn start';
+        btn.textContent = i18n[currentLang].simranStart;
+        aura.classList.remove('active');
+        clearInterval(simranInterval);
+        clearInterval(particleInterval);
+        document.getElementById('simranTimer').textContent = '';
+        document.getElementById('simranLabel').textContent = '';
+      }
+    }
+    function updateTimer() {
+      const elapsed = Math.floor((Date.now() - simranStart) / 1000);
+      const m = String(Math.floor(elapsed/60)).padStart(2,'0');
+      const s = String(elapsed%60).padStart(2,'0');
+      document.getElementById('simranTimer').textContent = m + ':' + s;
+      document.getElementById('simranLabel').textContent = currentLang === 'pa' ? '\u0A38\u0A3F\u0A2E\u0A30\u0A28 \u0A1A\u0A71\u0A32 \u0A30\u0A3F\u0A39\u0A3E \u0A39\u0A48' : 'Simran in progress';
+    }
+    function spawnParticle() {
+      const container = document.querySelector('.globe-container');
+      if (!container) return;
+      const texts = ['\u0A35\u0A3E\u0A39\u0A3F\u0A17\u0A41\u0A30\u0A42', 'Waheguru'];
+      const el = document.createElement('div');
+      el.className = 'floating-text';
+      el.textContent = texts[Math.floor(Math.random()*texts.length)];
+      const sizes = [14,18,22,28,36];
+      el.style.fontSize = sizes[Math.floor(Math.random()*sizes.length)] + 'px';
+      el.style.left = (30 + Math.random()*40) + '%';
+      el.style.top = (30 + Math.random()*40) + '%';
+      el.style.setProperty('--tx', (Math.random()-0.5)*120 + 'px');
+      const angle = -60 - Math.random()*60;
+      el.style.animationName = 'float-out';
+      el.style.transform = 'rotate(' + (Math.random()*30-15) + 'deg)';
+      container.appendChild(el);
+      setTimeout(() => el.remove(), 3000);
+    }
+
+    /* ── SHARE BUTTONS ── */
+    function toggleShare() { document.getElementById('shareFab').classList.toggle('open'); }
+    function shareWhatsApp() {
+      window.open('https://wa.me/?text=' + encodeURIComponent('Check out Sikh AI - Your daily companion for Sikhi! https://www.sohajbrar.com/sikhai'), '_blank');
+    }
+    function shareTwitter() {
+      window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent('Check out Sikh AI - Daily Hukamnama, Gurbani Quotes, Nitnem, Simran & more! https://www.sohajbrar.com/sikhai'), '_blank');
+    }
+    function copyLink() {
+      navigator.clipboard.writeText('https://www.sohajbrar.com/sikhai');
+      const toast = document.getElementById('copyToast');
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2000);
+    }
   </script>
 
 </body>
