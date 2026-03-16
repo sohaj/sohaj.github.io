@@ -1485,6 +1485,10 @@
 
     /* ── SIMRAN SESSION ── */
     let simranActive = false, simranStart = 0, simranInterval = null, particleInterval = null;
+    const simranAudio = new Audio('audio/waheguru.mp3');
+    simranAudio.loop = true;
+    simranAudio.preload = 'auto';
+
     function toggleSimran() {
       simranActive = !simranActive;
       const btn = document.getElementById('simranBtn');
@@ -1494,6 +1498,8 @@
         btn.className = 'simran-btn stop';
         btn.textContent = i18n[currentLang].simranStop;
         aura.classList.add('active');
+        simranAudio.currentTime = 0;
+        simranAudio.play().catch(() => {});
         simranInterval = setInterval(updateTimer, 1000);
         particleInterval = setInterval(spawnParticle, 2200);
         updateTimer();
@@ -1501,6 +1507,8 @@
         btn.className = 'simran-btn start';
         btn.textContent = i18n[currentLang].simranStart;
         aura.classList.remove('active');
+        simranAudio.pause();
+        simranAudio.currentTime = 0;
         clearInterval(simranInterval);
         clearInterval(particleInterval);
         document.getElementById('simranTimer').textContent = '';
