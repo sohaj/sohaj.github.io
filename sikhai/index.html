@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sikh AI — Your Daily Companion for Sikhi</title>
+  <meta name="description" content="Daily Hukamnama, Gurbani Quotes, Nitnem with Audio, Simran, Live Kirtan, Sikh Calendar, and AI — all in one free app.">
+  <meta name="keywords" content="Sikh AI, Gurbani, Hukamnama, Nitnem, Simran, Kirtan, Sikh Calendar, Chardi Kala AI, Sikh App, Waheguru">
+  <meta name="author" content="Sohaj Singh Brar">
+
+  <meta property="og:title" content="Sikh AI — Your Daily Companion for Sikhi">
+  <meta property="og:description" content="Daily Hukamnama, Gurbani Quotes, Nitnem with Audio, Simran, Live Kirtan, Sikh Calendar, and AI — all in one free app.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://www.sohajbrar.com/sikhai">
+
+  <link rel="shortcut icon" href="../img/favicon2.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --color-bg: #010101;
+      --color-bg-white: #111111;
+      --color-bg-cream: #161616;
+      --color-bg-card: #141414;
+      --color-text: #FFFFFF;
+      --color-text-secondary: #A0A0A0;
+      --color-text-muted: #666666;
+      --color-accent: #FFFFFF;
+      --color-border: #2A2A2A;
+      --color-border-light: #1E1E1E;
+      --color-primary: #4ADE80;
+      --color-primary-hover: #22C55E;
+      --color-primary-dark: #16A34A;
+      --color-primary-text: #000000;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.3);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.4);
+      --shadow-lg: 0 8px 30px rgba(0,0,0,0.5);
+      --font-display: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-body: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-xl: 24px;
+      --radius-full: 100px;
+      --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    [data-theme="light"] {
+      --color-bg: #FAFAFA;
+      --color-bg-white: #FFFFFF;
+      --color-bg-cream: #F5F5F0;
+      --color-bg-card: #FFFFFF;
+      --color-text: #1A1A1A;
+      --color-text-secondary: #666666;
+      --color-text-muted: #999999;
+      --color-accent: #1A1A1A;
+      --color-border: #E8E8E8;
+      --color-border-light: #F0F0F0;
+      --color-primary: #15803D;
+      --color-primary-hover: #166534;
+      --color-primary-dark: #14532D;
+      --color-primary-text: #FFFFFF;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.05);
+      --shadow-lg: 0 8px 30px rgba(0,0,0,0.08);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; font-size: 16px; }
+
+    body {
+      background: var(--color-bg);
+      color: var(--color-text);
+      font-family: var(--font-body);
+      line-height: 1.6;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    ::selection { background: var(--color-text); color: var(--color-bg-white); }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* ── NAV ── */
+    .nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      padding: 16px 0;
+      background: rgba(1,1,1,0.8);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--color-border-light);
+    }
+    [data-theme="light"] .nav { background: rgba(250,250,250,0.85); }
+
+    .nav .container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: var(--color-text);
+      font-weight: 600;
+      font-size: 1.1rem;
+    }
+
+    .nav-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #DAA520, #B8860B);
+    }
+
+    .nav-icon svg { width: 22px; height: 22px; }
+
+    .nav-actions { display: flex; align-items: center; gap: 12px; }
+
+    .theme-toggle {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 1px solid var(--color-border);
+      background: transparent;
+      color: var(--color-text);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s var(--ease-out);
+      font-size: 1.1rem;
+    }
+    .theme-toggle:hover { border-color: var(--color-primary); }
+
+    .nav-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      background: var(--color-primary);
+      color: var(--color-primary-text);
+      text-decoration: none;
+      border-radius: var(--radius-full);
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: all 0.3s var(--ease-out);
+    }
+    .nav-cta:hover { background: var(--color-primary-hover); transform: translateY(-1px); }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 140px 24px 80px;
+    }
+
+    .hero-inner { max-width: 720px; }
+
+    .hero-icon {
+      width: 100px;
+      height: 100px;
+      border-radius: 24px;
+      margin: 0 auto 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #DAA520, #B8860B);
+      box-shadow: 0 12px 40px rgba(184, 134, 11, 0.3);
+    }
+
+    .hero-icon svg { width: 60px; height: 60px; }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 16px;
+      background: var(--color-bg-white);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-full);
+      font-size: 0.85rem;
+      color: var(--color-text-secondary);
+      margin-bottom: 24px;
+    }
+    .hero-badge .dot {
+      width: 8px; height: 8px;
+      background: var(--color-primary);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    .hero h1 {
+      font-family: var(--font-display);
+      font-size: clamp(2.5rem, 6vw, 4rem);
+      font-weight: 700;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      margin-bottom: 20px;
+    }
+
+    .hero h1 .gradient {
+      background: linear-gradient(135deg, var(--color-primary), #DAA520);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero p {
+      font-size: 1.2rem;
+      color: var(--color-text-secondary);
+      max-width: 540px;
+      margin: 0 auto 40px;
+      line-height: 1.7;
+    }
+
+    .hero-actions {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 16px 32px;
+      background: var(--color-primary);
+      color: var(--color-primary-text);
+      text-decoration: none;
+      border-radius: var(--radius-full);
+      font-weight: 600;
+      font-size: 1rem;
+      transition: all 0.3s var(--ease-out);
+      box-shadow: 0 4px 20px rgba(74, 222, 128, 0.25);
+    }
+    .btn-primary:hover { background: var(--color-primary-hover); transform: translateY(-2px); box-shadow: 0 8px 30px rgba(74, 222, 128, 0.35); }
+
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 16px 32px;
+      background: transparent;
+      color: var(--color-text);
+      text-decoration: none;
+      border-radius: var(--radius-full);
+      border: 1px solid var(--color-border);
+      font-weight: 500;
+      font-size: 1rem;
+      transition: all 0.3s var(--ease-out);
+    }
+    .btn-secondary:hover { border-color: var(--color-text-secondary); transform: translateY(-2px); }
+
+    /* ── STATS ── */
+    .stats {
+      padding: 60px 0;
+      border-top: 1px solid var(--color-border-light);
+      border-bottom: 1px solid var(--color-border-light);
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 32px;
+      text-align: center;
+    }
+
+    .stat-item h3 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: var(--color-primary);
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+
+    .stat-item p {
+      font-size: 0.95rem;
+      color: var(--color-text-secondary);
+    }
+
+    /* ── FEATURES ── */
+    .features {
+      padding: 100px 0;
+    }
+
+    .section-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--color-primary);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      font-family: var(--font-display);
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      font-weight: 700;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      margin-bottom: 16px;
+    }
+
+    .section-subtitle {
+      font-size: 1.1rem;
+      color: var(--color-text-secondary);
+      max-width: 560px;
+      line-height: 1.7;
+      margin-bottom: 56px;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    .feature-card {
+      background: var(--color-bg-white);
+      border: 1px solid var(--color-border-light);
+      border-radius: var(--radius-lg);
+      padding: 32px 28px;
+      transition: all 0.3s var(--ease-out);
+    }
+    .feature-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+
+    .feature-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+      font-size: 1.6rem;
+    }
+
+    .feature-card h3 {
+      font-size: 1.15rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .feature-card p {
+      font-size: 0.92rem;
+      color: var(--color-text-secondary);
+      line-height: 1.6;
+    }
+
+    /* Feature icon backgrounds */
+    .fi-hukamnama { background: rgba(251, 191, 36, 0.12); }
+    .fi-quotes { background: rgba(74, 222, 128, 0.12); }
+    .fi-nitnem { background: rgba(96, 165, 250, 0.12); }
+    .fi-simran { background: rgba(192, 132, 252, 0.12); }
+    .fi-kirtan { background: rgba(251, 146, 60, 0.12); }
+    .fi-calendar { background: rgba(45, 212, 191, 0.12); }
+    .fi-ai { background: rgba(244, 114, 182, 0.12); }
+    .fi-sewa { background: rgba(248, 113, 113, 0.12); }
+
+    /* ── HIGHLIGHT ── */
+    .highlight {
+      padding: 100px 0;
+    }
+
+    .highlight-card {
+      background: linear-gradient(135deg, var(--color-bg-card), var(--color-bg-white));
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-xl);
+      padding: 64px 48px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .highlight-card::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle at center, rgba(74, 222, 128, 0.04) 0%, transparent 50%);
+      pointer-events: none;
+    }
+
+    .highlight-card .gurmukhi {
+      font-size: clamp(1.4rem, 3vw, 2rem);
+      line-height: 1.8;
+      margin-bottom: 24px;
+      color: var(--color-primary);
+      font-weight: 500;
+    }
+
+    .highlight-card .translation {
+      font-size: 1.1rem;
+      color: var(--color-text-secondary);
+      max-width: 600px;
+      margin: 0 auto 12px;
+      line-height: 1.7;
+      font-style: italic;
+    }
+
+    .highlight-card .source {
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+    }
+
+    /* ── CTA ── */
+    .cta {
+      padding: 100px 0;
+      text-align: center;
+    }
+
+    .cta-inner {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .cta h2 {
+      font-family: var(--font-display);
+      font-size: clamp(1.8rem, 4vw, 2.5rem);
+      font-weight: 700;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      margin-bottom: 16px;
+    }
+
+    .cta p {
+      font-size: 1.1rem;
+      color: var(--color-text-secondary);
+      margin-bottom: 36px;
+      line-height: 1.7;
+    }
+
+    /* ── FOOTER ── */
+    .footer {
+      padding: 40px 0;
+      border-top: 1px solid var(--color-border-light);
+    }
+
+    .footer .container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .footer-left {
+      font-size: 0.88rem;
+      color: var(--color-text-muted);
+    }
+    .footer-left a {
+      color: var(--color-text-secondary);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .footer-left a:hover { color: var(--color-primary); }
+
+    .footer-links {
+      display: flex;
+      gap: 24px;
+    }
+    .footer-links a {
+      font-size: 0.88rem;
+      color: var(--color-text-muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .footer-links a:hover { color: var(--color-primary); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      .hero { padding: 120px 20px 60px; }
+      .hero-icon { width: 80px; height: 80px; border-radius: 20px; }
+      .hero-icon svg { width: 48px; height: 48px; }
+      .stats-grid { grid-template-columns: repeat(3, 1fr); gap: 16px; }
+      .stat-item h3 { font-size: 1.8rem; }
+      .features { padding: 60px 0; }
+      .features-grid { grid-template-columns: 1fr; }
+      .highlight-card { padding: 40px 24px; }
+      .cta { padding: 60px 0; }
+      .nav-cta span { display: none; }
+      .footer .container { flex-direction: column; text-align: center; }
+    }
+
+    /* ── ANIMATIONS ── */
+    .fade-up {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.6s var(--ease-out), transform 0.6s var(--ease-out);
+    }
+    .fade-up.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Nav -->
+  <nav class="nav">
+    <div class="container">
+      <a href="#" class="nav-brand">
+        <div class="nav-icon">
+          <svg viewBox="0 0 108 108" fill="none">
+            <circle cx="54" cy="54" r="25" stroke="white" stroke-width="2" fill="none"/>
+            <rect x="52" y="30" width="4" height="48" fill="white"/>
+            <path d="M34,54 Q44,44 54,54 Q64,64 74,54" stroke="white" stroke-width="3" fill="none"/>
+            <path d="M34,54 Q44,64 54,54 Q64,44 74,54" stroke="white" stroke-width="3" fill="none"/>
+          </svg>
+        </div>
+        Sikh AI
+      </a>
+      <div class="nav-actions">
+        <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+          <span id="themeIcon">&#9789;</span>
+        </button>
+        <a href="https://play.google.com/store/apps/details?id=com.anhadapp" class="nav-cta" target="_blank" rel="noopener">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M3.609 1.814L13.792 12 3.61 22.186a.996.996 0 01-.61-.92V2.734a1 1 0 01.609-.92zm10.89 10.893l2.302 2.302-10.937 6.333 8.635-8.635zm3.199-3.199l2.807 1.626a1 1 0 010 1.732l-2.807 1.626L15.206 12l2.492-2.492zM5.864 2.658L16.8 8.99l-2.302 2.302-8.634-8.634z"/></svg>
+          <span>Download</span>
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-icon fade-up">
+        <svg viewBox="0 0 108 108" fill="none">
+          <circle cx="54" cy="54" r="25" stroke="white" stroke-width="2" fill="none"/>
+          <rect x="52" y="30" width="4" height="48" fill="white"/>
+          <path d="M34,54 Q44,44 54,54 Q64,64 74,54" stroke="white" stroke-width="3" fill="none"/>
+          <path d="M34,54 Q44,64 54,54 Q64,44 74,54" stroke="white" stroke-width="3" fill="none"/>
+        </svg>
+      </div>
+      <div class="hero-badge fade-up">
+        <span class="dot"></span>
+        Available on Google Play
+      </div>
+      <h1 class="fade-up">Your Daily Companion<br>for <span class="gradient">Sikhi</span></h1>
+      <p class="fade-up">Daily Hukamnama, Gurbani Quotes, Nitnem with audio, Simran, live Kirtan from Golden Temple, Sikh Calendar, and AI — all in one free app.</p>
+      <div class="hero-actions fade-up">
+        <a href="https://play.google.com/store/apps/details?id=com.anhadapp" class="btn-primary" target="_blank" rel="noopener">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M3.609 1.814L13.792 12 3.61 22.186a.996.996 0 01-.61-.92V2.734a1 1 0 01.609-.92zm10.89 10.893l2.302 2.302-10.937 6.333 8.635-8.635zm3.199-3.199l2.807 1.626a1 1 0 010 1.732l-2.807 1.626L15.206 12l2.492-2.492zM5.864 2.658L16.8 8.99l-2.302 2.302-8.634-8.634z"/></svg>
+          Get it on Google Play
+        </a>
+        <a href="#features" class="btn-secondary">Explore Features &#8595;</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats -->
+  <section class="stats">
+    <div class="container">
+      <div class="stats-grid">
+        <div class="stat-item fade-up">
+          <h3>5K+</h3>
+          <p>Downloads</p>
+        </div>
+        <div class="stat-item fade-up">
+          <h3>&#9733; 5.0</h3>
+          <p>Play Store Rating</p>
+        </div>
+        <div class="stat-item fade-up">
+          <h3>Free</h3>
+          <p>No Ads, No Fees</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section class="features" id="features">
+    <div class="container">
+      <div class="section-label fade-up">&#9670; Features</div>
+      <h2 class="section-title fade-up">Everything for your<br>Sikhi journey</h2>
+      <p class="section-subtitle fade-up">A thoughtfully designed app that brings the richness of Gurbani and Sikh traditions to your fingertips.</p>
+
+      <div class="features-grid">
+
+        <div class="feature-card fade-up">
+          <div class="feature-icon fi-hukamnama">&#9737;</div>
+          <h3>Daily Hukamnama</h3>
+          <p>Receive the daily Hukamnama from Sri Darbar Sahib with Gurmukhi, English translation, and meaning.</p>
+        </div>
+
+        <div class="feature-card fade-up">
+          <div class="feature-icon fi-quotes">&#10077;</div>
+          <h3>108 Gurbani Quotes</h3>
+          <p>Curated verses from Sri Guru Granth Sahib Ji. Share as beautiful images or text with family and friends.</p>
+        </div>
+
+        <div class="feature-card fade-up">
+          <div class="feature-icon fi-nitnem">&#9835;</div>
+          <h3>Nitnem with Audio</h3>
+          <p>Complete Nitnem Banis with professional audio playback. Read along or listen during your daily prayers.</p>
+        </div>
+
+        <div class="feature-card fade-up">
+          <div class="feature-icon fi-simran">&#8634;</div>
+          <h3>Simran Counter</h3>
+          <p>A meditative Simran experience with a counter, calming globe visualization, and haptic feedback.</p>
+        </div>
+
+        <div class="feature-card fade-up">
+          <div class="feature-icon fi-kirtan">&#9654;</div>
+          <h3>Live Golden Temple Kirtan</h3>
+          <p>Stream live Kirtan from Sri Harmandir Sahib directly in the app, anytime, anywhere.</p>
+        </div>
+
+        <div class="feature-card fade-up">
+          <div class="feature-icon fi-calendar">&#9783;</div>
+          <h3>Sikh Nanakshahi Calendar</h3>
+          <p>Stay connected with Gurpurabs, important Sikh dates, and the Nanakshahi calendar year.</p>
+        </div>
+
+        <div class="feature-card fade-up">
+          <div class="feature-icon fi-ai">&#10024;</div>
+          <h3>Chardi Kala AI</h3>
+          <p>Ask any question about Gurbani, Sikh history, or philosophy and get thoughtful, referenced answers.</p>
+        </div>
+
+        <div class="feature-card fade-up">
+          <div class="feature-icon fi-sewa">&#10084;</div>
+          <h3>Sewa Pulse</h3>
+          <p>Discover volunteer opportunities and Sewa initiatives happening in the Sikh community near you.</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Gurbani Highlight -->
+  <section class="highlight">
+    <div class="container">
+      <div class="highlight-card fade-up">
+        <div class="gurmukhi">ਸੋਚੈ ਸੋਚਿ ਨ ਹੋਵਈ ਜੇ ਸੋਚੀ ਲਖ ਵਾਰ ॥</div>
+        <div class="translation">"By thinking, He cannot be reduced to thought, even by thinking hundreds of thousands of times."</div>
+        <div class="source">Sri Guru Granth Sahib Ji &middot; Ang 1 &middot; Japji Sahib</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta">
+    <div class="container">
+      <div class="cta-inner fade-up">
+        <h2>Begin your journey today</h2>
+        <p>Join thousands who start their day with Hukamnama, Gurbani, and Simran through Sikh AI.</p>
+        <a href="https://play.google.com/store/apps/details?id=com.anhadapp" class="btn-primary" target="_blank" rel="noopener">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M3.609 1.814L13.792 12 3.61 22.186a.996.996 0 01-.61-.92V2.734a1 1 0 01.609-.92zm10.89 10.893l2.302 2.302-10.937 6.333 8.635-8.635zm3.199-3.199l2.807 1.626a1 1 0 010 1.732l-2.807 1.626L15.206 12l2.492-2.492zM5.864 2.658L16.8 8.99l-2.302 2.302-8.634-8.634z"/></svg>
+          Download on Google Play
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-left">
+        &copy; 2026 Sikh AI &middot; Built by <a href="https://www.sohajbrar.com" target="_blank">Sohaj Singh Brar</a>
+      </div>
+      <div class="footer-links">
+        <a href="https://www.sohajbrar.com" target="_blank">Portfolio</a>
+        <a href="https://play.google.com/store/apps/details?id=com.anhadapp" target="_blank">Google Play</a>
+        <a href="/privacy-policy.html" target="_blank">Privacy Policy</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    function toggleTheme() {
+      const html = document.documentElement;
+      const current = html.getAttribute('data-theme');
+      const next = current === 'dark' ? 'light' : 'dark';
+      html.setAttribute('data-theme', next);
+      localStorage.setItem('sikhai-theme', next);
+      document.getElementById('themeIcon').innerHTML = next === 'dark' ? '&#9789;' : '&#9788;';
+    }
+
+    (function() {
+      const saved = localStorage.getItem('sikhai-theme');
+      if (saved) {
+        document.documentElement.setAttribute('data-theme', saved);
+        document.getElementById('themeIcon').innerHTML = saved === 'dark' ? '&#9789;' : '&#9788;';
+      }
+    })();
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry, i) => {
+        if (entry.isIntersecting) {
+          setTimeout(() => entry.target.classList.add('visible'), i * 80);
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+  </script>
+
+</body>
+</html>
