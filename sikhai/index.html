@@ -122,13 +122,10 @@
       width: 36px;
       height: 36px;
       border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: linear-gradient(135deg, #DAA520, #B8860B);
+      overflow: hidden;
     }
 
-    .nav-icon svg { width: 22px; height: 22px; }
+    .nav-icon img { width: 100%; height: 100%; object-fit: cover; }
 
     .nav-actions { display: flex; align-items: center; gap: 12px; }
 
@@ -176,18 +173,15 @@
     .hero-inner { max-width: 720px; }
 
     .hero-icon {
-      width: 100px;
-      height: 100px;
-      border-radius: 24px;
+      width: 120px;
+      height: 120px;
+      border-radius: 28px;
       margin: 0 auto 32px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: linear-gradient(135deg, #DAA520, #B8860B);
+      overflow: hidden;
       box-shadow: 0 12px 40px rgba(184, 134, 11, 0.3);
     }
 
-    .hero-icon svg { width: 60px; height: 60px; }
+    .hero-icon img { width: 100%; height: 100%; object-fit: cover; }
 
     .hero-badge {
       display: inline-flex;
@@ -501,8 +495,7 @@
     /* ── RESPONSIVE ── */
     @media (max-width: 768px) {
       .hero { padding: 120px 20px 60px; }
-      .hero-icon { width: 80px; height: 80px; border-radius: 20px; }
-      .hero-icon svg { width: 48px; height: 48px; }
+      .hero-icon { width: 96px; height: 96px; border-radius: 22px; }
       .stats-grid { grid-template-columns: repeat(3, 1fr); gap: 16px; }
       .stat-item h3 { font-size: 1.8rem; }
       .features { padding: 60px 0; }
@@ -533,12 +526,7 @@
     <div class="container">
       <a href="#" class="nav-brand">
         <div class="nav-icon">
-          <svg viewBox="0 0 108 108" fill="none">
-            <circle cx="54" cy="54" r="25" stroke="white" stroke-width="2" fill="none"/>
-            <rect x="52" y="30" width="4" height="48" fill="white"/>
-            <path d="M34,54 Q44,44 54,54 Q64,64 74,54" stroke="white" stroke-width="3" fill="none"/>
-            <path d="M34,54 Q44,64 54,54 Q64,44 74,54" stroke="white" stroke-width="3" fill="none"/>
-          </svg>
+          <img src="img/app-icon.png" alt="Sikh AI">
         </div>
         Sikh AI
       </a>
@@ -558,12 +546,7 @@
   <section class="hero">
     <div class="hero-inner">
       <div class="hero-icon fade-up">
-        <svg viewBox="0 0 108 108" fill="none">
-          <circle cx="54" cy="54" r="25" stroke="white" stroke-width="2" fill="none"/>
-          <rect x="52" y="30" width="4" height="48" fill="white"/>
-          <path d="M34,54 Q44,44 54,54 Q64,64 74,54" stroke="white" stroke-width="3" fill="none"/>
-          <path d="M34,54 Q44,64 54,54 Q64,44 74,54" stroke="white" stroke-width="3" fill="none"/>
-        </svg>
+        <img src="img/app-icon.png" alt="Sikh AI">
       </div>
       <div class="hero-badge fade-up">
         <span class="dot"></span>
