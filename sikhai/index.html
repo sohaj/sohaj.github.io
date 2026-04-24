@@ -713,9 +713,13 @@
     /* ── BLOG ARTICLES ── */
     .blog { padding: 80px 0; }
     .blog-grid {
-      display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;
+      display: flex; gap: 20px; overflow-x: auto; padding: 10px 0 20px;
+      scroll-snap-type: x mandatory; scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
     }
+    .blog-grid::-webkit-scrollbar { display: none; }
     .blog-card {
+      flex-shrink: 0; width: 320px; scroll-snap-align: start;
       background: var(--color-bg-white); border: 1px solid var(--color-border-light);
       border-radius: var(--radius-lg); padding: 32px 28px;
       transition: all 0.3s var(--ease-out);
@@ -824,7 +828,7 @@
       .screenshots-track .phone-frame { scroll-snap-align: center; }
       .hukamnama-card { padding: 28px 20px; }
       .review-card { width: 280px; }
-      .blog-grid { grid-template-columns: 1fr; }
+      .blog-card { width: 280px; }
       .qr-box { display: none; }
       .qr-label { display: none; }
       .share-fab { bottom: 16px; right: 16px; }
@@ -1209,6 +1213,26 @@
           <h3 data-i18n="blog3Title">What is Naam Simran?</h3>
           <p data-i18n="blog3Text">Naam Simran is the meditative remembrance of Waheguru's name — the core spiritual practice in Sikhi. By repeating "Waheguru" with focused devotion, the mind stills and connects with the Divine. Guru Nanak Dev Ji emphasized Naam Simran as the path to inner peace and spiritual liberation. Ideally practiced during Amrit Vela (early morning hours before dawn), it brings clarity, calm, and Chardi Kala (eternal optimism). Sikh AI's Simran feature includes a 3D globe showing Sikhs meditating worldwide, a session timer, and soothing audio.</p>
         </div>
+        <div class="blog-card fade-up">
+          <div class="blog-tag">History</div>
+          <h3 data-i18n="blog4Title">Who are the Ten Gurus?</h3>
+          <p data-i18n="blog4Text">The ten Sikh Gurus, from Guru Nanak Dev Ji (1469) to Guru Gobind Singh Ji (1708), shaped Sikhi over 239 years. Each Guru contributed uniquely — Guru Nanak laid the spiritual foundation of equality and devotion, Guru Angad Dev Ji formalized the Gurmukhi script, Guru Arjan Dev Ji compiled the Adi Granth, and Guru Gobind Singh Ji established the Khalsa and declared Sri Guru Granth Sahib Ji as the eternal Guru. Sikh AI's Chardi Kala AI can answer detailed questions about each Guru's life and teachings.</p>
+        </div>
+        <div class="blog-card fade-up">
+          <div class="blog-tag">Music</div>
+          <h3 data-i18n="blog5Title">Why is Kirtan important?</h3>
+          <p data-i18n="blog5Text">Kirtan is the devotional singing of Gurbani set to raags (classical musical modes) prescribed in Sri Guru Granth Sahib Ji. It is considered one of the highest forms of worship in Sikhi — Guru Nanak Dev Ji himself was an accomplished musician who composed shabads in specific raags. Listening to and singing Kirtan elevates the mind, inspires devotion, and creates a deep connection with Waheguru. Sikh AI streams live Kirtan from Sri Harmandir Sahib so you can listen anytime, anywhere.</p>
+        </div>
+        <div class="blog-card fade-up">
+          <div class="blog-tag">Calendar</div>
+          <h3 data-i18n="blog6Title">What is the Nanakshahi Calendar?</h3>
+          <p data-i18n="blog6Text">The Nanakshahi calendar is the Sikh calendar adopted in 2003, beginning from the birth year of Guru Nanak Dev Ji in 1469 CE. It is a solar calendar that fixes Gurpurabs and important Sikh dates to specific days each year. Key dates include Vaisakhi (1 Vaisakh), the martyrdom of Guru Arjan Dev Ji, and the parkash and joti jot dates of all ten Gurus. Sikh AI includes a full Nanakshahi calendar with notifications so you never miss an important date.</p>
+        </div>
+        <div class="blog-card fade-up">
+          <div class="blog-tag">Service</div>
+          <h3 data-i18n="blog7Title">What is Sewa in Sikhi?</h3>
+          <p data-i18n="blog7Text">Sewa (selfless service) is one of the three pillars of Sikhi, alongside Naam Japna (meditation) and Vand Chakna (sharing). It means serving others without expectation of reward. From langar (community kitchen) to community cleanups, Sewa is practiced daily by Sikhs worldwide. Guru Nanak Dev Ji taught that serving humanity is serving God. Sikh AI's Sewa Pulse feature highlights active volunteer opportunities and trusted Sikh-led NGOs where you can contribute.</p>
+        </div>
       </div>
     </div>
   </section>
@@ -1323,6 +1347,14 @@
         blog2Text: 'Nitnem is the daily recitation of five Banis prescribed for every Sikh: Japji Sahib, Jaap Sahib, and Tav-Prasad Savaiye in the morning (Amrit Vela), Rehras Sahib in the evening, and Sohila Sahib before sleep. Consistent Nitnem practice builds spiritual discipline and keeps you connected to the Guru\u2019s teachings throughout the day. Sikh AI provides all Nitnem Banis with professional audio so you can read along or listen during your commute.',
         blog3Title: 'What is Naam Simran?',
         blog3Text: 'Naam Simran is the meditative remembrance of Waheguru\u2019s name \u2014 the core spiritual practice in Sikhi. By repeating \u201CWaheguru\u201D with focused devotion, the mind stills and connects with the Divine. Guru Nanak Dev Ji emphasized Naam Simran as the path to inner peace and spiritual liberation. Ideally practiced during Amrit Vela (early morning hours before dawn), it brings clarity, calm, and Chardi Kala (eternal optimism). Sikh AI\u2019s Simran feature includes a 3D globe showing Sikhs meditating worldwide, a session timer, and soothing audio.',
+        blog4Title: 'Who are the Ten Gurus?',
+        blog4Text: 'The ten Sikh Gurus, from Guru Nanak Dev Ji (1469) to Guru Gobind Singh Ji (1708), shaped Sikhi over 239 years. Each Guru contributed uniquely \u2014 Guru Nanak laid the spiritual foundation of equality and devotion, Guru Angad Dev Ji formalized the Gurmukhi script, Guru Arjan Dev Ji compiled the Adi Granth, and Guru Gobind Singh Ji established the Khalsa and declared Sri Guru Granth Sahib Ji as the eternal Guru. Sikh AI\u2019s Chardi Kala AI can answer detailed questions about each Guru\u2019s life and teachings.',
+        blog5Title: 'Why is Kirtan important?',
+        blog5Text: 'Kirtan is the devotional singing of Gurbani set to raags (classical musical modes) prescribed in Sri Guru Granth Sahib Ji. It is considered one of the highest forms of worship in Sikhi \u2014 Guru Nanak Dev Ji himself was an accomplished musician who composed shabads in specific raags. Listening to and singing Kirtan elevates the mind, inspires devotion, and creates a deep connection with Waheguru. Sikh AI streams live Kirtan from Sri Harmandir Sahib so you can listen anytime, anywhere.',
+        blog6Title: 'What is the Nanakshahi Calendar?',
+        blog6Text: 'The Nanakshahi calendar is the Sikh calendar adopted in 2003, beginning from the birth year of Guru Nanak Dev Ji in 1469 CE. It is a solar calendar that fixes Gurpurabs and important Sikh dates to specific days each year. Key dates include Vaisakhi (1 Vaisakh), the martyrdom of Guru Arjan Dev Ji, and the parkash and joti jot dates of all ten Gurus. Sikh AI includes a full Nanakshahi calendar with notifications so you never miss an important date.',
+        blog7Title: 'What is Sewa in Sikhi?',
+        blog7Text: 'Sewa (selfless service) is one of the three pillars of Sikhi, alongside Naam Japna (meditation) and Vand Chakna (sharing). It means serving others without expectation of reward. From langar (community kitchen) to community cleanups, Sewa is practiced daily by Sikhs worldwide. Guru Nanak Dev Ji taught that serving humanity is serving God. Sikh AI\u2019s Sewa Pulse feature highlights active volunteer opportunities and trusted Sikh-led NGOs where you can contribute.',
         captureTitle: 'Stay connected', captureDesc: 'Get notified when new features drop. No spam, only updates.', captureBtn: 'Notify Me',
         ctaTitle: 'Begin your journey today', ctaDesc: 'Join 20,000+ Sikhs who start their day with Hukamnama, Gurbani, and Simran through Sikh AI.',
         ctaBtn: 'Download on Google Play', qrLabel: 'Scan to download'
@@ -1343,6 +1375,10 @@
         blog1Title: '\u0A39\u0A41\u0A15\u0A2E\u0A28\u0A3E\u0A2E\u0A3E \u0A15\u0A40 \u0A39\u0A48?',
         blog2Title: '\u0A28\u0A3F\u0A24\u0A28\u0A47\u0A2E \u0A15\u0A3F\u0A35\u0A47\u0A02 \u0A15\u0A30\u0A40\u0A0F?',
         blog3Title: '\u0A28\u0A3E\u0A2E \u0A38\u0A3F\u0A2E\u0A30\u0A28 \u0A15\u0A40 \u0A39\u0A48?',
+        blog4Title: '\u0A26\u0A38 \u0A17\u0A41\u0A30\u0A42 \u0A15\u0A4C\u0A23 \u0A39\u0A28?',
+        blog5Title: '\u0A15\u0A40\u0A30\u0A24\u0A28 \u0A15\u0A3F\u0A09\u0A02 \u0A1C\u0A3C\u0A30\u0A42\u0A30\u0A40 \u0A39\u0A48?',
+        blog6Title: '\u0A28\u0A3E\u0A28\u0A15\u0A36\u0A3E\u0A39\u0A40 \u0A15\u0A48\u0A32\u0A70\u0A21\u0A30 \u0A15\u0A40 \u0A39\u0A48?',
+        blog7Title: '\u0A38\u0A3F\u0A71\u0A16\u0A40 \u0A35\u0A3F\u0A71\u0A1A \u0A38\u0A47\u0A35\u0A3E \u0A15\u0A40 \u0A39\u0A48?',
         captureTitle: '\u0A1C\u0A41\u0A5C\u0A47 \u0A30\u0A39\u0A4B', captureDesc: '\u0A28\u0A35\u0A47\u0A02 \u0A2B\u0A3C\u0A40\u0A1A\u0A30 \u0A06\u0A09\u0A23 \u0A24\u0A47 \u0A38\u0A42\u0A1A\u0A28\u0A3E \u0A2A\u0A4D\u0A30\u0A3E\u0A2A\u0A24 \u0A15\u0A30\u0A4B\u0964', captureBtn: '\u0A38\u0A42\u0A1A\u0A3F\u0A24 \u0A15\u0A30\u0A4B',
         ctaTitle: '\u0A05\u0A71\u0A1C \u0A39\u0A40 \u0A06\u0A2A\u0A23\u0A40 \u0A2F\u0A3E\u0A24\u0A30\u0A3E \u0A36\u0A41\u0A30\u0A42 \u0A15\u0A30\u0A4B',
         ctaDesc: '20,000+ \u0A38\u0A3F\u0A71\u0A16\u0A3E\u0A02 \u0A28\u0A3E\u0A32 \u0A1C\u0A41\u0A5C\u0A4B \u0A1C\u0A4B \u0A39\u0A30 \u0A30\u0A4B\u0A1C\u0A3C \u0A39\u0A41\u0A15\u0A2E\u0A28\u0A3E\u0A2E\u0A3E, \u0A17\u0A41\u0A30\u0A2C\u0A3E\u0A23\u0A40, \u0A05\u0A24\u0A47 \u0A38\u0A3F\u0A2E\u0A30\u0A28 \u0A28\u0A3E\u0A32 \u0A36\u0A41\u0A30\u0A42 \u0A15\u0A30\u0A26\u0A47 \u0A39\u0A28\u0964',
