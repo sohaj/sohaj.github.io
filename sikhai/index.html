@@ -14,8 +14,10 @@
   <meta property="og:url" content="https://www.sohajbrar.com/sikhai">
 
   <link rel="shortcut icon" href="../img/favicon2.png">
+  <meta property="og:image" content="https://www.sohajbrar.com/sikhai/img/og-image.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" as="style">
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
 
   <style>
@@ -82,7 +84,7 @@
     ::selection { background: var(--color-text); color: var(--color-bg-white); }
 
     .container {
-      max-width: 1100px;
+      max-width: 1400px;
       margin: 0 auto;
       padding: 0 24px;
     }
@@ -165,20 +167,28 @@
       min-height: 100vh;
       display: flex;
       align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 140px 24px 80px;
+      padding: 100px 0 40px;
+      overflow: hidden;
     }
 
-    .hero-inner { max-width: 720px; }
+    .hero > .container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 48px;
+      align-items: center;
+    }
+
+    .hero-inner {
+      text-align: left;
+    }
 
     .hero-icon {
-      width: 120px;
-      height: 120px;
-      border-radius: 28px;
-      margin: 0 auto 32px;
+      width: 72px;
+      height: 72px;
+      border-radius: 18px;
+      margin-bottom: 24px;
       overflow: hidden;
-      box-shadow: 0 12px 40px rgba(184, 134, 11, 0.3);
+      box-shadow: 0 8px 28px rgba(184, 134, 11, 0.25);
     }
 
     .hero-icon img { width: 100%; height: 100%; object-fit: cover; }
@@ -209,7 +219,7 @@
 
     .hero h1 {
       font-family: var(--font-display);
-      font-size: clamp(2.5rem, 6vw, 4rem);
+      font-size: clamp(2.4rem, 4vw, 3.8rem);
       font-weight: 700;
       line-height: 1.1;
       letter-spacing: -0.02em;
@@ -224,19 +234,37 @@
     }
 
     .hero p {
-      font-size: 1.2rem;
+      font-size: 1.1rem;
       color: var(--color-text-secondary);
-      max-width: 540px;
-      margin: 0 auto 40px;
+      max-width: 480px;
+      margin: 0 0 36px;
       line-height: 1.7;
     }
 
     .hero-actions {
       display: flex;
       align-items: center;
-      justify-content: center;
       gap: 16px;
       flex-wrap: wrap;
+    }
+
+    .hero-globe {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .hero-globe .globe-container {
+      max-width: none;
+      width: 100%;
+      max-height: 80vh;
+    }
+
+    button.btn-secondary {
+      cursor: pointer;
+      font-family: var(--font-body);
+      background: transparent;
     }
 
     .btn-primary {
@@ -286,6 +314,7 @@
     }
 
     .stat-item h3 {
+      font-family: var(--font-display);
       font-size: 2.5rem;
       font-weight: 700;
       color: var(--color-primary);
@@ -493,9 +522,17 @@
     .footer-links a:hover { color: var(--color-primary); }
 
     /* ── RESPONSIVE ── */
+    @media (max-width: 1024px) {
+      .hero > .container { grid-template-columns: 1fr 1fr; gap: 24px; }
+    }
     @media (max-width: 768px) {
-      .hero { padding: 120px 20px 60px; }
-      .hero-icon { width: 96px; height: 96px; border-radius: 22px; }
+      .hero { padding: 100px 0 40px; min-height: auto; }
+      .hero > .container { grid-template-columns: 1fr; gap: 24px; max-width: 100%; }
+      .hero-inner { text-align: center; padding-left: 0; }
+      .hero-icon { margin: 0 auto 24px; }
+      .hero p { margin: 0 auto 36px; }
+      .hero-actions { justify-content: center; }
+      .hero-globe .globe-container { max-width: 400px; margin: 0 auto; }
       .stats-grid { grid-template-columns: repeat(3, 1fr); gap: 16px; }
       .stat-item h3 { font-size: 1.8rem; }
       .features { padding: 60px 0; }
@@ -518,14 +555,13 @@
 
     /* ── SCREENSHOTS ── */
     .screenshots { padding: 80px 0; }
-    .screenshots-scroll {
-      display: flex; gap: 24px; overflow-x: auto; padding: 20px 0 30px;
-      scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch;
-      scrollbar-width: none;
+    .screenshots-header { margin-bottom: 40px; }
+    .screenshots-track {
+      display: flex; gap: 32px; padding: 20px 0 30px;
+      will-change: transform;
     }
-    .screenshots-scroll::-webkit-scrollbar { display: none; }
     .phone-frame {
-      flex-shrink: 0; width: 260px; scroll-snap-align: center;
+      flex-shrink: 0; width: 280px;
       background: var(--color-bg-card); border: 1px solid var(--color-border);
       border-radius: 32px; padding: 12px; transition: transform 0.3s var(--ease-out);
     }
@@ -588,10 +624,6 @@
     }
 
     /* ── GLOBE SIMRAN ── */
-    .simran-section { padding: 100px 0; position: relative; }
-    .simran-wrapper {
-      display: flex; flex-direction: column; align-items: center; gap: 32px;
-    }
     .globe-container {
       position: relative; width: 100%; max-width: 550px;
       aspect-ratio: 1; margin: 0 auto;
@@ -622,41 +654,6 @@
       10% { opacity: 0.7; }
       40% { opacity: 0.5; }
       100% { opacity: 0; transform: translate(-50%, -180px) scale(0.6); }
-    }
-    .simran-controls { text-align: center; }
-    .simran-btn {
-      display: inline-flex; align-items: center; gap: 10px;
-      padding: 16px 40px; border-radius: var(--radius-full);
-      border: none; cursor: pointer; font-family: var(--font-body);
-      font-size: 1rem; font-weight: 600; transition: all 0.3s var(--ease-out);
-    }
-    .simran-btn.start {
-      background: var(--color-primary); color: var(--color-primary-text);
-      box-shadow: 0 4px 20px rgba(232,196,74,0.25);
-    }
-    .simran-btn.start:hover { box-shadow: 0 8px 30px rgba(232,196,74,0.4); transform: translateY(-2px); }
-    .simran-btn.stop {
-      background: rgba(248,113,113,0.15); color: #f87171;
-      border: 1px solid rgba(248,113,113,0.3);
-    }
-    .simran-btn.stop:hover { background: rgba(248,113,113,0.25); }
-    .simran-counter {
-      text-align: center; margin-bottom: 8px;
-    }
-    .simran-count-number {
-      font-size: 2rem; font-weight: 800; color: var(--color-primary);
-      display: block; line-height: 1.1;
-    }
-    .simran-count-label {
-      font-size: 0.85rem; color: var(--color-text-muted); font-weight: 500;
-      text-transform: uppercase; letter-spacing: 0.05em;
-    }
-    .simran-timer {
-      font-size: 2rem; font-weight: 700; color: var(--color-primary);
-      font-variant-numeric: tabular-nums; min-height: 2.5rem;
-    }
-    .simran-label {
-      font-size: 0.9rem; color: var(--color-text-muted); margin-top: 4px;
     }
 
     /* ── REVIEWS ── */
@@ -818,33 +815,127 @@
     /* ── RESPONSIVE ADDITIONS ── */
     @media (max-width: 768px) {
       .phone-frame { width: 220px; }
+      .screenshots-track {
+        overflow-x: auto; -webkit-overflow-scrolling: touch;
+        scroll-snap-type: x mandatory; scrollbar-width: none;
+        padding-left: 20px;
+      }
+      .screenshots-track::-webkit-scrollbar { display: none; }
+      .screenshots-track .phone-frame { scroll-snap-align: center; }
       .hukamnama-card { padding: 28px 20px; }
-      .globe-container { max-width: 320px; }
       .review-card { width: 280px; }
       .blog-grid { grid-template-columns: 1fr; }
       .qr-box { display: none; }
       .qr-label { display: none; }
       .share-fab { bottom: 16px; right: 16px; }
-      .simran-section { padding: 60px 0; }
     }
 
     /* ── ANIMATIONS ── */
     .fade-up {
       opacity: 0;
-      transform: translateY(30px);
-      transition: opacity 0.6s var(--ease-out), transform 0.6s var(--ease-out);
+      transform: translateY(40px);
     }
-    .fade-up.visible {
-      opacity: 1;
-      transform: translateY(0);
+
+    /* ── LOADER ── */
+    .loader-overlay {
+      position: fixed; inset: 0; z-index: 9999;
+      background: var(--color-bg);
+      display: flex; align-items: center; justify-content: center;
+      transition: opacity 0.6s ease, visibility 0.6s ease;
+    }
+    .loader-overlay.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+    .loader-symbol {
+      width: 64px; height: 64px; border-radius: 16px; overflow: hidden;
+      animation: loader-pulse 1.2s ease-in-out infinite;
+    }
+    .loader-symbol img { width: 100%; height: 100%; object-fit: cover; }
+    @keyframes loader-pulse {
+      0%, 100% { opacity: 0.4; transform: scale(0.92); }
+      50% { opacity: 1; transform: scale(1); }
+    }
+
+    /* ── CUSTOM CURSOR ── */
+    .cursor-dot {
+      position: fixed; top: 0; left: 0; z-index: 9998;
+      width: 10px; height: 10px; border-radius: 50%;
+      background: var(--color-primary);
+      pointer-events: none;
+      transform: translate(-50%, -50%);
+      transition: width 0.25s var(--ease-out), height 0.25s var(--ease-out), opacity 0.25s;
+      opacity: 0; mix-blend-mode: difference;
+    }
+    .cursor-dot.visible { opacity: 1; }
+    .cursor-dot.hover { width: 48px; height: 48px; }
+    @media (pointer: coarse) { .cursor-dot { display: none; } }
+
+    /* ── SKIP NAV ── */
+    .skip-nav {
+      position: absolute; top: -100%; left: 16px; z-index: 10000;
+      padding: 12px 24px; background: var(--color-primary); color: var(--color-primary-text);
+      border-radius: var(--radius-full); font-weight: 600; font-size: 0.9rem;
+      text-decoration: none; transition: top 0.2s;
+    }
+    .skip-nav:focus { top: 16px; }
+
+    /* ── FOCUS INDICATORS ── */
+    *:focus-visible {
+      outline: 2px solid var(--color-primary);
+      outline-offset: 3px;
+    }
+
+    /* ── MAGNETIC BUTTON ── */
+    .magnetic { transition: transform 0.3s var(--ease-out); }
+
+    /* ── HORIZONTAL SCROLL SCREENSHOTS ── */
+    .screenshots-pin { overflow: hidden; }
+    .screenshots-pin .screenshots-track {
+      display: flex; gap: 32px; align-items: center;
+      will-change: transform;
+    }
+    .screenshots-pin .phone-frame {
+      flex-shrink: 0; width: 280px;
+    }
+
+    /* ── CARD TILT GLOW ── */
+    .feature-card { position: relative; overflow: hidden; }
+    .feature-card::after {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(circle at var(--mx, 50%) var(--my, 50%), rgba(232,196,74,0.06) 0%, transparent 60%);
+      opacity: 0; transition: opacity 0.4s;
+      pointer-events: none;
+    }
+    .feature-card:hover::after { opacity: 1; }
+
+    /* ── REDUCED MOTION ── */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+      .fade-up { opacity: 1; transform: none; }
+      .loader-overlay { display: none; }
+      .cursor-dot { display: none; }
     }
   </style>
 </head>
 
 <body>
 
+  <!-- Loader -->
+  <div class="loader-overlay" id="loader">
+    <div class="loader-symbol"><img src="img/app-icon.png" alt=""></div>
+  </div>
+
+  <!-- Custom Cursor -->
+  <div class="cursor-dot" id="cursorDot"></div>
+
+  <!-- Skip Nav -->
+  <a href="#main-content" class="skip-nav">Skip to content</a>
+
   <!-- Nav -->
-  <nav class="nav">
+  <nav class="nav" role="navigation" aria-label="Main navigation">
     <div class="container">
       <a href="#" class="nav-brand">
         <div class="nav-icon">
@@ -866,23 +957,31 @@
   </nav>
 
   <!-- Hero -->
-  <section class="hero">
-    <div class="hero-inner">
-      <div class="hero-icon fade-up">
-        <img src="img/app-icon.png" alt="Sikh AI">
+  <section class="hero" id="main-content">
+    <div class="container">
+      <div class="hero-inner">
+        <div class="hero-badge fade-up">
+          <span class="dot"></span>
+          <span id="heroBadgeText" data-i18n="heroBadge">Souls meditating today</span>
+        </div>
+        <h1 class="fade-up"><span data-i18n="heroTitle">Meditate with Sikhs<br></span><span class="gradient" data-i18n="heroSikhi">across the world</span></h1>
+        <p class="fade-up" data-i18n="heroDesc">An interactive Simran experience connecting you with Sikhs meditating globally — plus daily Hukamnama, Nitnem with audio, live Kirtan, and Chardi Kala AI.</p>
+        <div class="hero-actions fade-up">
+          <a href="https://play.google.com/store/apps/details?id=com.anhadapp" class="btn-primary" target="_blank" rel="noopener">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M3.609 1.814L13.792 12 3.61 22.186a.996.996 0 01-.61-.92V2.734a1 1 0 01.609-.92zm10.89 10.893l2.302 2.302-10.937 6.333 8.635-8.635zm3.199-3.199l2.807 1.626a1 1 0 010 1.732l-2.807 1.626L15.206 12l2.492-2.492zM5.864 2.658L16.8 8.99l-2.302 2.302-8.634-8.634z"/></svg>
+            Get it on Google Play
+          </a>
+          <button class="btn-secondary" id="simranBtn" onclick="toggleSimran()" data-i18n="simranStart">
+            <svg id="simranIcon" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+            Begin Simran
+          </button>
+        </div>
       </div>
-      <div class="hero-badge fade-up">
-        <span class="dot"></span>
-        <span data-i18n="heroBadge">Available on Google Play</span>
-      </div>
-      <h1 class="fade-up"><span data-i18n="heroTitle">Your Daily Companion<br>for </span><span class="gradient" data-i18n="heroSikhi">Sikhi</span></h1>
-      <p class="fade-up" data-i18n="heroDesc">Daily Hukamnama, Gurbani Quotes, Nitnem with audio, Simran, live Kirtan from Golden Temple, Sikh Calendar, and AI — all in one free app.</p>
-      <div class="hero-actions fade-up">
-        <a href="https://play.google.com/store/apps/details?id=com.anhadapp" class="btn-primary" target="_blank" rel="noopener">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M3.609 1.814L13.792 12 3.61 22.186a.996.996 0 01-.61-.92V2.734a1 1 0 01.609-.92zm10.89 10.893l2.302 2.302-10.937 6.333 8.635-8.635zm3.199-3.199l2.807 1.626a1 1 0 010 1.732l-2.807 1.626L15.206 12l2.492-2.492zM5.864 2.658L16.8 8.99l-2.302 2.302-8.634-8.634z"/></svg>
-          Get it on Google Play
-        </a>
-        <a href="#features" class="btn-secondary">Explore Features &#8595;</a>
+      <div class="hero-globe fade-up">
+        <div class="globe-container">
+          <div class="globe-aura" id="globeAura"></div>
+          <div id="globeViz"></div>
+        </div>
       </div>
     </div>
   </section>
@@ -892,7 +991,7 @@
     <div class="container">
       <div class="stats-grid">
         <div class="stat-item fade-up">
-          <h3><span data-count="5000" data-suffix="K+" data-divide="1000">0</span></h3>
+          <h3><span data-count="20000" data-suffix="K+" data-divide="1000">0</span></h3>
           <p data-i18n="statDownloads">Downloads</p>
         </div>
         <div class="stat-item fade-up">
@@ -908,19 +1007,21 @@
   </section>
 
   <!-- Screenshots Carousel -->
-  <section class="screenshots">
+  <section class="screenshots screenshots-pin" id="screenshots">
     <div class="container">
-      <div class="section-label fade-up" data-i18n="screenshotsLabel">&#9670; See it in Action</div>
-      <h2 class="section-title fade-up" data-i18n="screenshotsTitle">Designed with care,<br>built for your daily practice</h2>
-      <div class="screenshots-scroll">
-        <div class="phone-frame fade-up"><div class="phone-screen"><img src="img/ss1-hukamnama.png" alt="Daily Hukamnama"></div></div>
-        <div class="phone-frame fade-up"><div class="phone-screen"><img src="img/ss3-ai.png" alt="Chardi Kala AI"></div></div>
-        <div class="phone-frame fade-up"><div class="phone-screen"><img src="img/ss2-kirtan.png" alt="Live Kirtan"></div></div>
-        <div class="phone-frame fade-up"><div class="phone-screen"><img src="img/ss5-nitnem.png" alt="Gurbani & Nitnem"></div></div>
-        <div class="phone-frame fade-up"><div class="phone-screen"><img src="img/ss8-saakhi.png" alt="Interactive Saakhi"></div></div>
-        <div class="phone-frame fade-up"><div class="phone-screen"><img src="img/ss6-stories.png" alt="Sikh Stories"></div></div>
-        <div class="phone-frame fade-up"><div class="phone-screen"><img src="img/ss4-simran.png" alt="Naam Simran Globe"></div></div>
-        <div class="phone-frame fade-up"><div class="phone-screen"><img src="img/ss7-sewa.png" alt="Sewa Pulse"></div></div>
+      <div class="screenshots-header">
+        <div class="section-label fade-up" data-i18n="screenshotsLabel">&#9670; See it in Action</div>
+        <h2 class="section-title fade-up" data-i18n="screenshotsTitle">Designed with care,<br>built for your daily practice</h2>
+      </div>
+      <div class="screenshots-track">
+        <div class="phone-frame"><div class="phone-screen"><img src="img/ss1-hukamnama.png" alt="Daily Hukamnama" loading="lazy"></div></div>
+        <div class="phone-frame"><div class="phone-screen"><img src="img/ss3-ai.png" alt="Chardi Kala AI" loading="lazy"></div></div>
+        <div class="phone-frame"><div class="phone-screen"><img src="img/ss2-kirtan.png" alt="Live Kirtan" loading="lazy"></div></div>
+        <div class="phone-frame"><div class="phone-screen"><img src="img/ss5-nitnem.png" alt="Gurbani & Nitnem" loading="lazy"></div></div>
+        <div class="phone-frame"><div class="phone-screen"><img src="img/ss8-saakhi.png" alt="Interactive Saakhi" loading="lazy"></div></div>
+        <div class="phone-frame"><div class="phone-screen"><img src="img/ss6-stories.png" alt="Sikh Stories" loading="lazy"></div></div>
+        <div class="phone-frame"><div class="phone-screen"><img src="img/ss4-simran.png" alt="Naam Simran Globe" loading="lazy"></div></div>
+        <div class="phone-frame"><div class="phone-screen"><img src="img/ss7-sewa.png" alt="Sewa Pulse" loading="lazy"></div></div>
       </div>
     </div>
   </section>
@@ -943,30 +1044,6 @@
             <div class="hukamnama-writer" id="hukamWriter"></div>
             <a href="https://play.google.com/store/apps/details?id=com.anhadapp" class="btn-secondary" style="padding:10px 24px;font-size:0.85rem" target="_blank" rel="noopener" data-i18n="hukamnamaCta">Read Full Hukamnama in App</a>
           </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Globe Simran Experience -->
-  <section class="simran-section" id="simran">
-    <div class="container">
-      <div class="section-label fade-up" data-i18n="simranLabel">&#9670; Experience Simran</div>
-      <h2 class="section-title fade-up" data-i18n="simranTitle">Meditate with the world</h2>
-      <p class="section-subtitle fade-up" data-i18n="simranSubtitle">An interactive Naam Simran experience. Start a session and feel connected to Sikhs meditating across the globe.</p>
-      <div class="simran-wrapper fade-up">
-        <div class="globe-container">
-          <div class="globe-aura" id="globeAura"></div>
-          <div id="globeViz"></div>
-        </div>
-        <div class="simran-controls">
-          <div class="simran-counter" id="simranCounter" style="display:none;">
-            <span class="simran-count-number" id="simranCountNumber"></span>
-            <span class="simran-count-label" id="simranCountLabel">souls meditating today</span>
-          </div>
-          <div class="simran-timer" id="simranTimer"></div>
-          <div class="simran-label" id="simranLabel"></div>
-          <button class="simran-btn start" id="simranBtn" onclick="toggleSimran()" data-i18n="simranStart">Begin Simran</button>
         </div>
       </div>
     </div>
@@ -1064,6 +1141,21 @@
           <div class="review-text">Very nice app. All the features a Sikh needs in daily life.</div>
           <div class="review-author"><div class="review-avatar">H</div><div><div class="review-name">Harwinder Singh</div><div class="review-device">Vivo Y29 5G</div></div></div>
         </div>
+        <div class="review-card fade-up">
+          <div class="review-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+          <div class="review-text">This is an amazing app and concept. You brought everything at one place for people who want to connect and want their children to connect. This is brilliant.</div>
+          <div class="review-author"><div class="review-avatar">S</div><div><div class="review-name">Sikh AI User</div><div class="review-device">Google Pixel 9</div></div></div>
+        </div>
+        <div class="review-card fade-up">
+          <div class="review-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+          <div class="review-text">Ability to lock the phone while having the Nitnem and Live Kirtan playing in the background would be great. Otherwise, amazing app!</div>
+          <div class="review-author"><div class="review-avatar">I</div><div><div class="review-name">Inderpal Singh</div><div class="review-device">Motorola Edge 50 Pro</div></div></div>
+        </div>
+        <div class="review-card fade-up">
+          <div class="review-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+          <div class="review-text">ਬਹੁਤ ਬਹੁਤ ਵਦੀਆ ਐਪ। ਵਾਹਿਗੁਰੂ ਜੀ ਸਰਬਤ ਦਾ ਭਲਾ ਕਰਨ 🙏</div>
+          <div class="review-author"><div class="review-avatar">ਵ</div><div><div class="review-name">Waheguru Sevak</div><div class="review-device">Google Pixel 6a</div></div></div>
+        </div>
       </div>
     </div>
   </section>
@@ -1079,7 +1171,7 @@
         <div class="proof-avatar" style="background:#DAA520">H</div>
         <div class="proof-avatar" style="background:#7A5C00">D</div>
       </div>
-      <div class="proof-text" data-i18n="proofText">Join <span>5,000+</span> Sikhs worldwide</div>
+      <div class="proof-text" data-i18n="proofText">Join <span>20,000+</span> Sikhs worldwide</div>
       <div class="proof-sub" data-i18n="proofSub">Growing every day through the power of Sangat</div>
     </div>
   </section>
@@ -1140,7 +1232,7 @@
     <div class="container">
       <div class="cta-inner fade-up">
         <h2 data-i18n="ctaTitle">Begin your journey today</h2>
-        <p data-i18n="ctaDesc">Join thousands who start their day with Hukamnama, Gurbani, and Simran through Sikh AI.</p>
+        <p data-i18n="ctaDesc">Join 20,000+ Sikhs who start their day with Hukamnama, Gurbani, and Simran through Sikh AI.</p>
         <div class="qr-section">
           <a href="https://play.google.com/store/apps/details?id=com.anhadapp" class="btn-primary" target="_blank" rel="noopener">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M3.609 1.814L13.792 12 3.61 22.186a.996.996 0 01-.61-.92V2.734a1 1 0 01.609-.92zm10.89 10.893l2.302 2.302-10.937 6.333 8.635-8.635zm3.199-3.199l2.807 1.626a1 1 0 010 1.732l-2.807 1.626L15.206 12l2.492-2.492zM5.864 2.658L16.8 8.99l-2.302 2.302-8.634-8.634z"/></svg>
@@ -1160,16 +1252,16 @@
   <!-- Share FAB -->
   <div class="share-fab" id="shareFab">
     <div class="share-fab-items">
-      <button class="fab-btn fab-whatsapp" onclick="shareWhatsApp()" title="Share on WhatsApp">&#128172;</button>
-      <button class="fab-btn fab-twitter" onclick="shareTwitter()" title="Share on X">&#120143;</button>
-      <button class="fab-btn fab-copy" onclick="copyLink()" title="Copy link">&#128279;</button>
+      <button class="fab-btn fab-whatsapp" onclick="shareWhatsApp()" title="Share on WhatsApp" aria-label="Share on WhatsApp">&#128172;</button>
+      <button class="fab-btn fab-twitter" onclick="shareTwitter()" title="Share on X" aria-label="Share on X">&#120143;</button>
+      <button class="fab-btn fab-copy" onclick="copyLink()" title="Copy link" aria-label="Copy link">&#128279;</button>
     </div>
-    <button class="fab-main" onclick="toggleShare()">&#8599;</button>
+    <button class="fab-main" onclick="toggleShare()" aria-label="Share this page">&#8599;</button>
   </div>
   <div class="copy-toast" id="copyToast">Link copied!</div>
 
   <!-- Footer -->
-  <footer class="footer">
+  <footer class="footer" role="contentinfo">
     <div class="container">
       <div class="footer-left">
         &copy; 2026 Sikh AI &middot; Built by <a href="https://www.sohajbrar.com" target="_blank">Sohaj Singh Brar</a>
@@ -1185,6 +1277,9 @@
   <!-- Globe.GL -->
   <script src="js/three.min.js"></script>
   <script src="js/globe.gl.min.js"></script>
+  <!-- GSAP -->
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/gsap.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/ScrollTrigger.min.js" defer></script>
 
   <script>
     /* ── THEME ── */
@@ -1210,19 +1305,17 @@
     /* ── LANGUAGE ── */
     const i18n = {
       en: {
-        heroBadge: 'Available on Google Play', heroTitle: 'Your Daily Companion<br>for ', heroSikhi: 'Sikhi',
-        heroDesc: 'Daily Hukamnama, Gurbani Quotes, Nitnem with audio, Simran, live Kirtan from Golden Temple, Sikh Calendar, and AI \u2014 all in one free app.',
+        heroBadge: 'Souls meditating today', heroTitle: 'Meditate with Sikhs<br>', heroSikhi: 'across the world',
+        heroDesc: 'An interactive Simran experience connecting you with Sikhs meditating globally \u2014 plus daily Hukamnama, Nitnem with audio, live Kirtan, and Chardi Kala AI.',
         statDownloads: 'Downloads', statRating: 'Play Store Rating', statFree: 'Free', statNoAds: 'No Ads, No Fees',
         screenshotsLabel: '\u25C6 See it in Action', screenshotsTitle: 'Designed with care,<br>built for your daily practice',
         hukamnamaLabel: '\u25C6 Live from Sri Darbar Sahib', hukamnamaTitle: "Today's Hukamnama",
         hukamnamaLoading: "Loading today's Hukamnama...", hukamnamaCta: 'Read Full Hukamnama in App',
-        simranLabel: '\u25C6 Experience Simran', simranTitle: 'Meditate with the world',
-        simranSubtitle: 'An interactive Naam Simran experience. Start a session and feel connected to Sikhs meditating across the globe.',
         simranStart: 'Begin Simran', simranStop: 'End Session',
         featuresLabel: '\u25C6 Features', featuresTitle: 'Everything for your<br>Sikhi journey',
         featuresSubtitle: 'A thoughtfully designed app that brings the richness of Gurbani and Sikh traditions to your fingertips.',
         reviewsLabel: '\u25C6 Reviews', reviewsTitle: 'Loved by the Sangat',
-        proofText: 'Join <span>5,000+</span> Sikhs worldwide', proofSub: 'Growing every day through the power of Sangat',
+        proofText: 'Join <span>20,000+</span> Sikhs worldwide', proofSub: 'Growing every day through the power of Sangat',
         blogLabel: '\u25C6 Learn', blogTitle: 'Explore Sikhi', blogSubtitle: 'Deepen your understanding of Sikh traditions and daily practice.',
         blog1Title: 'What is Hukamnama?',
         blog1Text: 'Hukamnama is the daily divine order read from Sri Guru Granth Sahib Ji at Sri Darbar Sahib, Amritsar. Every morning, the Granthi Singh opens the Holy Scripture at random and reads the first shabad on the left page. This becomes the Hukam (command) for the entire Sikh community for that day. It offers spiritual guidance, comfort, and direction for daily life. Sikh AI delivers this Hukamnama to your phone every morning with full Gurmukhi text, English translation, and meaning.',
@@ -1231,30 +1324,28 @@
         blog3Title: 'What is Naam Simran?',
         blog3Text: 'Naam Simran is the meditative remembrance of Waheguru\u2019s name \u2014 the core spiritual practice in Sikhi. By repeating \u201CWaheguru\u201D with focused devotion, the mind stills and connects with the Divine. Guru Nanak Dev Ji emphasized Naam Simran as the path to inner peace and spiritual liberation. Ideally practiced during Amrit Vela (early morning hours before dawn), it brings clarity, calm, and Chardi Kala (eternal optimism). Sikh AI\u2019s Simran feature includes a 3D globe showing Sikhs meditating worldwide, a session timer, and soothing audio.',
         captureTitle: 'Stay connected', captureDesc: 'Get notified when new features drop. No spam, only updates.', captureBtn: 'Notify Me',
-        ctaTitle: 'Begin your journey today', ctaDesc: 'Join thousands who start their day with Hukamnama, Gurbani, and Simran through Sikh AI.',
+        ctaTitle: 'Begin your journey today', ctaDesc: 'Join 20,000+ Sikhs who start their day with Hukamnama, Gurbani, and Simran through Sikh AI.',
         ctaBtn: 'Download on Google Play', qrLabel: 'Scan to download'
       },
       pa: {
-        heroBadge: 'Google Play \u0A24\u0A47 \u0A09\u0A2A\u0A32\u0A2C\u0A27', heroTitle: '\u0A38\u0A3F\u0A71\u0A16\u0A40 \u0A32\u0A08 \u0A24\u0A41\u0A39\u0A3E\u0A21\u0A3E \u0A30\u0A4B\u0A1C\u0A3C\u0A3E\u0A28\u0A3E \u0A38\u0A3E\u0A25\u0A40<br>', heroSikhi: '\u0A38\u0A3F\u0A71\u0A16\u0A40',
-        heroDesc: '\u0A30\u0A4B\u0A1C\u0A3C\u0A3E\u0A28\u0A3E \u0A39\u0A41\u0A15\u0A2E\u0A28\u0A3E\u0A2E\u0A3E, \u0A17\u0A41\u0A30\u0A2C\u0A3E\u0A23\u0A40 \u0A15\u0A4B\u0A1F\u0A38, \u0A28\u0A3F\u0A24\u0A28\u0A47\u0A2E, \u0A38\u0A3F\u0A2E\u0A30\u0A28, \u0A15\u0A40\u0A30\u0A24\u0A28, \u0A38\u0A3F\u0A71\u0A16 \u0A15\u0A48\u0A32\u0A47\u0A02\u0A21\u0A30, \u0A05\u0A24\u0A47 AI \u2014 \u0A38\u0A2D \u0A07\u0A71\u0A15 \u0A2E\u0A41\u0A2B\u0A3C\u0A24 \u0A10\u0A2A \u0A35\u0A3F\u0A71\u0A1A\u0964',
+        heroBadge: '\u0A05\u0A71\u0A1C \u0A38\u0A3F\u0A2E\u0A30\u0A28 \u0A15\u0A30\u0A28 \u0A35\u0A3E\u0A32\u0A47 \u0A30\u0A42\u0A39\u0A3E\u0A02', heroTitle: '\u0A38\u0A3F\u0A71\u0A16\u0A3E\u0A02 \u0A28\u0A3E\u0A32 \u0A38\u0A3F\u0A2E\u0A30\u0A28 \u0A15\u0A30\u0A4B<br>', heroSikhi: '\u0A2A\u0A42\u0A30\u0A40 \u0A26\u0A41\u0A28\u0A40\u0A06 \u0A28\u0A3E\u0A32',
+        heroDesc: '\u0A07\u0A71\u0A15 \u0A07\u0A70\u0A1F\u0A30\u0A10\u0A15\u0A1F\u0A3F\u0A35 \u0A38\u0A3F\u0A2E\u0A30\u0A28 \u0A05\u0A28\u0A41\u0A2D\u0A35 \u0A1C\u0A4B \u0A24\u0A41\u0A39\u0A3E\u0A28\u0A42\u0A70 \u0A26\u0A41\u0A28\u0A40\u0A06 \u0A2D\u0A30 \u0A26\u0A47 \u0A38\u0A3F\u0A71\u0A16\u0A3E\u0A02 \u0A28\u0A3E\u0A32 \u0A1C\u0A4B\u0A5C\u0A26\u0A3E \u0A39\u0A48 \u2014 \u0A28\u0A3E\u0A32 \u0A39\u0A40 \u0A30\u0A4B\u0A1C\u0A3C\u0A3E\u0A28\u0A3E \u0A39\u0A41\u0A15\u0A2E\u0A28\u0A3E\u0A2E\u0A3E, \u0A28\u0A3F\u0A24\u0A28\u0A47\u0A2E, \u0A15\u0A40\u0A30\u0A24\u0A28, \u0A05\u0A24\u0A47 \u0A1A\u0A5C\u0A4D\u0A39\u0A26\u0A40 \u0A15\u0A32\u0A3E AI\u0964',
         statDownloads: '\u0A21\u0A3E\u0A0A\u0A28\u0A32\u0A4B\u0A21\u0A38', statRating: 'Play Store \u0A30\u0A47\u0A1F\u0A3F\u0A70\u0A17', statFree: '\u0A2E\u0A41\u0A2B\u0A3C\u0A24', statNoAds: '\u0A15\u0A4B\u0A08 \u0A07\u0A36\u0A24\u0A3F\u0A39\u0A3E\u0A30 \u0A28\u0A39\u0A40\u0A02',
         screenshotsLabel: '\u25C6 \u0A10\u0A2A \u0A26\u0A47\u0A16\u0A4B', screenshotsTitle: '\u0A2A\u0A3F\u0A06\u0A30 \u0A28\u0A3E\u0A32 \u0A21\u0A3F\u0A1C\u0A3C\u0A3E\u0A07\u0A28 \u0A15\u0A40\u0A24\u0A3E',
         hukamnamaLabel: '\u25C6 \u0A38\u0A4D\u0A30\u0A40 \u0A26\u0A30\u0A2C\u0A3E\u0A30 \u0A38\u0A3E\u0A39\u0A3F\u0A2C \u0A24\u0A4B\u0A02', hukamnamaTitle: '\u0A05\u0A71\u0A1C \u0A26\u0A3E \u0A39\u0A41\u0A15\u0A2E\u0A28\u0A3E\u0A2E\u0A3E',
         hukamnamaLoading: '\u0A39\u0A41\u0A15\u0A2E\u0A28\u0A3E\u0A2E\u0A3E \u0A32\u0A4B\u0A21 \u0A39\u0A4B \u0A30\u0A3F\u0A39\u0A3E \u0A39\u0A48...', hukamnamaCta: '\u0A10\u0A2A \u0A35\u0A3F\u0A71\u0A1A \u0A2A\u0A42\u0A30\u0A3E \u0A39\u0A41\u0A15\u0A2E\u0A28\u0A3E\u0A2E\u0A3E \u0A2A\u0A5C\u0A4B',
-        simranLabel: '\u25C6 \u0A38\u0A3F\u0A2E\u0A30\u0A28 \u0A26\u0A3E \u0A05\u0A28\u0A41\u0A2D\u0A35', simranTitle: '\u0A26\u0A41\u0A28\u0A40\u0A06 \u0A28\u0A3E\u0A32 \u0A38\u0A3F\u0A2E\u0A30\u0A28 \u0A15\u0A30\u0A4B',
-        simranSubtitle: '\u0A07\u0A71\u0A15 \u0A07\u0A70\u0A1F\u0A30\u0A10\u0A15\u0A1F\u0A3F\u0A35 \u0A28\u0A3E\u0A2E \u0A38\u0A3F\u0A2E\u0A30\u0A28 \u0A05\u0A28\u0A41\u0A2D\u0A35\u0964 \u0A38\u0A48\u0A36\u0A28 \u0A36\u0A41\u0A30\u0A42 \u0A15\u0A30\u0A4B \u0A05\u0A24\u0A47 \u0A26\u0A41\u0A28\u0A40\u0A06 \u0A2D\u0A30 \u0A26\u0A47 \u0A38\u0A3F\u0A71\u0A16\u0A3E\u0A02 \u0A28\u0A3E\u0A32 \u0A1C\u0A41\u0A5C\u0A4B\u0964',
         simranStart: '\u0A38\u0A3F\u0A2E\u0A30\u0A28 \u0A36\u0A41\u0A30\u0A42 \u0A15\u0A30\u0A4B', simranStop: '\u0A38\u0A48\u0A36\u0A28 \u0A2C\u0A70\u0A26 \u0A15\u0A30\u0A4B',
         featuresLabel: '\u25C6 \u0A2B\u0A3C\u0A40\u0A1A\u0A30\u0A1C\u0A3C', featuresTitle: '\u0A24\u0A41\u0A39\u0A3E\u0A21\u0A40 \u0A38\u0A3F\u0A71\u0A16\u0A40 \u0A2F\u0A3E\u0A24\u0A30\u0A3E \u0A32\u0A08<br>\u0A38\u0A2D \u0A15\u0A41\u0A1D',
         featuresSubtitle: '\u0A07\u0A71\u0A15 \u0A38\u0A4B\u0A1A-\u0A38\u0A2E\u0A1D \u0A15\u0A47 \u0A21\u0A3F\u0A1C\u0A3C\u0A3E\u0A07\u0A28 \u0A15\u0A40\u0A24\u0A40 \u0A10\u0A2A \u0A1C\u0A4B \u0A17\u0A41\u0A30\u0A2C\u0A3E\u0A23\u0A40 \u0A05\u0A24\u0A47 \u0A38\u0A3F\u0A71\u0A16 \u0A30\u0A35\u0A3E\u0A07\u0A24\u0A3E\u0A02 \u0A28\u0A42\u0A70 \u0A24\u0A41\u0A39\u0A3E\u0A21\u0A47 \u0A39\u0A71\u0A25 \u0A35\u0A3F\u0A71\u0A1A \u0A32\u0A3F\u0A06\u0A02\u0A26\u0A40 \u0A39\u0A48\u0964',
         reviewsLabel: '\u25C6 \u0A30\u0A3F\u0A35\u0A3F\u0A0A\u0A1C\u0A3C', reviewsTitle: '\u0A38\u0A70\u0A17\u0A24 \u0A26\u0A41\u0A06\u0A30\u0A3E \u0A2A\u0A3F\u0A06\u0A30\u0A3E',
-        proofText: '<span>5,000+</span> \u0A38\u0A3F\u0A71\u0A16\u0A3E\u0A02 \u0A28\u0A3E\u0A32 \u0A1C\u0A41\u0A5C\u0A4B', proofSub: '\u0A38\u0A70\u0A17\u0A24 \u0A26\u0A40 \u0A24\u0A3E\u0A15\u0A24 \u0A28\u0A3E\u0A32 \u0A39\u0A30 \u0A30\u0A4B\u0A1C\u0A3C \u0A35\u0A27 \u0A30\u0A3F\u0A39\u0A3E \u0A39\u0A48',
+        proofText: '<span>20,000+</span> \u0A38\u0A3F\u0A71\u0A16\u0A3E\u0A02 \u0A28\u0A3E\u0A32 \u0A1C\u0A41\u0A5C\u0A4B', proofSub: '\u0A38\u0A70\u0A17\u0A24 \u0A26\u0A40 \u0A24\u0A3E\u0A15\u0A24 \u0A28\u0A3E\u0A32 \u0A39\u0A30 \u0A30\u0A4B\u0A1C\u0A3C \u0A35\u0A27 \u0A30\u0A3F\u0A39\u0A3E \u0A39\u0A48',
         blogLabel: '\u25C6 \u0A38\u0A3F\u0A71\u0A16\u0A4B', blogTitle: '\u0A38\u0A3F\u0A71\u0A16\u0A40 \u0A2C\u0A3E\u0A30\u0A47 \u0A1C\u0A3E\u0A23\u0A4B', blogSubtitle: '\u0A38\u0A3F\u0A71\u0A16 \u0A30\u0A35\u0A3E\u0A07\u0A24\u0A3E\u0A02 \u0A05\u0A24\u0A47 \u0A30\u0A4B\u0A1C\u0A3C\u0A3E\u0A28\u0A3E \u0A05\u0A2D\u0A3F\u0A06\u0A38 \u0A28\u0A42\u0A70 \u0A21\u0A42\u0A70\u0A18\u0A3E \u0A38\u0A2E\u0A1D\u0A4B\u0964',
         blog1Title: '\u0A39\u0A41\u0A15\u0A2E\u0A28\u0A3E\u0A2E\u0A3E \u0A15\u0A40 \u0A39\u0A48?',
         blog2Title: '\u0A28\u0A3F\u0A24\u0A28\u0A47\u0A2E \u0A15\u0A3F\u0A35\u0A47\u0A02 \u0A15\u0A30\u0A40\u0A0F?',
         blog3Title: '\u0A28\u0A3E\u0A2E \u0A38\u0A3F\u0A2E\u0A30\u0A28 \u0A15\u0A40 \u0A39\u0A48?',
         captureTitle: '\u0A1C\u0A41\u0A5C\u0A47 \u0A30\u0A39\u0A4B', captureDesc: '\u0A28\u0A35\u0A47\u0A02 \u0A2B\u0A3C\u0A40\u0A1A\u0A30 \u0A06\u0A09\u0A23 \u0A24\u0A47 \u0A38\u0A42\u0A1A\u0A28\u0A3E \u0A2A\u0A4D\u0A30\u0A3E\u0A2A\u0A24 \u0A15\u0A30\u0A4B\u0964', captureBtn: '\u0A38\u0A42\u0A1A\u0A3F\u0A24 \u0A15\u0A30\u0A4B',
         ctaTitle: '\u0A05\u0A71\u0A1C \u0A39\u0A40 \u0A06\u0A2A\u0A23\u0A40 \u0A2F\u0A3E\u0A24\u0A30\u0A3E \u0A36\u0A41\u0A30\u0A42 \u0A15\u0A30\u0A4B',
-        ctaDesc: '\u0A39\u0A1C\u0A3C\u0A3E\u0A30\u0A3E\u0A02 \u0A38\u0A3F\u0A71\u0A16\u0A3E\u0A02 \u0A28\u0A3E\u0A32 \u0A1C\u0A41\u0A5C\u0A4B \u0A1C\u0A4B \u0A39\u0A30 \u0A30\u0A4B\u0A1C\u0A3C \u0A39\u0A41\u0A15\u0A2E\u0A28\u0A3E\u0A2E\u0A3E, \u0A17\u0A41\u0A30\u0A2C\u0A3E\u0A23\u0A40, \u0A05\u0A24\u0A47 \u0A38\u0A3F\u0A2E\u0A30\u0A28 \u0A28\u0A3E\u0A32 \u0A36\u0A41\u0A30\u0A42 \u0A15\u0A30\u0A26\u0A47 \u0A39\u0A28\u0964',
+        ctaDesc: '20,000+ \u0A38\u0A3F\u0A71\u0A16\u0A3E\u0A02 \u0A28\u0A3E\u0A32 \u0A1C\u0A41\u0A5C\u0A4B \u0A1C\u0A4B \u0A39\u0A30 \u0A30\u0A4B\u0A1C\u0A3C \u0A39\u0A41\u0A15\u0A2E\u0A28\u0A3E\u0A2E\u0A3E, \u0A17\u0A41\u0A30\u0A2C\u0A3E\u0A23\u0A40, \u0A05\u0A24\u0A47 \u0A38\u0A3F\u0A2E\u0A30\u0A28 \u0A28\u0A3E\u0A32 \u0A36\u0A41\u0A30\u0A42 \u0A15\u0A30\u0A26\u0A47 \u0A39\u0A28\u0964',
         ctaBtn: 'Google Play \u0A24\u0A4B\u0A02 \u0A21\u0A3E\u0A0A\u0A28\u0A32\u0A4B\u0A21 \u0A15\u0A30\u0A4B', qrLabel: '\u0A38\u0A15\u0A48\u0A28 \u0A15\u0A30\u0A4B'
       }
     };
@@ -1270,6 +1361,7 @@
         const key = el.getAttribute('data-i18n');
         if (i18n[currentLang][key]) el.innerHTML = i18n[currentLang][key];
       });
+      if (typeof fetchDailyMeditationCount === 'function') fetchDailyMeditationCount();
     }
     if (currentLang !== 'en') applyLang();
 
@@ -1301,16 +1393,111 @@
     }, { threshold: 0.5 });
     document.querySelectorAll('[data-count]').forEach(el => statsObserver.observe(el));
 
-    /* ── FADE-UP OBSERVER ── */
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry, i) => {
-        if (entry.isIntersecting) {
-          setTimeout(() => entry.target.classList.add('visible'), i * 80);
-          observer.unobserve(entry.target);
-        }
+    /* ── GSAP + LENIS INIT ── */
+    function initAnimations() {
+      if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') {
+        document.querySelectorAll('.fade-up').forEach(el => { el.style.opacity = 1; el.style.transform = 'none'; });
+        return;
+      }
+      gsap.registerPlugin(ScrollTrigger);
+
+      gsap.utils.toArray('.fade-up').forEach((el) => {
+        gsap.fromTo(el,
+          { opacity: 0, y: 40 },
+          { opacity: 1, y: 0, duration: 0.8, ease: 'power2.out',
+            scrollTrigger: { trigger: el, start: 'top 88%', once: true }
+          }
+        );
       });
-    }, { threshold: 0.1 });
-    document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+      gsap.utils.toArray('.stat-item').forEach((el, i) => {
+        gsap.fromTo(el,
+          { scale: 0.85, opacity: 0 },
+          { scale: 1, opacity: 1, duration: 0.6, delay: i * 0.1, ease: 'back.out(1.4)',
+            scrollTrigger: { trigger: el, start: 'top 90%', once: true }
+          }
+        );
+      });
+
+      gsap.utils.toArray('.feature-card').forEach((el, i) => {
+        gsap.fromTo(el,
+          { opacity: 0, y: 50, rotateX: 6 },
+          { opacity: 1, y: 0, rotateX: 0, duration: 0.7, delay: i * 0.08, ease: 'power3.out',
+            scrollTrigger: { trigger: el, start: 'top 88%', once: true }
+          }
+        );
+      });
+
+      gsap.utils.toArray('.review-card').forEach((el, i) => {
+        gsap.fromTo(el,
+          { opacity: 0, y: 30 },
+          { opacity: 1, y: 0, duration: 0.6, delay: i * 0.06, ease: 'power2.out',
+            scrollTrigger: { trigger: el, start: 'top 90%', once: true }
+          }
+        );
+      });
+
+      gsap.utils.toArray('.blog-card').forEach((el, i) => {
+        gsap.fromTo(el,
+          { opacity: 0, y: 40 },
+          { opacity: 1, y: 0, duration: 0.7, delay: i * 0.1, ease: 'power2.out',
+            scrollTrigger: { trigger: el, start: 'top 88%', once: true }
+          }
+        );
+      });
+
+      const hukamGurmukhi = document.querySelector('.hukamnama-card .gurmukhi');
+      if (hukamGurmukhi) {
+        gsap.fromTo(hukamGurmukhi,
+          { opacity: 0, y: 20 },
+          { opacity: 1, y: 0, duration: 1, ease: 'power2.out',
+            scrollTrigger: { trigger: hukamGurmukhi, start: 'top 88%', once: true }
+          }
+        );
+      }
+
+      const highlightCard = document.querySelector('.highlight-card');
+      if (highlightCard) {
+        gsap.fromTo(highlightCard,
+          { scale: 0.96 },
+          { scale: 1, ease: 'none',
+            scrollTrigger: { trigger: highlightCard, start: 'top 80%', end: 'bottom 20%', scrub: 0.5 }
+          }
+        );
+      }
+
+      const screenshotsSection = document.querySelector('.screenshots-pin');
+      const screenshotsTrack = document.querySelector('.screenshots-track');
+      if (screenshotsSection && screenshotsTrack && window.innerWidth > 768) {
+        const getScrollAmount = () => screenshotsTrack.scrollWidth - screenshotsSection.offsetWidth + 60;
+        const horizontalScroll = gsap.to(screenshotsTrack, {
+          x: () => -getScrollAmount(),
+          ease: 'none',
+          scrollTrigger: {
+            trigger: screenshotsSection,
+            pin: true,
+            scrub: 0.6,
+            end: () => '+=' + getScrollAmount(),
+            invalidateOnRefresh: true
+          }
+        });
+        gsap.utils.toArray('.screenshots-track .phone-frame').forEach((frame) => {
+          gsap.fromTo(frame,
+            { opacity: 0.4, scale: 0.88 },
+            { opacity: 1, scale: 1, ease: 'none',
+              scrollTrigger: {
+                trigger: frame,
+                containerAnimation: horizontalScroll,
+                start: 'left 90%', end: 'left 40%', scrub: true
+              }
+            }
+          );
+        });
+      }
+    }
+
+    if (document.readyState === 'complete') { initAnimations(); }
+    else { window.addEventListener('load', initAnimations); }
 
     /* ── LIVE HUKAMNAMA ── */
     (async function loadHukamnama() {
@@ -1377,7 +1564,7 @@
       globe.controls().autoRotate = true;
       globe.controls().autoRotateSpeed = 0.5;
       globe.controls().enableZoom = false;
-      globe.pointOfView({ lat: 30, lng: 78, altitude: 2.3 });
+      globe.pointOfView({ lat: 30, lng: 78, altitude: 1.8 });
       window._globe = globe;
       function onResize() {
         const w = container.clientWidth, h = container.clientHeight;
@@ -1458,14 +1645,13 @@
         .then(data => {
           if (!data) return;
           const count = Object.keys(data).length;
-          if (count >= 10) {
-            const counter = document.getElementById('simranCounter');
-            const num = document.getElementById('simranCountNumber');
-            const label = document.getElementById('simranCountLabel');
-            if (counter && num) {
-              num.textContent = roundDisplayCount(count);
-              label.textContent = currentLang === 'pa' ? '\u0A05\u0A71\u0A1C \u0A38\u0A3F\u0A2E\u0A30\u0A28 \u0A15\u0A30\u0A28 \u0A35\u0A3E\u0A32\u0A47' : 'souls meditating today';
-              counter.style.display = 'block';
+          if (count >= 5) {
+            const badge = document.getElementById('heroBadgeText');
+            if (badge) {
+              const display = roundDisplayCount(count);
+              badge.textContent = currentLang === 'pa'
+                ? display + ' ਰੂਹਾਂ ਨੇ ਅੱਜ ਸਿਮਰਨ ਕੀਤਾ'
+                : display + ' Souls Meditated Today';
             }
           }
         })
@@ -1475,16 +1661,10 @@
     fetchDailyMeditationCount();
 
     function updateSocialProofCount() {
-      if (globeUsers.length > 0) {
-        const proofText = document.querySelector('.proof-text span');
-        if (proofText) {
-          proofText.textContent = roundDisplayCount(globeUsers.length);
-        }
-      }
     }
 
     /* ── SIMRAN SESSION ── */
-    let simranActive = false, simranStart = 0, simranInterval = null, particleInterval = null;
+    let simranActive = false, simranStart = 0, particleInterval = null;
     const simranAudio = new Audio('audio/waheguru.mp3');
     simranAudio.loop = true;
     simranAudio.preload = 'auto';
@@ -1492,35 +1672,29 @@
     function toggleSimran() {
       simranActive = !simranActive;
       const btn = document.getElementById('simranBtn');
+      const icon = document.getElementById('simranIcon');
       const aura = document.getElementById('globeAura');
+      const playPath = 'M8 5v14l11-7z';
+      const pausePath = 'M6 19h4V5H6v14zm8-14v14h4V5h-4z';
       if (simranActive) {
         simranStart = Date.now();
-        btn.className = 'simran-btn stop';
-        btn.textContent = i18n[currentLang].simranStop;
+        icon.querySelector('path').setAttribute('d', pausePath);
+        btn.innerHTML = icon.outerHTML + ' ' + i18n[currentLang].simranStop;
+        btn.style.borderColor = 'rgba(248,113,113,0.5)';
+        btn.style.color = '#f87171';
         aura.classList.add('active');
         simranAudio.currentTime = 0;
         simranAudio.play().catch(() => {});
-        simranInterval = setInterval(updateTimer, 1000);
         particleInterval = setInterval(spawnParticle, 2200);
-        updateTimer();
       } else {
-        btn.className = 'simran-btn start';
-        btn.textContent = i18n[currentLang].simranStart;
+        btn.innerHTML = '<svg id="simranIcon" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="' + playPath + '"/></svg> ' + i18n[currentLang].simranStart;
+        btn.style.borderColor = '';
+        btn.style.color = '';
         aura.classList.remove('active');
         simranAudio.pause();
         simranAudio.currentTime = 0;
-        clearInterval(simranInterval);
         clearInterval(particleInterval);
-        document.getElementById('simranTimer').textContent = '';
-        document.getElementById('simranLabel').textContent = '';
       }
-    }
-    function updateTimer() {
-      const elapsed = Math.floor((Date.now() - simranStart) / 1000);
-      const m = String(Math.floor(elapsed/60)).padStart(2,'0');
-      const s = String(elapsed%60).padStart(2,'0');
-      document.getElementById('simranTimer').textContent = m + ':' + s;
-      document.getElementById('simranLabel').textContent = currentLang === 'pa' ? '\u0A38\u0A3F\u0A2E\u0A30\u0A28 \u0A1A\u0A71\u0A32 \u0A30\u0A3F\u0A39\u0A3E \u0A39\u0A48' : 'Simran in progress';
     }
     function spawnParticle() {
       const container = document.querySelector('.globe-container');
@@ -1555,6 +1729,75 @@
       toast.classList.add('show');
       setTimeout(() => toast.classList.remove('show'), 2000);
     }
+
+    /* ── LOADER ── */
+    window.addEventListener('load', function() {
+      const loader = document.getElementById('loader');
+      if (!loader) return;
+      setTimeout(function() {
+        loader.classList.add('hidden');
+        if (typeof gsap !== 'undefined') {
+          gsap.fromTo('.hero-inner > *',
+            { opacity: 0, y: 30 },
+            { opacity: 1, y: 0, duration: 0.7, stagger: 0.1, ease: 'power2.out', delay: 0.1 }
+          );
+          gsap.fromTo('.hero-globe',
+            { opacity: 0, scale: 0.92 },
+            { opacity: 1, scale: 1, duration: 1, ease: 'power2.out', delay: 0.2 }
+          );
+        }
+      }, 1400);
+    });
+
+    /* ── CUSTOM CURSOR ── */
+    (function() {
+      const dot = document.getElementById('cursorDot');
+      if (!dot || window.matchMedia('(pointer: coarse)').matches) return;
+      let mx = 0, my = 0, dx = 0, dy = 0;
+      document.addEventListener('mousemove', function(e) {
+        mx = e.clientX; my = e.clientY;
+        if (!dot.classList.contains('visible')) dot.classList.add('visible');
+      });
+      (function loop() {
+        dx += (mx - dx) * 0.15;
+        dy += (my - dy) * 0.15;
+        dot.style.left = dx + 'px';
+        dot.style.top = dy + 'px';
+        requestAnimationFrame(loop);
+      })();
+      document.querySelectorAll('a, button, .feature-card, .review-card, .phone-frame, .blog-card').forEach(function(el) {
+        el.addEventListener('mouseenter', function() { dot.classList.add('hover'); });
+        el.addEventListener('mouseleave', function() { dot.classList.remove('hover'); });
+      });
+    })();
+
+    /* ── MAGNETIC BUTTONS ── */
+    (function() {
+      if (window.matchMedia('(pointer: coarse)').matches) return;
+      document.querySelectorAll('.btn-primary, .btn-secondary').forEach(function(btn) {
+        btn.classList.add('magnetic');
+        btn.addEventListener('mousemove', function(e) {
+          const r = btn.getBoundingClientRect();
+          const cx = r.left + r.width / 2;
+          const cy = r.top + r.height / 2;
+          const dx = (e.clientX - cx) * 0.25;
+          const dy = (e.clientY - cy) * 0.25;
+          btn.style.transform = 'translate(' + dx + 'px,' + dy + 'px)';
+        });
+        btn.addEventListener('mouseleave', function() {
+          btn.style.transform = '';
+        });
+      });
+    })();
+
+    /* ── CARD TILT GLOW ── */
+    document.querySelectorAll('.feature-card').forEach(function(card) {
+      card.addEventListener('mousemove', function(e) {
+        const r = card.getBoundingClientRect();
+        card.style.setProperty('--mx', ((e.clientX - r.left) / r.width * 100) + '%');
+        card.style.setProperty('--my', ((e.clientY - r.top) / r.height * 100) + '%');
+      });
+    });
   </script>
 
 </body>
