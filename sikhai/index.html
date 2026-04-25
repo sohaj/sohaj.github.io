@@ -813,6 +813,10 @@
       width: 4px; height: 4px; border-radius: 50%;
       background: radial-gradient(circle, rgba(232,196,74,0.9) 0%, rgba(232,196,74,0) 70%);
       will-change: transform, opacity;
+      z-index: 0;
+    }
+    .hero .globe-container {
+      position: relative; z-index: 2;
     }
 
     /* ── REVIEWS ── */
@@ -1952,25 +1956,39 @@
     }
 
     function startBreathing() {
-      var container = document.querySelector('.globe-container');
-      if (!container || breathingActive) return;
+      var hero = document.querySelector('.hero');
+      var globeEl = document.querySelector('.globe-container');
+      if (!hero || breathingActive) return;
       breathingActive = true;
       breathParticles = [];
+      hero.style.position = 'relative';
       for (var i = 0; i < PARTICLE_COUNT; i++) {
         var el = document.createElement('div');
         el.className = 'breath-particle';
-        var size = 2 + Math.random() * 5;
+        var size = 2 + Math.random() * 6;
         el.style.width = size + 'px';
         el.style.height = size + 'px';
-        var angle = (i / PARTICLE_COUNT) * Math.PI * 2 + (Math.random() - 0.5) * 0.5;
-        var maxR = 38 + Math.random() * 15;
-        container.appendChild(el);
-        breathParticles.push({ el: el, angle: angle, maxR: maxR, phase: Math.random() * 0.3, size: size });
+        var angle = (i / PARTICLE_COUNT) * Math.PI * 2 + (Math.random() - 0.5) * 0.6;
+        var maxR = 25 + Math.random() * 28;
+        hero.appendChild(el);
+        breathParticles.push({ el: el, angle: angle, maxR: maxR, phase: Math.random() * 0.4, size: size });
       }
       var startTime = performance.now();
+      var globeRect, heroRect, cx, cy;
+      function updateCenter() {
+        if (!globeEl || !hero) return;
+        globeRect = globeEl.getBoundingClientRect();
+        heroRect = hero.getBoundingClientRect();
+        cx = ((globeRect.left + globeRect.width / 2) - heroRect.left) / heroRect.width * 100;
+        cy = ((globeRect.top + globeRect.height / 2) - heroRect.top) / heroRect.height * 100;
+      }
+      updateCenter();
+      var resizeTimer = setInterval(updateCenter, 1000);
+
       function tick(now) {
-        if (!breathingActive) return;
+        if (!breathingActive) { clearInterval(resizeTimer); return; }
         var elapsed = now - startTime;
+        var avgR = 0;
         for (var i = 0; i < breathParticles.length; i++) {
           var bp = breathParticles[i];
           var t = elapsed + bp.phase * BREATH_CYCLE;
@@ -1985,13 +2003,20 @@
           } else {
             r = bp.maxR;
           }
-          var x = 50 + Math.cos(bp.angle) * r;
-          var y = 50 + Math.sin(bp.angle) * r;
-          var opacity = (state.phase === 'hold-in' || state.phase === 'hold-out') ? 0.2 : 0.15 + 0.7 * (1 - r / bp.maxR);
+          avgR += r / bp.maxR;
+          var x = cx + Math.cos(bp.angle) * r;
+          var y = cy + Math.sin(bp.angle) * r;
+          var closeness = 1 - r / bp.maxR;
+          var opacity = (state.phase === 'hold-in' || state.phase === 'hold-out') ? 0.15 : 0.1 + 0.75 * closeness;
           bp.el.style.left = x + '%';
           bp.el.style.top = y + '%';
           bp.el.style.opacity = opacity;
-          bp.el.style.transform = 'translate(-50%,-50%) scale(' + (0.6 + 0.8 * (1 - r / bp.maxR)) + ')';
+          bp.el.style.transform = 'translate(-50%,-50%) scale(' + (0.5 + 1.0 * closeness) + ')';
+        }
+        avgR /= breathParticles.length;
+        if (globeEl) {
+          var s = 1 + 0.06 * (1 - avgR);
+          globeEl.style.transform = 'scale(' + s + ')';
         }
         breathRafId = requestAnimationFrame(tick);
       }
@@ -2007,6 +2032,8 @@
         breathParticles[i].el.remove();
       }
       breathParticles = [];
+      var globeEl = document.querySelector('.globe-container');
+      if (globeEl) globeEl.style.transform = '';
     }
 
     /* ── SHARE BUTTONS ── */
