@@ -301,7 +301,9 @@
 
     /* ── STATS ── */
     .stats {
+      position: relative; z-index: 2;
       padding: 60px 0;
+      background: var(--color-bg);
       border-top: 1px solid var(--color-border-light);
       border-bottom: 1px solid var(--color-border-light);
     }
@@ -891,7 +893,7 @@
     .magnetic { transition: transform 0.3s var(--ease-out); }
 
     /* ── HORIZONTAL SCROLL SCREENSHOTS ── */
-    .screenshots-pin { overflow: hidden; }
+    .screenshots-pin { overflow: hidden; position: relative; z-index: 1; }
     .screenshots-pin .screenshots-track {
       display: flex; gap: 32px; align-items: center;
       will-change: transform;
@@ -1512,6 +1514,7 @@
           scrollTrigger: {
             trigger: screenshotsSection,
             pin: true,
+            anticipatePin: 1,
             scrub: 0.6,
             end: () => '+=' + getScrollAmount(),
             invalidateOnRefresh: true
