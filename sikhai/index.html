@@ -813,10 +813,13 @@
       width: 4px; height: 4px; border-radius: 50%;
       background: radial-gradient(circle, rgba(232,196,74,0.9) 0%, rgba(232,196,74,0) 70%);
       will-change: transform, opacity;
-      z-index: 0;
+      z-index: 1;
     }
-    .hero .globe-container {
-      position: relative; z-index: 2;
+    .hero-globe {
+      position: relative; z-index: 10;
+    }
+    .hero-inner {
+      position: relative; z-index: 10;
     }
 
     /* ── REVIEWS ── */
