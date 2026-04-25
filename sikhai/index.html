@@ -578,17 +578,7 @@
 
     /* ── HUKAMNAMA LIVE ── */
     .hukamnama-live { padding: 100px 0; }
-    .hukamnama-card {
-      background: linear-gradient(135deg, var(--color-bg-card), var(--color-bg-white));
-      border: 1px solid var(--color-border); border-radius: var(--radius-xl);
-      padding: 48px; position: relative; overflow: hidden;
-    }
-    .hukamnama-card::before {
-      content: ''; position: absolute; top: -50%; right: -30%;
-      width: 80%; height: 200%;
-      background: radial-gradient(circle, rgba(232,196,74,0.05) 0%, transparent 60%);
-      pointer-events: none;
-    }
+    .hukamnama-card { position: relative; }
     .hukamnama-meta {
       display: flex; align-items: center; gap: 12px;
       margin-bottom: 28px; flex-wrap: wrap;
@@ -620,6 +610,103 @@
       display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;
     }
     .hukamnama-writer { font-size: 0.88rem; color: var(--color-text-muted); }
+    /* ── 3D BOOK ── */
+    .book-scene {
+      perspective: 1800px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    .book {
+      position: relative;
+      transform-style: preserve-3d;
+    }
+    .book-cover {
+      position: absolute; inset: 0;
+      transform-style: preserve-3d;
+      transform-origin: left center;
+      z-index: 2;
+      pointer-events: none;
+    }
+    .book-cover-front {
+      position: absolute; inset: 0;
+      background: linear-gradient(145deg, #1a1206 0%, #2a1d0e 30%, #1a1206 100%);
+      border: 2px solid rgba(212,168,83,0.3);
+      border-radius: var(--radius-xl);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 12px;
+      backface-visibility: hidden;
+      box-shadow: 4px 0 20px rgba(0,0,0,0.4), inset 0 0 60px rgba(212,168,83,0.05);
+    }
+    [data-theme="light"] .book-cover-front {
+      background: linear-gradient(145deg, #f5e6c8 0%, #e8d5a8 30%, #f0dbb8 100%);
+      border-color: rgba(180,140,50,0.3);
+      box-shadow: 4px 0 20px rgba(0,0,0,0.15), inset 0 0 60px rgba(212,168,83,0.08);
+    }
+    .book-emblem {
+      font-size: 3.5rem; color: var(--color-primary);
+      text-shadow: 0 0 30px rgba(212,168,83,0.3);
+    }
+    .book-cover-title {
+      font-family: var(--font-display);
+      font-size: 1.3rem; font-weight: 600;
+      color: var(--color-primary); letter-spacing: 0.04em;
+    }
+    .book-cover-sub {
+      font-size: 0.85rem; color: var(--color-primary);
+      opacity: 0.6; letter-spacing: 0.1em; text-transform: uppercase;
+    }
+    .book-cover-back {
+      position: absolute; inset: 0;
+      background: linear-gradient(145deg, #120d04, #1a1206);
+      border-radius: var(--radius-xl);
+      transform: rotateY(180deg);
+      backface-visibility: hidden;
+    }
+    [data-theme="light"] .book-cover-back {
+      background: linear-gradient(145deg, #e0c890, #d4b87a);
+    }
+    .book-page {
+      position: relative; z-index: 1;
+      background: linear-gradient(135deg, var(--color-bg-card), var(--color-bg-white));
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-xl);
+      padding: 48px;
+      overflow: hidden;
+      min-height: 300px;
+    }
+    .book-page::before {
+      content: ''; position: absolute; top: -50%; right: -30%;
+      width: 80%; height: 200%;
+      background: radial-gradient(circle, rgba(232,196,74,0.05) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .book-page::after {
+      content: ''; position: absolute; left: 0; top: 10%; bottom: 10%;
+      width: 3px;
+      background: linear-gradient(to bottom, transparent, rgba(212,168,83,0.15), transparent);
+      pointer-events: none;
+    }
+
+    /* ── INK REVEAL ── */
+    .ink-reveal {
+      -webkit-mask-image: linear-gradient(to right, #000 0%, #000 25%, transparent 50%);
+      mask-image: linear-gradient(to right, #000 0%, #000 25%, transparent 50%);
+      -webkit-mask-size: 300% 100%;
+      mask-size: 300% 100%;
+      -webkit-mask-position: 100% 0;
+      mask-position: 100% 0;
+    }
+    .ink-reveal.revealed {
+      -webkit-mask-position: 0% 0;
+      mask-position: 0% 0;
+    }
+
+    @media (max-width: 768px) {
+      .book-page { padding: 28px 20px; }
+      .book-emblem { font-size: 2.5rem; }
+      .book-cover-title { font-size: 1rem; }
+    }
+
     .hukamnama-loading {
       text-align: center; padding: 60px 0;
       color: var(--color-text-muted); font-size: 0.95rem;
@@ -828,7 +915,6 @@
       }
       .screenshots-track::-webkit-scrollbar { display: none; }
       .screenshots-track .phone-frame { scroll-snap-align: center; }
-      .hukamnama-card { padding: 28px 20px; }
       .review-card { width: 280px; }
       .blog-card { width: 280px; }
       .qr-box { display: none; }
@@ -921,6 +1007,8 @@
         scroll-behavior: auto !important;
       }
       .fade-up { opacity: 1; transform: none; }
+      .book-cover { transform: rotateY(-178deg) !important; }
+      .ink-reveal { mask-position: 0% 0 !important; -webkit-mask-position: 0% 0 !important; }
       .loader-overlay { display: none; }
       .cursor-dot { display: none; }
     }
@@ -1033,18 +1121,30 @@
     <div class="container">
       <div class="section-label fade-up" data-i18n="hukamnamaLabel">&#9670; Live from Sri Darbar Sahib</div>
       <h2 class="section-title fade-up" data-i18n="hukamnamaTitle">Today's Hukamnama</h2>
-      <div class="hukamnama-card fade-up" id="hukamnamaCard">
-        <div class="hukamnama-loading" id="hukamnamaLoading" data-i18n="hukamnamaLoading">Loading today's Hukamnama...</div>
-        <div id="hukamnamaContent" style="display:none">
-          <div class="hukamnama-meta">
-            <div class="hukamnama-live-dot"><span class="livedot"></span> LIVE</div>
-            <div class="hukamnama-ang" id="hukamAng"></div>
+      <div class="book-scene" id="bookScene">
+        <div class="book">
+          <div class="book-cover" id="bookCover">
+            <div class="book-cover-front">
+              <div class="book-emblem">&#9737;</div>
+              <div class="book-cover-title">Sri Guru Granth Sahib Ji</div>
+              <div class="book-cover-sub">Hukamnama</div>
+            </div>
+            <div class="book-cover-back"></div>
           </div>
-          <div class="hukamnama-gurmukhi" id="hukamGurmukhi"></div>
-          <div class="hukamnama-english" id="hukamEnglish"></div>
-          <div class="hukamnama-footer">
-            <div class="hukamnama-writer" id="hukamWriter"></div>
-            <a href="https://play.google.com/store/apps/details?id=com.anhadapp" class="btn-secondary" style="padding:10px 24px;font-size:0.85rem" target="_blank" rel="noopener" data-i18n="hukamnamaCta">Read Full Hukamnama in App</a>
+          <div class="book-page" id="hukamnamaCard">
+            <div class="hukamnama-loading" id="hukamnamaLoading" data-i18n="hukamnamaLoading">Loading today's Hukamnama...</div>
+            <div id="hukamnamaContent" style="display:none">
+              <div class="hukamnama-meta">
+                <div class="hukamnama-live-dot"><span class="livedot"></span> LIVE</div>
+                <div class="hukamnama-ang" id="hukamAng"></div>
+              </div>
+              <div class="hukamnama-gurmukhi ink-reveal" id="hukamGurmukhi"></div>
+              <div class="hukamnama-english ink-reveal" id="hukamEnglish"></div>
+              <div class="hukamnama-footer">
+                <div class="hukamnama-writer" id="hukamWriter"></div>
+                <a href="https://play.google.com/store/apps/details?id=com.anhadapp" class="btn-secondary" style="padding:10px 24px;font-size:0.85rem" target="_blank" rel="noopener" data-i18n="hukamnamaCta">Read Full Hukamnama in App</a>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -1480,13 +1580,34 @@
         );
       });
 
-      const hukamGurmukhi = document.querySelector('.hukamnama-card .gurmukhi');
-      if (hukamGurmukhi) {
-        gsap.fromTo(hukamGurmukhi,
-          { opacity: 0, y: 20 },
-          { opacity: 1, y: 0, duration: 1, ease: 'power2.out',
-            scrollTrigger: { trigger: hukamGurmukhi, start: 'top 88%', once: true }
+      const bookScene = document.getElementById('bookScene');
+      const bookCover = document.getElementById('bookCover');
+      if (bookScene && bookCover) {
+        const bookTl = gsap.timeline({
+          scrollTrigger: {
+            trigger: bookScene,
+            start: 'top 75%',
+            once: true
           }
+        });
+        bookTl.fromTo(bookCover,
+          { rotateY: 0 },
+          { rotateY: -178, duration: 1.6, ease: 'power2.inOut' }
+        );
+        bookTl.to('.ink-reveal', {
+          maskPosition: '0% 0',
+          webkitMaskPosition: '0% 0',
+          duration: 1.4,
+          ease: 'power1.inOut',
+          stagger: 0.3
+        }, '-=0.4');
+        bookTl.fromTo('#hukamnamaContent .hukamnama-meta',
+          { opacity: 0, y: 10 },
+          { opacity: 1, y: 0, duration: 0.5 }, '-=1.4'
+        );
+        bookTl.fromTo('#hukamnamaContent .hukamnama-footer',
+          { opacity: 0, y: 10 },
+          { opacity: 1, y: 0, duration: 0.5 }, '-=0.3'
         );
       }
 
