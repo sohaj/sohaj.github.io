@@ -301,9 +301,7 @@
 
     /* ── STATS ── */
     .stats {
-      position: relative; z-index: 2;
       padding: 60px 0;
-      background: var(--color-bg);
       border-top: 1px solid var(--color-border-light);
       border-bottom: 1px solid var(--color-border-light);
     }
@@ -1040,14 +1038,14 @@
     /* ── MAGNETIC BUTTON ── */
     .magnetic { transition: transform 0.3s var(--ease-out); }
 
-    /* ── HORIZONTAL SCROLL SCREENSHOTS ── */
-    .screenshots-pin { overflow: hidden; position: relative; z-index: 1; }
-    .screenshots-pin .screenshots-track {
-      display: flex; gap: 32px; align-items: center;
-      will-change: transform;
+    /* ── SCREENSHOTS OVERFLOW ── */
+    .screenshots .screenshots-track {
+      overflow-x: auto; -webkit-overflow-scrolling: touch;
+      scroll-snap-type: x mandatory; scrollbar-width: none;
     }
-    .screenshots-pin .phone-frame {
-      flex-shrink: 0; width: 280px;
+    .screenshots .screenshots-track::-webkit-scrollbar { display: none; }
+    .screenshots .phone-frame {
+      flex-shrink: 0; width: 280px; scroll-snap-align: center;
     }
 
     /* ── CARD TILT GLOW ── */
@@ -1159,7 +1157,7 @@
   </section>
 
   <!-- Screenshots Carousel -->
-  <section class="screenshots screenshots-pin" id="screenshots">
+  <section class="screenshots" id="screenshots">
     <div class="container">
       <div class="screenshots-header">
         <div class="section-label fade-up" data-i18n="screenshotsLabel">&#9670; See it in Action</div>
@@ -1698,35 +1696,14 @@
         );
       }
 
-      const screenshotsSection = document.querySelector('.screenshots-pin');
-      const screenshotsTrack = document.querySelector('.screenshots-track');
-      if (screenshotsSection && screenshotsTrack && window.innerWidth > 768) {
-        const getScrollAmount = () => screenshotsTrack.scrollWidth - screenshotsSection.offsetWidth + 60;
-        const horizontalScroll = gsap.to(screenshotsTrack, {
-          x: () => -getScrollAmount(),
-          ease: 'none',
-          scrollTrigger: {
-            trigger: screenshotsSection,
-            pin: true,
-            anticipatePin: 1,
-            scrub: 0.6,
-            end: () => '+=' + getScrollAmount(),
-            invalidateOnRefresh: true
+      gsap.utils.toArray('.screenshots-track .phone-frame').forEach((frame, i) => {
+        gsap.fromTo(frame,
+          { opacity: 0, y: 30 },
+          { opacity: 1, y: 0, duration: 0.6, delay: i * 0.07, ease: 'power2.out',
+            scrollTrigger: { trigger: '.screenshots', start: 'top 80%', once: true }
           }
-        });
-        gsap.utils.toArray('.screenshots-track .phone-frame').forEach((frame) => {
-          gsap.fromTo(frame,
-            { opacity: 0.4, scale: 0.88 },
-            { opacity: 1, scale: 1, ease: 'none',
-              scrollTrigger: {
-                trigger: frame,
-                containerAnimation: horizontalScroll,
-                start: 'left 90%', end: 'left 40%', scrub: true
-              }
-            }
-          );
-        });
-      }
+        );
+      });
     }
 
     if (document.readyState === 'complete') { initAnimations(); }
