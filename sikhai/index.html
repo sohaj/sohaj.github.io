@@ -1145,7 +1145,7 @@
         <div class="hero-actions fade-up">
           <button class="btn-secondary" id="simranBtn" onclick="toggleSimran()" data-i18n="simranStart">
             <svg id="simranIcon" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-            Begin Simran
+            Begin Meditation
           </button>
         </div>
       </div>
@@ -1518,7 +1518,7 @@
         screenshotsLabel: '\u25C6 See it in Action', screenshotsTitle: 'Designed with care,<br>built for your daily practice',
         hukamnamaLabel: '\u25C6 Live from Sri Darbar Sahib', hukamnamaTitle: "Today's Hukamnama",
         hukamnamaLoading: "Loading today's Hukamnama...", hukamnamaCta: 'Read Full Hukamnama in App',
-        simranStart: 'Begin Simran', simranStop: 'End Session',
+        simranStart: 'Begin Meditation', simranStop: 'End Meditation',
         featuresLabel: '\u25C6 Features', featuresTitle: 'Everything for your<br>Sikhi journey',
         featuresSubtitle: 'A thoughtfully designed app that brings the richness of Gurbani and Sikh traditions to your fingertips.',
         reviewsLabel: '\u25C6 Reviews', reviewsTitle: 'Loved by the Sangat',
@@ -1930,6 +1930,10 @@
       const aura = document.getElementById('globeAura');
       const playPath = 'M8 5v14l11-7z';
       const pausePath = 'M6 19h4V5H6v14zm8-14v14h4V5h-4z';
+      var heroTitle = document.querySelector('[data-i18n="heroTitle"]');
+      var heroSikhi = document.querySelector('[data-i18n="heroSikhi"]');
+      var heroDescEl = document.querySelector('[data-i18n="heroDesc"]');
+      var heroBadge = document.querySelector('.hero-badge');
       if (simranActive) {
         simranStart = Date.now();
         icon.querySelector('path').setAttribute('d', pausePath);
@@ -1941,6 +1945,10 @@
         simranAudio.play().catch(() => {});
         particleInterval = setInterval(spawnParticle, 2200);
         startBreathing();
+        if (heroTitle) heroTitle.innerHTML = currentLang === 'pa' ? '\u0A35\u0A3E\u0A39\u0A3F\u0A17\u0A41\u0A30\u0A42<br>' : 'Waheguru<br>';
+        if (heroSikhi) heroSikhi.textContent = currentLang === 'pa' ? '\u0A38\u0A3E\u0A39 \u0A32\u0A48' : 'Breathe. Be still.';
+        if (heroDescEl) heroDescEl.style.display = 'none';
+        if (heroBadge) heroBadge.style.display = 'none';
         if (navigator.geolocation) {
           navigator.geolocation.getCurrentPosition(
             function(pos) { addUserToGlobe(pos.coords.latitude, pos.coords.longitude); },
@@ -1957,6 +1965,10 @@
         clearInterval(particleInterval);
         stopBreathing();
         removeUserFromGlobe();
+        if (heroTitle) heroTitle.innerHTML = i18n[currentLang].heroTitle;
+        if (heroSikhi) heroSikhi.textContent = i18n[currentLang].heroSikhi;
+        if (heroDescEl) heroDescEl.style.display = '';
+        if (heroBadge) heroBadge.style.display = '';
       }
     }
     function spawnParticle() {
