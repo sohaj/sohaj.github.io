@@ -2504,19 +2504,28 @@
         var scaleX = svgRect.width / 804;
         var scaleY = svgRect.height / 758;
 
+        var cx = canvas.offsetWidth / 2;
+        var cy = canvas.offsetHeight / 2;
+
         strokes.forEach(function(s) {
           var len = s.getTotalLength();
           var count = Math.max(10, Math.round(len / 3));
           for (var i = 0; i < count; i++) {
             var pt = s.getPointAtLength((i / count) * len);
+            var px = ox + pt.x * scaleX;
+            var py = oy + pt.y * scaleY;
+            var dx = px - cx;
+            var dy = py - cy;
+            var dist = Math.sqrt(dx * dx + dy * dy) || 1;
+            var speed = 0.3 + Math.random() * 0.5;
             particles.push({
-              x: ox + pt.x * scaleX,
-              y: oy + pt.y * scaleY,
-              vx: (Math.random() - 0.5) * 7,
-              vy: (Math.random() - 0.5) * 7 - 1.5,
-              size: 1.2 + Math.random() * 2.5,
-              alpha: 0.8 + Math.random() * 0.2,
-              decay: 0.01 + Math.random() * 0.014
+              x: px, y: py,
+              vx: (dx / dist) * speed,
+              vy: (dy / dist) * speed,
+              size: 1.2 + Math.random() * 2,
+              maxSize: 3 + Math.random() * 4,
+              alpha: 0.85 + Math.random() * 0.15,
+              decay: 0.004 + Math.random() * 0.005
             });
           }
         });
@@ -2533,16 +2542,18 @@
             alive = true;
             p.x += p.vx;
             p.y += p.vy;
-            p.vy += 0.035;
-            p.vx *= 0.996;
+            p.vx *= 0.998;
+            p.vy *= 0.998;
             p.alpha -= p.decay;
             if (p.alpha < 0) p.alpha = 0;
+            var grow = 1 - p.alpha / 0.85;
+            var r = p.size + (p.maxSize - p.size) * grow;
             ctx.beginPath();
-            ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-            ctx.fillStyle = 'rgba(212,168,83,' + p.alpha.toFixed(3) + ')';
+            ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(212,168,83,' + (p.alpha * p.alpha).toFixed(3) + ')';
             ctx.fill();
           }
-          if (alive && elapsed < 2.2) {
+          if (alive && elapsed < 3.5) {
             requestAnimationFrame(frame);
           } else {
             revealSite();
