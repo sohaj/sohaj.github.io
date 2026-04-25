@@ -1110,20 +1110,57 @@
     /* ── LOADER ── */
     .loader-overlay {
       position: fixed; inset: 0; z-index: 9999;
-      background: var(--color-bg);
+      background: #050505;
       display: flex; align-items: center; justify-content: center;
-      transition: opacity 0.6s ease, visibility 0.6s ease;
+      flex-direction: column; gap: 24px;
     }
-    .loader-overlay.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
-    .loader-symbol {
-      width: 64px; height: 64px; border-radius: 16px; overflow: hidden;
-      animation: loader-pulse 1.2s ease-in-out infinite;
+    .loader-overlay.phase-out {
+      transition: opacity 0.8s cubic-bezier(0.4,0,0.2,1), visibility 0.8s;
+      opacity: 0; visibility: hidden; pointer-events: none;
     }
-    .loader-symbol img { width: 100%; height: 100%; object-fit: cover; }
-    @keyframes loader-pulse {
-      0%, 100% { opacity: 0.4; transform: scale(0.92); }
-      50% { opacity: 1; transform: scale(1); }
+    .loader-svg-wrap {
+      position: relative; width: 180px; height: 180px;
     }
+    .loader-svg {
+      width: 100%; height: 100%;
+    }
+    .loader-svg path {
+      fill: none;
+      stroke: #D4A853;
+      stroke-width: 3;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-dasharray: var(--path-len);
+      stroke-dashoffset: var(--path-len);
+    }
+    .loader-svg path.drawing {
+      animation: strokeDraw 2s cubic-bezier(0.65,0,0.35,1) forwards;
+    }
+    .loader-svg path.filling {
+      stroke-dashoffset: 0;
+      fill: #D4A853;
+      fill-opacity: 0;
+      animation: strokeFill 0.6s ease forwards;
+    }
+    @keyframes strokeDraw {
+      to { stroke-dashoffset: 0; }
+    }
+    @keyframes strokeFill {
+      0%   { fill-opacity: 0; stroke-opacity: 1; }
+      100% { fill-opacity: 1; stroke-opacity: 0.3; }
+    }
+    .loader-canvas {
+      position: absolute; inset: -100px;
+      width: calc(100% + 200px); height: calc(100% + 200px);
+      pointer-events: none;
+    }
+    .loader-tagline {
+      font-size: 0.8rem; letter-spacing: 0.15em; text-transform: uppercase;
+      color: rgba(212,168,83,0.5);
+      opacity: 0;
+      transition: opacity 0.6s ease;
+    }
+    .loader-tagline.visible { opacity: 1; }
 
     /* ── CUSTOM CURSOR ── */
     .cursor-dot {
@@ -1198,7 +1235,21 @@
 
   <!-- Loader -->
   <div class="loader-overlay" id="loader">
-    <div class="loader-symbol"><img src="img/app-icon.png" alt=""></div>
+    <div class="loader-svg-wrap" id="loaderWrap">
+      <svg class="loader-svg" id="loaderSvg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+        <path id="ikOnkarPath" d="
+          M 30 130 C 30 80, 55 55, 85 55 C 110 55, 125 70, 125 90 C 125 110, 110 125, 85 125
+          L 55 125
+          M 85 55 L 85 35
+          M 55 125 C 30 125, 15 110, 15 90
+          M 125 90 L 170 90
+          M 140 65 C 150 55, 165 55, 175 65 C 185 75, 185 90, 175 100 C 165 110, 150 110, 140 100
+          M 170 90 L 185 90
+        "/>
+      </svg>
+      <canvas class="loader-canvas" id="loaderCanvas"></canvas>
+    </div>
+    <div class="loader-tagline" id="loaderTagline">Sikh AI</div>
   </div>
 
   <!-- Custom Cursor -->
@@ -2404,11 +2455,19 @@
     }
 
     /* ── LOADER ── */
-    window.addEventListener('load', function() {
-      const loader = document.getElementById('loader');
-      if (!loader) return;
-      setTimeout(function() {
-        loader.classList.add('hidden');
+    (function initLoader() {
+      var loader = document.getElementById('loader');
+      var svgPath = document.getElementById('ikOnkarPath');
+      var canvas = document.getElementById('loaderCanvas');
+      var tagline = document.getElementById('loaderTagline');
+      var svgEl = document.getElementById('loaderSvg');
+      if (!loader || !svgPath || !canvas) return;
+
+      var pathLen = svgPath.getTotalLength();
+      svgPath.style.setProperty('--path-len', pathLen);
+
+      function revealSite() {
+        loader.classList.add('phase-out');
         if (typeof gsap !== 'undefined') {
           gsap.fromTo('.hero-inner > *',
             { opacity: 0, y: 30 },
@@ -2419,8 +2478,96 @@
             { opacity: 1, scale: 1, duration: 1, ease: 'power2.out', delay: 0.2 }
           );
         }
-      }, 1400);
-    });
+      }
+
+      function dissolveToParticles() {
+        var wrap = document.getElementById('loaderWrap');
+        var rect = svgEl.getBoundingClientRect();
+        var wrapRect = wrap.getBoundingClientRect();
+        canvas.width = canvas.offsetWidth * 2;
+        canvas.height = canvas.offsetHeight * 2;
+        var ctx = canvas.getContext('2d');
+        ctx.scale(2, 2);
+
+        var particles = [];
+        var numPts = 160;
+        var ox = rect.left - wrapRect.left + 100;
+        var oy = rect.top - wrapRect.top + 100;
+        var sw = rect.width;
+        var sh = rect.height;
+
+        for (var i = 0; i < numPts; i++) {
+          var t = i / numPts;
+          var pt = svgPath.getPointAtLength(t * pathLen);
+          var scaleX = sw / 200;
+          var scaleY = sh / 200;
+          particles.push({
+            x: ox + pt.x * scaleX,
+            y: oy + pt.y * scaleY,
+            origX: ox + pt.x * scaleX,
+            origY: oy + pt.y * scaleY,
+            vx: (Math.random() - 0.5) * 8,
+            vy: (Math.random() - 0.5) * 8 - 2,
+            size: 1.5 + Math.random() * 2.5,
+            alpha: 0.8 + Math.random() * 0.2,
+            decay: 0.012 + Math.random() * 0.015
+          });
+        }
+
+        svgEl.style.opacity = '0';
+
+        var start = performance.now();
+        function frame(now) {
+          var elapsed = (now - start) / 1000;
+          ctx.clearRect(0, 0, canvas.width / 2, canvas.height / 2);
+          var alive = false;
+          for (var i = 0; i < particles.length; i++) {
+            var p = particles[i];
+            if (p.alpha <= 0) continue;
+            alive = true;
+            p.x += p.vx;
+            p.y += p.vy;
+            p.vy += 0.04;
+            p.vx *= 0.995;
+            p.alpha -= p.decay;
+            if (p.alpha < 0) p.alpha = 0;
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(212,168,83,' + p.alpha.toFixed(3) + ')';
+            ctx.fill();
+          }
+          if (alive && elapsed < 2) {
+            requestAnimationFrame(frame);
+          } else {
+            revealSite();
+          }
+        }
+        requestAnimationFrame(frame);
+      }
+
+      function startSequence() {
+        svgPath.classList.add('drawing');
+        if (tagline) setTimeout(function() { tagline.classList.add('visible'); }, 800);
+
+        svgPath.addEventListener('animationend', function onDrawDone() {
+          svgPath.removeEventListener('animationend', onDrawDone);
+          svgPath.classList.remove('drawing');
+          svgPath.classList.add('filling');
+
+          svgPath.addEventListener('animationend', function onFillDone() {
+            svgPath.removeEventListener('animationend', onFillDone);
+            if (tagline) tagline.style.opacity = '0';
+            setTimeout(dissolveToParticles, 200);
+          });
+        });
+      }
+
+      if (document.readyState === 'complete') {
+        startSequence();
+      } else {
+        window.addEventListener('load', startSequence);
+      }
+    })();
 
     /* ── CUSTOM CURSOR ── */
     (function() {
