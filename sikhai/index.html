@@ -1897,9 +1897,31 @@
 
     /* ── SIMRAN SESSION ── */
     let simranActive = false, simranStart = 0, particleInterval = null;
+    let userGeoLat = null, userGeoLng = null;
     const simranAudio = new Audio('audio/waheguru.mp3');
     simranAudio.loop = true;
     simranAudio.preload = 'auto';
+
+    function addUserToGlobe(lat, lng) {
+      if (!window._globe) return;
+      userGeoLat = lat;
+      userGeoLng = lng;
+      var pts = window._globe.pointsData().filter(function(p) { return !p._isUser; });
+      pts.push({ lat: lat, lng: lng, altitude: 0.02, radius: 0.6, color: 'rgba(255,180,40,1)', _isUser: true });
+      window._globe.pointsData(pts);
+      var rings = window._globe.ringsData().filter(function(r) { return !r._isUser; });
+      rings.push({ lat: lat, lng: lng, _isUser: true });
+      window._globe.ringsData(rings);
+      window._globe.pointOfView({ lat: lat, lng: lng, altitude: 1.8 }, 1200);
+    }
+
+    function removeUserFromGlobe() {
+      if (!window._globe) return;
+      window._globe.pointsData(window._globe.pointsData().filter(function(p) { return !p._isUser; }));
+      window._globe.ringsData(window._globe.ringsData().filter(function(r) { return !r._isUser; }));
+      userGeoLat = null;
+      userGeoLng = null;
+    }
 
     function toggleSimran() {
       simranActive = !simranActive;
@@ -1919,6 +1941,12 @@
         simranAudio.play().catch(() => {});
         particleInterval = setInterval(spawnParticle, 2200);
         startBreathing();
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(
+            function(pos) { addUserToGlobe(pos.coords.latitude, pos.coords.longitude); },
+            function() {}
+          );
+        }
       } else {
         btn.innerHTML = '<svg id="simranIcon" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="' + playPath + '"/></svg> ' + i18n[currentLang].simranStart;
         btn.style.borderColor = '';
@@ -1928,6 +1956,7 @@
         simranAudio.currentTime = 0;
         clearInterval(particleInterval);
         stopBreathing();
+        removeUserFromGlobe();
       }
     }
     function spawnParticle() {
