@@ -1127,16 +1127,21 @@
     .loader-svg path {
       fill: none;
       stroke: #D4A853;
-      stroke-width: 3;
+      stroke-width: 3.5;
       stroke-linecap: round;
       stroke-linejoin: round;
-      stroke-dasharray: var(--path-len);
-      stroke-dashoffset: var(--path-len);
     }
-    .loader-svg path.drawing {
-      animation: strokeDraw 2s cubic-bezier(0.65,0,0.35,1) forwards;
+    .ik-stroke {
+      stroke-dasharray: var(--len);
+      stroke-dashoffset: var(--len);
     }
-    .loader-svg path.filling {
+    .ik-stroke.drawing {
+      animation: strokeDraw var(--dur) cubic-bezier(0.65,0,0.35,1) var(--delay) forwards;
+    }
+    .ik-stroke.drawn {
+      stroke-dashoffset: 0;
+    }
+    .ik-stroke.filling {
       stroke-dashoffset: 0;
       fill: #D4A853;
       fill-opacity: 0;
@@ -1236,16 +1241,12 @@
   <!-- Loader -->
   <div class="loader-overlay" id="loader">
     <div class="loader-svg-wrap" id="loaderWrap">
-      <svg class="loader-svg" id="loaderSvg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-        <path id="ikOnkarPath" d="
-          M 30 130 C 30 80, 55 55, 85 55 C 110 55, 125 70, 125 90 C 125 110, 110 125, 85 125
-          L 55 125
-          M 85 55 L 85 35
-          M 55 125 C 30 125, 15 110, 15 90
-          M 125 90 L 170 90
-          M 140 65 C 150 55, 165 55, 175 65 C 185 75, 185 90, 175 100 C 165 110, 150 110, 140 100
-          M 170 90 L 185 90
-        "/>
+      <svg class="loader-svg" id="loaderSvg" viewBox="0 0 300 220" xmlns="http://www.w3.org/2000/svg">
+        <path class="ik-stroke" d="M 52 28 C 44 18, 32 26, 38 38"/>
+        <path class="ik-stroke" d="M 50 24 L 50 148"/>
+        <path class="ik-stroke" d="M 50 148 C 50 182, 90 202, 138 202 C 190 202, 218 172, 218 130 C 218 86, 190 60, 138 60 C 100 60, 72 82, 64 115"/>
+        <path class="ik-stroke" d="M 218 130 L 258 130"/>
+        <path class="ik-stroke" d="M 258 130 C 274 130, 280 114, 272 102 C 264 90, 248 96, 252 110"/>
       </svg>
       <canvas class="loader-canvas" id="loaderCanvas"></canvas>
     </div>
@@ -2457,14 +2458,25 @@
     /* ── LOADER ── */
     (function initLoader() {
       var loader = document.getElementById('loader');
-      var svgPath = document.getElementById('ikOnkarPath');
       var canvas = document.getElementById('loaderCanvas');
       var tagline = document.getElementById('loaderTagline');
       var svgEl = document.getElementById('loaderSvg');
-      if (!loader || !svgPath || !canvas) return;
+      var strokes = document.querySelectorAll('.ik-stroke');
+      if (!loader || !canvas || !strokes.length) return;
 
-      var pathLen = svgPath.getTotalLength();
-      svgPath.style.setProperty('--path-len', pathLen);
+      var totalDrawTime = 0;
+      var durations = [0.3, 0.4, 1.2, 0.25, 0.35];
+      var gaps = [0, 0.05, 0.05, 0.05, 0.05];
+
+      strokes.forEach(function(s, i) {
+        var len = s.getTotalLength();
+        s.style.setProperty('--len', len);
+        var dur = durations[i] || 0.4;
+        s.style.setProperty('--dur', dur + 's');
+        var delay = totalDrawTime;
+        s.style.setProperty('--delay', delay + 's');
+        totalDrawTime += dur + (gaps[i + 1] || 0);
+      });
 
       function revealSite() {
         loader.classList.add('phase-out');
@@ -2482,7 +2494,7 @@
 
       function dissolveToParticles() {
         var wrap = document.getElementById('loaderWrap');
-        var rect = svgEl.getBoundingClientRect();
+        var svgRect = svgEl.getBoundingClientRect();
         var wrapRect = wrap.getBoundingClientRect();
         canvas.width = canvas.offsetWidth * 2;
         canvas.height = canvas.offsetHeight * 2;
@@ -2490,32 +2502,29 @@
         ctx.scale(2, 2);
 
         var particles = [];
-        var numPts = 160;
-        var ox = rect.left - wrapRect.left + 100;
-        var oy = rect.top - wrapRect.top + 100;
-        var sw = rect.width;
-        var sh = rect.height;
+        var ox = svgRect.left - wrapRect.left + 100;
+        var oy = svgRect.top - wrapRect.top + 100;
+        var scaleX = svgRect.width / 300;
+        var scaleY = svgRect.height / 220;
 
-        for (var i = 0; i < numPts; i++) {
-          var t = i / numPts;
-          var pt = svgPath.getPointAtLength(t * pathLen);
-          var scaleX = sw / 200;
-          var scaleY = sh / 200;
-          particles.push({
-            x: ox + pt.x * scaleX,
-            y: oy + pt.y * scaleY,
-            origX: ox + pt.x * scaleX,
-            origY: oy + pt.y * scaleY,
-            vx: (Math.random() - 0.5) * 8,
-            vy: (Math.random() - 0.5) * 8 - 2,
-            size: 1.5 + Math.random() * 2.5,
-            alpha: 0.8 + Math.random() * 0.2,
-            decay: 0.012 + Math.random() * 0.015
-          });
-        }
+        strokes.forEach(function(s) {
+          var len = s.getTotalLength();
+          var count = Math.max(10, Math.round(len / 3));
+          for (var i = 0; i < count; i++) {
+            var pt = s.getPointAtLength((i / count) * len);
+            particles.push({
+              x: ox + pt.x * scaleX,
+              y: oy + pt.y * scaleY,
+              vx: (Math.random() - 0.5) * 7,
+              vy: (Math.random() - 0.5) * 7 - 1.5,
+              size: 1.2 + Math.random() * 2.5,
+              alpha: 0.8 + Math.random() * 0.2,
+              decay: 0.01 + Math.random() * 0.014
+            });
+          }
+        });
 
         svgEl.style.opacity = '0';
-
         var start = performance.now();
         function frame(now) {
           var elapsed = (now - start) / 1000;
@@ -2527,8 +2536,8 @@
             alive = true;
             p.x += p.vx;
             p.y += p.vy;
-            p.vy += 0.04;
-            p.vx *= 0.995;
+            p.vy += 0.035;
+            p.vx *= 0.996;
             p.alpha -= p.decay;
             if (p.alpha < 0) p.alpha = 0;
             ctx.beginPath();
@@ -2536,7 +2545,7 @@
             ctx.fillStyle = 'rgba(212,168,83,' + p.alpha.toFixed(3) + ')';
             ctx.fill();
           }
-          if (alive && elapsed < 2) {
+          if (alive && elapsed < 2.2) {
             requestAnimationFrame(frame);
           } else {
             revealSite();
@@ -2546,20 +2555,18 @@
       }
 
       function startSequence() {
-        svgPath.classList.add('drawing');
-        if (tagline) setTimeout(function() { tagline.classList.add('visible'); }, 800);
+        strokes.forEach(function(s) { s.classList.add('drawing'); });
+        if (tagline) setTimeout(function() { tagline.classList.add('visible'); }, 600);
 
-        svgPath.addEventListener('animationend', function onDrawDone() {
-          svgPath.removeEventListener('animationend', onDrawDone);
-          svgPath.classList.remove('drawing');
-          svgPath.classList.add('filling');
-
-          svgPath.addEventListener('animationend', function onFillDone() {
-            svgPath.removeEventListener('animationend', onFillDone);
-            if (tagline) tagline.style.opacity = '0';
-            setTimeout(dissolveToParticles, 200);
+        var fillDelay = (totalDrawTime + 0.15) * 1000;
+        setTimeout(function() {
+          strokes.forEach(function(s) {
+            s.classList.remove('drawing');
+            s.classList.add('filling');
           });
-        });
+          if (tagline) setTimeout(function() { tagline.style.opacity = '0'; }, 400);
+          setTimeout(dissolveToParticles, 650);
+        }, fillDelay);
       }
 
       if (document.readyState === 'complete') {
