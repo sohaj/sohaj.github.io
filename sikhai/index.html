@@ -771,6 +771,47 @@
       background: linear-gradient(to right, rgba(0,0,0,0.03), transparent);
     }
 
+    /* ── BOOK NAV ── */
+    .book-nav {
+      position: absolute; top: 50%; transform: translateY(-50%);
+      width: 40px; height: 40px; border-radius: 50%;
+      border: 1px solid var(--color-border);
+      background: var(--color-bg-white);
+      color: var(--color-text); font-size: 1.4rem; line-height: 1;
+      cursor: pointer; display: none; align-items: center; justify-content: center;
+      transition: all 0.25s ease; z-index: 5;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .book-nav:hover { border-color: var(--color-primary); color: var(--color-primary); }
+    .book-nav--prev { left: 12px; }
+    .book-nav--next { right: 12px; }
+    .book-nav.visible { display: flex; }
+    .book-page-dots {
+      display: none; justify-content: center; gap: 6px;
+      position: absolute; bottom: 14px; left: 0; right: 0; z-index: 5;
+    }
+    .book-page-dots.visible { display: flex; }
+    .book-page-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--color-text-muted); opacity: 0.3;
+      transition: all 0.3s ease;
+    }
+    .book-page-dot.active { opacity: 1; background: var(--color-primary); transform: scale(1.3); }
+    .page-flip-out {
+      animation: pageFlipOut 0.35s ease-in forwards;
+    }
+    .page-flip-in {
+      animation: pageFlipIn 0.35s ease-out forwards;
+    }
+    @keyframes pageFlipOut {
+      0%   { opacity: 1; transform: perspective(1200px) rotateY(0deg); }
+      100% { opacity: 0; transform: perspective(1200px) rotateY(-15deg); }
+    }
+    @keyframes pageFlipIn {
+      0%   { opacity: 0; transform: perspective(1200px) rotateY(15deg); }
+      100% { opacity: 1; transform: perspective(1200px) rotateY(0deg); }
+    }
+
     /* ── INK REVEAL ── */
     .ink-reveal {
       -webkit-mask-image: linear-gradient(to right, #000 0%, #000 20%, transparent 45%);
@@ -789,6 +830,9 @@
       .book { transform: rotateX(0deg); }
       .book-spine { display: none; }
       .book-page-edges { display: none; }
+      .book-nav { width: 34px; height: 34px; font-size: 1.2rem; }
+      .book-nav--prev { left: 6px; }
+      .book-nav--next { right: 6px; }
     }
 
     .hukamnama-loading {
@@ -1250,7 +1294,7 @@
             <div class="hukamnama-loading" id="hukamnamaLoading" data-i18n="hukamnamaLoading">Loading today's Hukamnama...</div>
             <div id="hukamnamaContent" style="display:none">
               <div class="hukamnama-meta">
-                <div class="hukamnama-live-dot"><span class="livedot"></span> LIVE</div>
+                <div class="hukamnama-live-dot"><span class="livedot"></span> <span id="hukamDateLabel">LIVE</span></div>
                 <div class="hukamnama-ang" id="hukamAng"></div>
               </div>
               <div class="hukamnama-gurmukhi ink-reveal" id="hukamGurmukhi"></div>
@@ -1260,6 +1304,9 @@
                 <a href="https://play.google.com/store/apps/details?id=com.anhadapp" class="btn-secondary" style="padding:10px 24px;font-size:0.85rem" target="_blank" rel="noopener" data-i18n="hukamnamaCta">Read Full Hukamnama in App</a>
               </div>
             </div>
+            <button class="book-nav book-nav--prev" id="bookPrev" aria-label="Previous day" onclick="turnPage(-1)">&#8249;</button>
+            <button class="book-nav book-nav--next" id="bookNext" aria-label="Next day" onclick="turnPage(1)">&#8250;</button>
+            <div class="book-page-dots" id="bookDots"></div>
           </div>
         </div>
       </div>
@@ -1763,34 +1810,111 @@
     if (document.readyState === 'complete') { initAnimations(); }
     else { window.addEventListener('load', initAnimations); }
 
-    /* ── LIVE HUKAMNAMA ── */
+    /* ── LIVE HUKAMNAMA (7-day archive) ── */
+    var hukamPages = [], hukamIndex = 0, hukamFlipping = false;
+
+    function parseHukamData(data) {
+      var lines = (data.hukamnama || []).filter(function(l) { return l.line && l.line.gurmukhi; });
+      var info = data.hukamnamainfo || {};
+      return {
+        gurmukhi: lines.slice(0,4).map(function(l) { return l.line.gurmukhi.unicode; }).join(' '),
+        english: lines.slice(0,4).map(function(l) { return l.line.translation && l.line.translation.english ? l.line.translation.english.default : ''; }).filter(Boolean).join(' '),
+        ang: 'Ang ' + (info.pageno || '') + (info.raag ? ' \u00B7 ' + info.raag.english : ''),
+        writer: info.writer ? info.writer.english : '',
+        dateObj: data._dateObj
+      };
+    }
+
+    function formatDateLabel(d, isToday) {
+      if (isToday) return 'LIVE';
+      var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      var days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+      return days[d.getDay()] + ', ' + months[d.getMonth()] + ' ' + d.getDate();
+    }
+
+    function renderHukamPage(idx) {
+      var p = hukamPages[idx];
+      if (!p) return;
+      var isToday = idx === 0;
+      document.getElementById('hukamAng').textContent = p.ang;
+      document.getElementById('hukamGurmukhi').textContent = p.gurmukhi;
+      document.getElementById('hukamEnglish').textContent = p.english;
+      document.getElementById('hukamWriter').textContent = p.writer;
+      var label = document.getElementById('hukamDateLabel');
+      if (label) label.textContent = formatDateLabel(p.dateObj, isToday);
+      var liveDot = document.querySelector('.hukamnama-live-dot .livedot');
+      if (liveDot) liveDot.style.display = isToday ? '' : 'none';
+      document.getElementById('bookPrev').classList.toggle('visible', idx < hukamPages.length - 1);
+      document.getElementById('bookNext').classList.toggle('visible', idx > 0);
+      var dots = document.querySelectorAll('.book-page-dot');
+      dots.forEach(function(d, i) { d.classList.toggle('active', i === idx); });
+    }
+
+    function turnPage(dir) {
+      var next = hukamIndex - dir;
+      if (next < 0 || next >= hukamPages.length || hukamFlipping) return;
+      hukamFlipping = true;
+      var content = document.getElementById('hukamnamaContent');
+      content.classList.add('page-flip-out');
+      content.addEventListener('animationend', function handler() {
+        content.removeEventListener('animationend', handler);
+        content.classList.remove('page-flip-out');
+        hukamIndex = next;
+        renderHukamPage(hukamIndex);
+        content.classList.add('page-flip-in');
+        content.addEventListener('animationend', function h2() {
+          content.removeEventListener('animationend', h2);
+          content.classList.remove('page-flip-in');
+          hukamFlipping = false;
+        });
+      });
+    }
+
+    function buildDots(count) {
+      var container = document.getElementById('bookDots');
+      container.innerHTML = '';
+      for (var i = 0; i < count; i++) {
+        var dot = document.createElement('span');
+        dot.className = 'book-page-dot' + (i === 0 ? ' active' : '');
+        container.appendChild(dot);
+      }
+      container.classList.add('visible');
+    }
+
     (async function loadHukamnama() {
-      const today = new Date().toISOString().slice(0,10);
-      const cached = localStorage.getItem('sikhai-hukamnama');
-      let data;
+      var dates = [];
+      for (var i = 0; i < 7; i++) {
+        var d = new Date(); d.setDate(d.getDate() - i);
+        dates.push(d);
+      }
+      var todayStr = dates[0].toISOString().slice(0,10);
+      var cached = localStorage.getItem('sikhai-hukamnama-7d');
+      var cache = {};
       if (cached) {
-        const parsed = JSON.parse(cached);
-        if (parsed._date === today) { data = parsed; }
+        try { cache = JSON.parse(cached); } catch(e) { cache = {}; }
       }
-      if (!data) {
-        try {
-          const res = await fetch('https://api.gurbaninow.com/v2/hukamnama/today');
-          data = await res.json();
-          data._date = today;
-          localStorage.setItem('sikhai-hukamnama', JSON.stringify(data));
-        } catch(e) {
-          document.getElementById('hukamnamaLoading').textContent = '\u0A38\u0A4B\u0A1A\u0A48 \u0A38\u0A4B\u0A1A\u0A3F \u0A28 \u0A39\u0A4B\u0A35\u0A08 \u0A1C\u0A47 \u0A38\u0A4B\u0A1A\u0A40 \u0A32\u0A16 \u0A35\u0A3E\u0A30 \u2016';
-          return;
-        }
+      var fetches = dates.map(function(d) {
+        var key = d.toISOString().slice(0,10);
+        if (cache[key]) { cache[key]._dateObj = d; return Promise.resolve(cache[key]); }
+        var url = key === todayStr
+          ? 'https://api.gurbaninow.com/v2/hukamnama/today'
+          : 'https://api.gurbaninow.com/v2/hukamnama/' + d.getFullYear() + '/' + String(d.getMonth()+1).padStart(2,'0') + '/' + String(d.getDate()).padStart(2,'0');
+        return fetch(url).then(function(r) { return r.json(); }).then(function(data) {
+          data._dateObj = d;
+          cache[key] = data;
+          return data;
+        }).catch(function() { return null; });
+      });
+      var results = await Promise.all(fetches);
+      try { localStorage.setItem('sikhai-hukamnama-7d', JSON.stringify(cache)); } catch(e) {}
+      hukamPages = results.filter(Boolean).map(parseHukamData);
+      if (hukamPages.length === 0) {
+        document.getElementById('hukamnamaLoading').textContent = 'Could not load Hukamnama.';
+        return;
       }
-      const lines = (data.hukamnama || []).filter(l => l.line && l.line.gurmukhi);
-      const gurmukhiText = lines.slice(0,4).map(l => l.line.gurmukhi.unicode).join(' ');
-      const englishText = lines.slice(0,4).map(l => l.line.translation && l.line.translation.english ? l.line.translation.english.default : '').filter(Boolean).join(' ');
-      const info = data.hukamnamainfo || {};
-      document.getElementById('hukamAng').textContent = 'Ang ' + (info.pageno || '') + (info.raag ? ' \u00B7 ' + info.raag.english : '');
-      document.getElementById('hukamGurmukhi').textContent = gurmukhiText;
-      document.getElementById('hukamEnglish').textContent = englishText;
-      document.getElementById('hukamWriter').textContent = info.writer ? info.writer.english : '';
+      hukamIndex = 0;
+      renderHukamPage(0);
+      buildDots(hukamPages.length);
       document.getElementById('hukamnamaLoading').style.display = 'none';
       document.getElementById('hukamnamaContent').style.display = 'block';
     })();
