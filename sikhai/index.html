@@ -787,11 +787,14 @@
     }
     .globe-aura.active {
       opacity: 1;
-      animation: aura-breathe 3s ease-in-out infinite;
+      animation: aura-breathe 7s ease-in-out infinite;
     }
     @keyframes aura-breathe {
-      0%,100% { transform: translate(-50%,-50%) scale(1); opacity: 0.6; }
-      50% { transform: translate(-50%,-50%) scale(1.08); opacity: 1; }
+      0% { transform: translate(-50%,-50%) scale(1.08); opacity: 1; }
+      40% { transform: translate(-50%,-50%) scale(1.08); opacity: 1; }
+      48% { transform: translate(-50%,-50%) scale(1); opacity: 0.5; }
+      92% { transform: translate(-50%,-50%) scale(1); opacity: 0.5; }
+      100% { transform: translate(-50%,-50%) scale(1.08); opacity: 1; }
     }
     .floating-text {
       position: absolute; pointer-events: none; white-space: nowrap;
@@ -803,6 +806,13 @@
       10% { opacity: 0.7; }
       40% { opacity: 0.5; }
       100% { opacity: 0; transform: translate(-50%, -180px) scale(0.6); }
+    }
+
+    .breath-particle {
+      position: absolute; pointer-events: none;
+      width: 4px; height: 4px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(232,196,74,0.9) 0%, rgba(232,196,74,0) 70%);
+      will-change: transform, opacity;
     }
 
     /* ── REVIEWS ── */
@@ -1896,6 +1906,7 @@
         simranAudio.currentTime = 0;
         simranAudio.play().catch(() => {});
         particleInterval = setInterval(spawnParticle, 2200);
+        startBreathing();
       } else {
         btn.innerHTML = '<svg id="simranIcon" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="' + playPath + '"/></svg> ' + i18n[currentLang].simranStart;
         btn.style.borderColor = '';
@@ -1904,6 +1915,7 @@
         simranAudio.pause();
         simranAudio.currentTime = 0;
         clearInterval(particleInterval);
+        stopBreathing();
       }
     }
     function spawnParticle() {
@@ -1917,12 +1929,84 @@
       el.style.fontSize = sizes[Math.floor(Math.random()*sizes.length)] + 'px';
       el.style.left = (30 + Math.random()*40) + '%';
       el.style.top = (30 + Math.random()*40) + '%';
-      el.style.setProperty('--tx', (Math.random()-0.5)*120 + 'px');
-      const angle = -60 - Math.random()*60;
       el.style.animationName = 'float-out';
       el.style.transform = 'rotate(' + (Math.random()*30-15) + 'deg)';
       container.appendChild(el);
       setTimeout(() => el.remove(), 3000);
+    }
+
+    /* ── BREATHING PARTICLES ── */
+    let breathingActive = false, breathRafId = null, breathParticles = [];
+    const BREATH_INHALE = 2800, BREATH_HOLD_IN = 600, BREATH_EXHALE = 3200, BREATH_HOLD_OUT = 400;
+    const BREATH_CYCLE = BREATH_INHALE + BREATH_HOLD_IN + BREATH_EXHALE + BREATH_HOLD_OUT;
+    const PARTICLE_COUNT = 60;
+
+    function getBreathPhase(t) {
+      var p = t % BREATH_CYCLE;
+      if (p < BREATH_INHALE) return { phase: 'inhale', progress: p / BREATH_INHALE };
+      p -= BREATH_INHALE;
+      if (p < BREATH_HOLD_IN) return { phase: 'hold-in', progress: 1 };
+      p -= BREATH_HOLD_IN;
+      if (p < BREATH_EXHALE) return { phase: 'exhale', progress: p / BREATH_EXHALE };
+      return { phase: 'hold-out', progress: 0 };
+    }
+
+    function startBreathing() {
+      var container = document.querySelector('.globe-container');
+      if (!container || breathingActive) return;
+      breathingActive = true;
+      breathParticles = [];
+      for (var i = 0; i < PARTICLE_COUNT; i++) {
+        var el = document.createElement('div');
+        el.className = 'breath-particle';
+        var size = 2 + Math.random() * 5;
+        el.style.width = size + 'px';
+        el.style.height = size + 'px';
+        var angle = (i / PARTICLE_COUNT) * Math.PI * 2 + (Math.random() - 0.5) * 0.5;
+        var maxR = 38 + Math.random() * 15;
+        container.appendChild(el);
+        breathParticles.push({ el: el, angle: angle, maxR: maxR, phase: Math.random() * 0.3, size: size });
+      }
+      var startTime = performance.now();
+      function tick(now) {
+        if (!breathingActive) return;
+        var elapsed = now - startTime;
+        for (var i = 0; i < breathParticles.length; i++) {
+          var bp = breathParticles[i];
+          var t = elapsed + bp.phase * BREATH_CYCLE;
+          var state = getBreathPhase(t);
+          var r;
+          if (state.phase === 'inhale') {
+            r = bp.maxR * (1 - easeInOutSine(state.progress));
+          } else if (state.phase === 'hold-in') {
+            r = 0;
+          } else if (state.phase === 'exhale') {
+            r = bp.maxR * easeInOutSine(state.progress);
+          } else {
+            r = bp.maxR;
+          }
+          var x = 50 + Math.cos(bp.angle) * r;
+          var y = 50 + Math.sin(bp.angle) * r;
+          var opacity = (state.phase === 'hold-in' || state.phase === 'hold-out') ? 0.2 : 0.15 + 0.7 * (1 - r / bp.maxR);
+          bp.el.style.left = x + '%';
+          bp.el.style.top = y + '%';
+          bp.el.style.opacity = opacity;
+          bp.el.style.transform = 'translate(-50%,-50%) scale(' + (0.6 + 0.8 * (1 - r / bp.maxR)) + ')';
+        }
+        breathRafId = requestAnimationFrame(tick);
+      }
+      breathRafId = requestAnimationFrame(tick);
+    }
+
+    function easeInOutSine(t) { return -(Math.cos(Math.PI * t) - 1) / 2; }
+
+    function stopBreathing() {
+      breathingActive = false;
+      if (breathRafId) { cancelAnimationFrame(breathRafId); breathRafId = null; }
+      for (var i = 0; i < breathParticles.length; i++) {
+        breathParticles[i].el.remove();
+      }
+      breathParticles = [];
     }
 
     /* ── SHARE BUTTONS ── */
