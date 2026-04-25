@@ -811,9 +811,14 @@
     .breath-particle {
       position: absolute; pointer-events: none;
       width: 4px; height: 4px; border-radius: 50%;
-      background: radial-gradient(circle, rgba(232,196,74,0.9) 0%, rgba(232,196,74,0) 70%);
+      background: radial-gradient(circle, rgba(232,196,74,0.95) 0%, rgba(232,196,74,0) 70%);
+      box-shadow: 0 0 6px rgba(232,196,74,0.4);
       will-change: transform, opacity;
       z-index: 1;
+    }
+    [data-theme="light"] .breath-particle {
+      background: radial-gradient(circle, rgba(160,120,30,0.85) 0%, rgba(160,120,30,0) 70%);
+      box-shadow: 0 0 6px rgba(160,120,30,0.3);
     }
     .hero-globe {
       position: relative; z-index: 10;
@@ -1946,7 +1951,7 @@
     let breathingActive = false, breathRafId = null, breathParticles = [];
     const BREATH_INHALE = 3000, BREATH_HOLD_IN = 600, BREATH_EXHALE = 3200, BREATH_HOLD_OUT = 400;
     const BREATH_CYCLE = BREATH_INHALE + BREATH_HOLD_IN + BREATH_EXHALE + BREATH_HOLD_OUT;
-    const PARTICLE_COUNT = 60;
+    const PARTICLE_COUNT = 90;
 
     function getBreathPhase(t) {
       var p = t % BREATH_CYCLE;
@@ -1968,11 +1973,11 @@
       for (var i = 0; i < PARTICLE_COUNT; i++) {
         var el = document.createElement('div');
         el.className = 'breath-particle';
-        var size = 2 + Math.random() * 6;
+        var size = 3 + Math.random() * 7;
         el.style.width = size + 'px';
         el.style.height = size + 'px';
-        var angle = (i / PARTICLE_COUNT) * Math.PI * 2 + (Math.random() - 0.5) * 0.6;
-        var maxR = 25 + Math.random() * 28;
+        var angle = (i / PARTICLE_COUNT) * Math.PI * 2 + (Math.random() - 0.5) * 0.8;
+        var maxR = 20 + Math.random() * 45;
         hero.appendChild(el);
         breathParticles.push({ el: el, angle: angle, maxR: maxR, phase: Math.random() * 0.4, size: size });
       }
