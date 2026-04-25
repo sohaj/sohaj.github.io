@@ -2075,8 +2075,6 @@
       if (!window._globe) return;
       window._globe.pointsData(window._globe.pointsData().filter(function(p) { return !p._isUser; }));
       window._globe.ringsData(window._globe.ringsData().filter(function(r) { return !r._isUser; }));
-      userGeoLat = null;
-      userGeoLng = null;
     }
 
     function toggleSimran() {
@@ -2107,7 +2105,9 @@
         if (heroSikhi) heroSikhi.textContent = currentLang === 'pa' ? '\u0A38\u0A3E\u0A39 \u0A32\u0A48' : 'Breathe. Be still.';
         if (heroDescEl) { heroDescEl.style.visibility = 'hidden'; heroDescEl.style.opacity = '0'; }
         if (heroBadge) { heroBadge.style.visibility = 'hidden'; heroBadge.style.opacity = '0'; }
-        if (navigator.geolocation) {
+        if (userGeoLat != null && userGeoLng != null) {
+          addUserToGlobe(userGeoLat, userGeoLng);
+        } else if (navigator.geolocation) {
           navigator.geolocation.getCurrentPosition(
             function(pos) { addUserToGlobe(pos.coords.latitude, pos.coords.longitude); },
             function() {}
