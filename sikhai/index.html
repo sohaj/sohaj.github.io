@@ -2125,8 +2125,8 @@
         removeUserFromGlobe();
         if (heroTitle) heroTitle.innerHTML = i18n[currentLang].heroTitle;
         if (heroSikhi) heroSikhi.textContent = i18n[currentLang].heroSikhi;
-        if (heroDescEl) { heroDescEl.style.visibility = ''; heroDescEl.style.opacity = ''; }
-        if (heroBadge) { heroBadge.style.visibility = ''; heroBadge.style.opacity = ''; }
+        if (heroDescEl) { heroDescEl.style.visibility = 'visible'; heroDescEl.style.opacity = '1'; }
+        if (heroBadge) { heroBadge.style.visibility = 'visible'; heroBadge.style.opacity = '1'; }
         if (heroInner) heroInner.style.removeProperty('--hero-inner-h');
       }
     }
