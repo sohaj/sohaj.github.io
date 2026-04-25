@@ -180,6 +180,10 @@
 
     .hero-inner {
       text-align: left;
+      min-height: var(--hero-inner-h, auto);
+    }
+    .hero-inner [data-i18n="heroDesc"] {
+      transition: opacity 0.4s ease, visibility 0.4s ease;
     }
 
     .hero-icon {
@@ -204,6 +208,7 @@
       font-size: 0.85rem;
       color: var(--color-text-secondary);
       margin-bottom: 24px;
+      transition: opacity 0.4s ease, visibility 0.4s ease;
     }
     .hero-badge .dot {
       width: 8px; height: 8px;
@@ -1935,6 +1940,8 @@
       var heroSikhi = document.querySelector('[data-i18n="heroSikhi"]');
       var heroDescEl = document.querySelector('[data-i18n="heroDesc"]');
       var heroBadge = document.querySelector('.hero-badge');
+      var heroInner = document.querySelector('.hero-inner');
+      if (heroInner) heroInner.style.setProperty('--hero-inner-h', heroInner.offsetHeight + 'px');
       if (simranActive) {
         simranStart = Date.now();
         icon.querySelector('path').setAttribute('d', pausePath);
@@ -1948,8 +1955,8 @@
         startBreathing();
         if (heroTitle) heroTitle.innerHTML = currentLang === 'pa' ? '\u0A35\u0A3E\u0A39\u0A3F\u0A17\u0A41\u0A30\u0A42<br>' : 'Waheguru<br>';
         if (heroSikhi) heroSikhi.textContent = currentLang === 'pa' ? '\u0A38\u0A3E\u0A39 \u0A32\u0A48' : 'Breathe. Be still.';
-        if (heroDescEl) heroDescEl.style.display = 'none';
-        if (heroBadge) heroBadge.style.display = 'none';
+        if (heroDescEl) { heroDescEl.style.visibility = 'hidden'; heroDescEl.style.opacity = '0'; }
+        if (heroBadge) { heroBadge.style.visibility = 'hidden'; heroBadge.style.opacity = '0'; }
         if (navigator.geolocation) {
           navigator.geolocation.getCurrentPosition(
             function(pos) { addUserToGlobe(pos.coords.latitude, pos.coords.longitude); },
@@ -1968,8 +1975,9 @@
         removeUserFromGlobe();
         if (heroTitle) heroTitle.innerHTML = i18n[currentLang].heroTitle;
         if (heroSikhi) heroSikhi.textContent = i18n[currentLang].heroSikhi;
-        if (heroDescEl) heroDescEl.style.display = '';
-        if (heroBadge) heroBadge.style.display = '';
+        if (heroDescEl) { heroDescEl.style.visibility = ''; heroDescEl.style.opacity = ''; }
+        if (heroBadge) { heroBadge.style.visibility = ''; heroBadge.style.opacity = ''; }
+        if (heroInner) heroInner.style.removeProperty('--hero-inner-h');
       }
     }
     function spawnParticle() {
