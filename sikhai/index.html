@@ -690,6 +690,25 @@
       border-radius: 2px;
       pointer-events: none;
     }
+    .book-cover-front::after {
+      content: ''; position: absolute; inset: 20px;
+      border: 0.5px solid rgba(212,168,83,0.06);
+      border-radius: 1px;
+      pointer-events: none;
+    }
+    .book-corner {
+      position: absolute; width: 28px; height: 28px;
+      border-color: rgba(212,168,83,0.25); border-style: solid; border-width: 0;
+      pointer-events: none;
+    }
+    .book-corner--tl { top: 18px; left: 18px; border-top-width: 1.5px; border-left-width: 1.5px; border-radius: 3px 0 0 0; }
+    .book-corner--tr { top: 18px; right: 18px; border-top-width: 1.5px; border-right-width: 1.5px; border-radius: 0 3px 0 0; }
+    .book-corner--bl { bottom: 18px; left: 18px; border-bottom-width: 1.5px; border-left-width: 1.5px; border-radius: 0 0 0 3px; }
+    .book-corner--br { bottom: 18px; right: 18px; border-bottom-width: 1.5px; border-right-width: 1.5px; border-radius: 0 0 3px 0; }
+    .book-cover-rule {
+      width: 60%; height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(212,168,83,0.3), transparent);
+    }
     .book-emblem {
       font-size: 4rem; color: var(--color-primary);
       text-shadow: 0 2px 20px rgba(212,168,83,0.25);
@@ -1214,9 +1233,15 @@
           <div class="book-page-edges"></div>
           <div class="book-cover" id="bookCover">
             <div class="book-cover-front">
+              <div class="book-corner book-corner--tl"></div>
+              <div class="book-corner book-corner--tr"></div>
+              <div class="book-corner book-corner--bl"></div>
+              <div class="book-corner book-corner--br"></div>
+              <div class="book-cover-rule"></div>
               <div class="book-emblem">&#9737;</div>
               <div class="book-cover-title">Sri Guru Granth Sahib Ji</div>
               <div class="book-cover-sub">Hukamnama</div>
+              <div class="book-cover-rule"></div>
             </div>
             <div class="book-cover-back"></div>
             <div class="book-cover-shadow" id="bookCoverShadow"></div>
@@ -1682,24 +1707,25 @@
             toggleActions: 'play reverse play reverse'
           }
         });
+        var d = 1.5;
         if (bookShadow) {
           bookTl.to(bookShadow, {
             opacity: 0.6, duration: 0.4, ease: 'power1.in'
-          }, 0);
+          }, d);
           bookTl.to(bookShadow, {
             opacity: 0, duration: 0.6, ease: 'power1.out'
-          }, 1.2);
+          }, d + 1.2);
         }
         bookTl.fromTo(bookCover,
           { rotateY: 0, z: 0 },
-          { rotateY: -6, z: 15, duration: 0.4, ease: 'power2.out' }, 0
+          { rotateY: -6, z: 15, duration: 0.4, ease: 'power2.out' }, d
         );
         bookTl.to(bookCover, {
           rotateY: -165, z: 0, duration: 1.4, ease: 'power3.inOut'
-        }, 0.35);
+        }, d + 0.35);
         bookTl.fromTo('#hukamnamaContent .hukamnama-meta',
           { opacity: 0, y: 12 },
-          { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }, 1.0
+          { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }, d + 1.0
         );
         bookTl.to('.ink-reveal', {
           maskPosition: '0% 0',
@@ -1707,10 +1733,10 @@
           duration: 1.6,
           ease: 'power1.inOut',
           stagger: 0.35
-        }, 1.2);
+        }, d + 1.2);
         bookTl.fromTo('#hukamnamaContent .hukamnama-footer',
           { opacity: 0, y: 10 },
-          { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }, 2.4
+          { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }, d + 2.4
         );
       }
 
