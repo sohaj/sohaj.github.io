@@ -911,14 +911,48 @@
       pointer-events: none;
       z-index: 5;
     }
-    .device-3d::after {
-      content: '';
+    .device-side {
       position: absolute;
-      inset: -3px;
-      border-radius: 35px;
-      background: linear-gradient(160deg, #4a4a4e 0%, #2a2a2e 30%, #1a1a1e 60%, #3a3a3e 100%);
-      z-index: -1;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.1);
+      background: linear-gradient(160deg, #3a3a3e 0%, #2a2a2e 50%, #1a1a1e 100%);
+      backface-visibility: hidden;
+    }
+    .device-side-back {
+      inset: 0;
+      border-radius: 32px;
+      background: linear-gradient(135deg, #222226 0%, #111114 50%, #0a0a0e 100%);
+      transform: translateZ(-12px);
+    }
+    .device-side-left {
+      top: 32px; bottom: 32px; left: 0;
+      width: 12px;
+      transform-origin: left center;
+      transform: rotateY(-90deg);
+      background: linear-gradient(to bottom, #3a3a3e, #2a2a2e 40%, #1a1a1e 80%, #2a2a2e);
+      border-radius: 2px 0 0 2px;
+    }
+    .device-side-right {
+      top: 32px; bottom: 32px; right: 0;
+      width: 12px;
+      transform-origin: right center;
+      transform: rotateY(90deg);
+      background: linear-gradient(to bottom, #3a3a3e, #2a2a2e 40%, #1a1a1e 80%, #2a2a2e);
+      border-radius: 0 2px 2px 0;
+    }
+    .device-side-top {
+      top: 0; left: 32px; right: 32px;
+      height: 12px;
+      transform-origin: top center;
+      transform: rotateX(90deg);
+      background: linear-gradient(to right, #2a2a2e, #3a3a3e 30%, #3a3a3e 70%, #2a2a2e);
+      border-radius: 2px 2px 0 0;
+    }
+    .device-side-bottom {
+      bottom: 0; left: 32px; right: 32px;
+      height: 12px;
+      transform-origin: bottom center;
+      transform: rotateX(-90deg);
+      background: linear-gradient(to right, #1a1a1e, #2a2a2e 30%, #2a2a2e 70%, #1a1a1e);
+      border-radius: 0 0 2px 2px;
     }
     .device-screen {
       position: absolute;
@@ -930,6 +964,7 @@
       overflow: hidden;
       background: #000;
       z-index: 2;
+      transform: translateZ(1px);
       box-shadow:
         inset 0 0 0 0.5px rgba(0,0,0,0.8),
         inset 0 0 3px rgba(0,0,0,0.4);
@@ -945,7 +980,7 @@
       position: absolute;
       top: 14px;
       left: 50%;
-      transform: translateX(-50%);
+      transform: translateX(-50%) translateZ(1px);
       width: 10px;
       height: 10px;
       border-radius: 50%;
@@ -956,7 +991,7 @@
     }
     .device-btn-power {
       position: absolute;
-      right: -4px;
+      right: -6px;
       top: 140px;
       width: 4px;
       height: 50px;
@@ -968,7 +1003,7 @@
     }
     .device-btn-vol {
       position: absolute;
-      left: -4px;
+      left: -6px;
       width: 4px;
       border-radius: 3px 0 0 3px;
       background: linear-gradient(to left, #3a3a3e, #4a4a4e 40%, #3a3a3e);
@@ -2234,6 +2269,11 @@
               <div class="device-btn-power"></div>
               <div class="device-btn-vol up"></div>
               <div class="device-btn-vol down"></div>
+              <div class="device-side device-side-back"></div>
+              <div class="device-side device-side-left"></div>
+              <div class="device-side device-side-right"></div>
+              <div class="device-side device-side-top"></div>
+              <div class="device-side device-side-bottom"></div>
             </div>
           </div>
         </div>
