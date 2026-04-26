@@ -746,10 +746,13 @@
     }
     .features > .container { max-width: none; padding: 0; }
     .features-header {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
       text-align: center;
-      padding: 80px 24px 0;
-      max-width: 1400px;
-      margin: 0 auto;
+      padding: 40px 24px 0;
+      z-index: 5;
     }
     .features-pinned {
       height: 100vh;
@@ -2157,13 +2160,11 @@
 
   <!-- Features -->
   <section class="features" id="features">
-    <div class="container">
+    <div class="features-pinned" id="featuresPinned">
       <div class="features-header">
         <div class="section-label fade-up" data-i18n="featuresLabel">&#9670; Features</div>
         <h2 class="section-title fade-up" data-i18n="featuresTitle">Everything for your<br>Sikhi journey</h2>
       </div>
-    </div>
-    <div class="features-pinned" id="featuresPinned">
       <div class="features-bg-text" id="featuresBgText">
         <h3>Hukamnama</h3>
       </div>
