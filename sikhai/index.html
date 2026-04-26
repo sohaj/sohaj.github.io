@@ -1813,8 +1813,18 @@
       localStorage.setItem('sikhai-theme', next);
       document.getElementById('themeIcon').innerHTML = next === 'dark' ? '\u263D' : '\u2600';
       if (window._globe) {
-        const bg = next === 'dark' ? '#010101' : '#FAFAFA';
+        var isDark = next === 'dark';
+        var bg = isDark ? '#010101' : '#FAFAFA';
         window._globe.scene().background = new THREE.Color(bg);
+        window._globe.atmosphereColor(isDark ? '#D4A853' : '#8B6914');
+        var mat = window._globe.globeMaterial();
+        mat.emissive = new THREE.Color(isDark ? '#1a1200' : '#3E2E00');
+        mat.emissiveIntensity = isDark ? 0.12 : 0.05;
+        var scene = window._globe.scene();
+        scene.children.forEach(function(child) {
+          if (child.isAmbientLight) { child.color.set(isDark ? 0x443311 : 0x777777); child.intensity = isDark ? 1.2 : 1.5; }
+          if (child.isDirectionalLight) { child.color.set(isDark ? 0xD4A853 : 0x8B6914); child.intensity = isDark ? 0.8 : 0.6; }
+        });
       }
     }
     (function() {
@@ -2544,16 +2554,17 @@
 
     (function initGlobe() {
       const theme = document.documentElement.getAttribute('data-theme');
-      const bg = theme === 'dark' ? '#010101' : '#FAFAFA';
+      const isDark = theme !== 'light';
+      const bg = isDark ? '#010101' : '#FAFAFA';
       const container = document.getElementById('globeViz');
       if (!container || typeof Globe === 'undefined') return;
       const globe = Globe()
-        .globeImageUrl('https://unpkg.com/three-globe/example/img/earth-day.jpg')
+        .globeImageUrl('https://unpkg.com/three-globe/example/img/earth-night.jpg')
         .bumpImageUrl('https://unpkg.com/three-globe/example/img/earth-topology.png')
         .backgroundImageUrl('')
         .showAtmosphere(true)
-        .atmosphereColor('#D4A853')
-        .atmosphereAltitude(0.2)
+        .atmosphereColor(isDark ? '#D4A853' : '#8B6914')
+        .atmosphereAltitude(0.18)
         .pointsData([])
         .pointLat('lat').pointLng('lng')
         .pointAltitude('altitude').pointRadius('radius')
@@ -2562,12 +2573,34 @@
         .ringsData([])
         .ringLat('lat').ringLng('lng')
         .ringAltitude(0.015)
-        .ringColor(() => 'rgba(255,205,70,0.6)')
+        .ringColor(function() { return isDark ? 'rgba(232,196,74,0.6)' : 'rgba(122,92,0,0.5)'; })
         .ringMaxRadius(8)
         .ringPropagationSpeed(2)
         .ringRepeatPeriod(1200)
         (container);
       globe.scene().background = new THREE.Color(bg);
+
+      var globeMat = globe.globeMaterial();
+      globeMat.bumpScale = 3;
+      if (isDark) {
+        globeMat.emissive = new THREE.Color('#1a1200');
+        globeMat.emissiveIntensity = 0.12;
+        globeMat.shininess = 0.3;
+      } else {
+        globeMat.emissive = new THREE.Color('#3E2E00');
+        globeMat.emissiveIntensity = 0.05;
+      }
+
+      var scene = globe.scene();
+      scene.children.forEach(function(child) {
+        if (child.isLight) scene.remove(child);
+      });
+      var ambientLight = new THREE.AmbientLight(isDark ? 0x443311 : 0x777777, isDark ? 1.2 : 1.5);
+      scene.add(ambientLight);
+      var dirLight = new THREE.DirectionalLight(isDark ? 0xD4A853 : 0x8B6914, isDark ? 0.8 : 0.6);
+      dirLight.position.set(5, 3, 5);
+      scene.add(dirLight);
+
       globe.controls().autoRotate = true;
       globe.controls().autoRotateSpeed = 0.5;
       globe.controls().enableZoom = false;
@@ -2594,7 +2627,7 @@
             .map(u => ({
               lat: u.lat, lng: u.lng,
               altitude: 0.01, radius: 0.3,
-              color: 'rgba(255,212,74,0.95)'
+              color: 'rgba(232,196,74,0.9)'
             }));
           if (window._globe) window._globe.pointsData(globeUsers);
           updateSocialProofCount();
