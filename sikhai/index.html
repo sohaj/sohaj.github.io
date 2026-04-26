@@ -348,6 +348,37 @@
     }
     .btn-secondary:hover { border-color: var(--color-text-secondary); transform: translateY(-2px); }
 
+    /* ── ABOUT INTRO ── */
+    .about-intro {
+      padding: 120px 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 60vh;
+    }
+    .about-intro .container {
+      max-width: 900px;
+    }
+    .about-text {
+      font-size: clamp(1.5rem, 3vw, 2.2rem);
+      line-height: 1.55;
+      font-weight: 400;
+      letter-spacing: -0.01em;
+      margin: 0;
+    }
+    .about-text .about-word {
+      display: inline;
+      color: var(--color-text-muted);
+      transition: color 0.3s ease;
+    }
+    .about-text .about-word.active {
+      color: var(--color-text);
+    }
+    @media (max-width: 768px) {
+      .about-intro { padding: 80px 0; min-height: auto; }
+      .about-text { font-size: clamp(1.2rem, 4vw, 1.6rem); }
+    }
+
     /* ── STATS ── */
     .stats {
       padding: 60px 0;
@@ -1421,6 +1452,13 @@
     </div>
   </section>
 
+  <!-- About / Intro -->
+  <section class="about-intro" id="aboutIntro">
+    <div class="container">
+      <p class="about-text" id="aboutText">Sikh AI is a free, ad-free companion for every Sikh — whether you're beginning your spiritual journey or deepening a lifelong practice. It delivers the daily Hukamnama from Sri Darbar Sahib, guides you through Nitnem with professional audio, connects you to live Kirtan from the Golden Temple, and lets you meditate alongside thousands of Sikhs on a real-time globe. Ask Chardi Kala AI any question about Gurbani, explore the Nanakshahi calendar, read interactive Saakhis, and find Sewa opportunities — all in one place, built with reverence and love for the Panth.</p>
+    </div>
+  </section>
+
   <!-- Stats -->
   <section class="stats">
     <div class="container">
@@ -1929,6 +1967,39 @@
             start: '60% top',
             end: 'bottom top',
             scrub: 0.3
+          }
+        });
+      }
+
+      /* ═══ About Intro — word-by-word scroll reveal ═══ */
+      const aboutText = document.getElementById('aboutText');
+      if (aboutText) {
+        const raw = aboutText.textContent;
+        aboutText.innerHTML = '';
+        raw.split(/(\s+)/).forEach(token => {
+          if (/^\s+$/.test(token)) {
+            aboutText.appendChild(document.createTextNode(token));
+          } else {
+            const span = document.createElement('span');
+            span.className = 'about-word';
+            span.textContent = token;
+            aboutText.appendChild(span);
+          }
+        });
+        const words = aboutText.querySelectorAll('.about-word');
+        ScrollTrigger.create({
+          trigger: '.about-intro',
+          start: 'top 80%',
+          end: 'bottom 30%',
+          scrub: true,
+          onUpdate: function(self) {
+            var p = self.progress;
+            var total = words.length;
+            var activeCount = Math.round(p * total);
+            words.forEach(function(w, i) {
+              if (i < activeCount) w.classList.add('active');
+              else w.classList.remove('active');
+            });
           }
         });
       }
