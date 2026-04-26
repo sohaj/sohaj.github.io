@@ -2462,14 +2462,29 @@
       }
 
       /* ═══ Section title word reveals ═══ */
-      gsap.utils.toArray('.section-title').forEach(title => {
+      gsap.utils.toArray('.section-title').forEach(function(title) {
         if (title.closest('.hero') || title.closest('.cta') || title.closest('.highlight')) return;
-        var html = title.innerHTML;
-        html = html.replace(/(<[^>]+>)|(\S+)/g, function(m, tag, word) {
-          if (tag) return tag;
-          return '<span class="word">' + word + '</span> ';
+        var nodes = Array.from(title.childNodes);
+        title.innerHTML = '';
+        nodes.forEach(function(node) {
+          if (node.nodeType === 1) {
+            title.appendChild(node);
+            return;
+          }
+          if (node.nodeType === 3) {
+            var parts = node.textContent.split(/(\s+)/);
+            parts.forEach(function(part) {
+              if (/^\s+$/.test(part) || part === '') {
+                title.appendChild(document.createTextNode(part));
+              } else {
+                var span = document.createElement('span');
+                span.className = 'word';
+                span.textContent = part;
+                title.appendChild(span);
+              }
+            });
+          }
         });
-        title.innerHTML = html;
         gsap.to(title.querySelectorAll('.word'), {
           opacity: 1, y: 0, duration: 0.5, stagger: 0.06, ease: 'power2.out',
           scrollTrigger: { trigger: title, start: 'top 85%', once: true }
