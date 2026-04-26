@@ -603,12 +603,13 @@
     .lang-toggle:hover { border-color: var(--color-primary); }
 
     /* ── SCREENSHOTS ── */
-    .screenshots { padding: 80px 0; }
+    .screenshots { padding: 80px 0; overflow: hidden; }
     .screenshots-header { margin-bottom: 40px; }
     .screenshots-track {
       display: flex; gap: 32px; padding: 20px 0 30px;
       will-change: transform;
     }
+    .screenshots .screenshots-header { max-width: 1200px; margin-left: auto; margin-right: auto; padding: 0 24px; }
     .phone-frame {
       flex-shrink: 0; width: 280px;
       background: var(--color-bg-card); border: 1px solid var(--color-border);
@@ -969,10 +970,10 @@
     }
 
     /* ── REVIEWS ── */
-    .reviews { padding: 80px 0; }
+    .reviews { padding: 80px 0; overflow: hidden; }
     .reviews-scroll {
-      display: flex; gap: 20px; overflow-x: auto; padding: 10px 0 20px;
-      scroll-snap-type: x mandatory; scrollbar-width: none;
+      display: flex; gap: 20px; padding: 10px 0 20px;
+      scrollbar-width: none; will-change: transform;
     }
     .reviews-scroll::-webkit-scrollbar { display: none; }
     .review-card {
@@ -1149,6 +1150,74 @@
     .fade-up {
       opacity: 0;
       transform: translateY(40px);
+    }
+
+    /* ── IMMERSIVE SCROLL SCENES ── */
+    .hero { will-change: transform; }
+    .hero-inner, .hero-globe { will-change: transform, opacity; }
+
+    .screenshots-pin {
+      overflow: hidden;
+    }
+
+    .features { overflow: hidden; }
+    .feature-card {
+      will-change: transform, opacity;
+    }
+
+    .highlight {
+      padding: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .highlight-card {
+      background: transparent;
+      border: none;
+      max-width: 800px;
+      padding: 64px 32px;
+    }
+    .highlight-card::before { display: none; }
+    .highlight-card .gurmukhi {
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+    }
+    .highlight-word {
+      display: inline-block;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: none;
+    }
+    .highlight-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .highlight-card { position: relative; z-index: 1; }
+
+    .reviews-pin {
+      overflow: hidden;
+    }
+
+    .section-title .word {
+      display: inline-block;
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    .cta .btn-primary {
+      position: relative;
+      overflow: visible;
+    }
+
+    @media (max-width: 768px) {
+      .highlight { min-height: auto; padding: 80px 0; }
+      .highlight-card .gurmukhi { font-size: clamp(1.3rem, 3vw, 1.8rem); }
     }
 
     /* ── LOADER ── */
@@ -1575,12 +1644,13 @@
   </section>
 
   <!-- Gurbani Highlight -->
-  <section class="highlight">
+  <section class="highlight" id="gurbaniHighlight">
+    <canvas class="highlight-canvas" id="highlightCanvas"></canvas>
     <div class="container">
-      <div class="highlight-card fade-up">
-        <div class="gurmukhi">ਸੋਚੈ ਸੋਚਿ ਨ ਹੋਵਈ ਜੇ ਸੋਚੀ ਲਖ ਵਾਰ ॥</div>
-        <div class="translation">"By thinking, He cannot be reduced to thought, even by thinking hundreds of thousands of times."</div>
-        <div class="source">Sri Guru Granth Sahib Ji &middot; Ang 1 &middot; Japji Sahib</div>
+      <div class="highlight-card">
+        <div class="gurmukhi" id="gurbaniGurmukhi">ਸੋਚੈ ਸੋਚਿ ਨ ਹੋਵਈ ਜੇ ਸੋਚੀ ਲਖ ਵਾਰ ॥</div>
+        <div class="translation" id="gurbaniTranslation" style="opacity:0">"By thinking, He cannot be reduced to thought, even by thinking hundreds of thousands of times."</div>
+        <div class="source" id="gurbaniSource" style="opacity:0">Sri Guru Granth Sahib Ji &middot; Ang 1 &middot; Japji Sahib</div>
       </div>
     </div>
   </section>
@@ -1652,7 +1722,7 @@
         <h2 data-i18n="ctaTitle">Begin your journey today</h2>
         <p data-i18n="ctaDesc">Join 20,000+ Sikhs who start their day with Hukamnama, Gurbani, and Simran through Sikh AI.</p>
         <div class="qr-section">
-          <a href="https://play.google.com/store/apps/details?id=com.anhadapp" class="btn-primary" target="_blank" rel="noopener">
+          <a href="https://play.google.com/store/apps/details?id=com.anhadapp" class="btn-primary shine-border" id="ctaDownloadBtn" target="_blank" rel="noopener">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M3.609 1.814L13.792 12 3.61 22.186a.996.996 0 01-.61-.92V2.734a1 1 0 01.609-.92zm10.89 10.893l2.302 2.302-10.937 6.333 8.635-8.635zm3.199-3.199l2.807 1.626a1 1 0 010 1.732l-2.807 1.626L15.206 12l2.492-2.492zM5.864 2.658L16.8 8.99l-2.302 2.302-8.634-8.634z"/></svg>
             <span data-i18n="ctaBtn">Download on Google Play</span>
           </a>
@@ -1820,7 +1890,7 @@
     }, { threshold: 0.5 });
     document.querySelectorAll('[data-count]').forEach(el => statsObserver.observe(el));
 
-    /* ── GSAP + LENIS INIT ── */
+    /* ── GSAP IMMERSIVE SCROLL ── */
     function initAnimations() {
       if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') {
         document.querySelectorAll('.fade-up').forEach(el => { el.style.opacity = 1; el.style.transform = 'none'; });
@@ -1828,7 +1898,9 @@
       }
       gsap.registerPlugin(ScrollTrigger);
 
-      gsap.utils.toArray('.fade-up').forEach((el) => {
+      /* --- Fallback fade-ups for elements not covered by scenes --- */
+      gsap.utils.toArray('.fade-up').forEach(el => {
+        if (el.closest('.hero-inner') || el.closest('.hero-globe') || el.closest('.highlight-card')) return;
         gsap.fromTo(el,
           { opacity: 0, y: 40 },
           { opacity: 1, y: 0, duration: 0.8, ease: 'power2.out',
@@ -1837,6 +1909,34 @@
         );
       });
 
+      /* ═══ SCENE 1 — Hero Parallax ═══ */
+      const heroSection = document.querySelector('.hero');
+      const heroInner = document.querySelector('.hero-inner');
+      const heroGlobe = document.querySelector('.hero-globe');
+      if (heroSection && heroInner && heroGlobe) {
+        gsap.to(heroGlobe, {
+          y: -120,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: heroSection,
+            start: 'top top',
+            end: 'bottom top',
+            scrub: 0.3
+          }
+        });
+        gsap.to(heroInner, {
+          y: 80, opacity: 0,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: heroSection,
+            start: '60% top',
+            end: 'bottom top',
+            scrub: 0.3
+          }
+        });
+      }
+
+      /* ═══ SCENE 1b — Stats counter entrance ═══ */
       gsap.utils.toArray('.stat-item').forEach((el, i) => {
         gsap.fromTo(el,
           { scale: 0.85, opacity: 0 },
@@ -1846,24 +1946,135 @@
         );
       });
 
-      gsap.utils.toArray('.feature-card').forEach((el, i) => {
-        gsap.fromTo(el,
-          { opacity: 0, y: 50, rotateX: 6 },
-          { opacity: 1, y: 0, rotateX: 0, duration: 0.7, delay: i * 0.08, ease: 'power3.out',
-            scrollTrigger: { trigger: el, start: 'top 88%', once: true }
-          }
-        );
-      });
+      /* ═══ SCENE 2 — Pinned Horizontal Screenshots ═══ */
+      const ssSection = document.querySelector('.screenshots');
+      const ssTrack = document.querySelector('.screenshots-track');
+      if (ssSection && ssTrack) {
+        const frames = gsap.utils.toArray('.screenshots-track .phone-frame');
+        frames.forEach(f => { f.style.opacity = '1'; f.style.transform = 'none'; });
 
-      gsap.utils.toArray('.review-card').forEach((el, i) => {
-        gsap.fromTo(el,
-          { opacity: 0, y: 30 },
-          { opacity: 1, y: 0, duration: 0.6, delay: i * 0.06, ease: 'power2.out',
-            scrollTrigger: { trigger: el, start: 'top 90%', once: true }
+        const totalScroll = ssTrack.scrollWidth - ssSection.offsetWidth + 100;
+        gsap.to(ssTrack, {
+          x: () => -totalScroll,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: ssSection,
+            start: 'top top',
+            end: () => '+=' + totalScroll * 1.2,
+            scrub: 0.5,
+            pin: true,
+            anticipatePin: 1,
+            invalidateOnRefresh: true
           }
-        );
-      });
+        });
 
+        frames.forEach((frame, i) => {
+          gsap.fromTo(frame,
+            { rotateY: 15, scale: 0.92, opacity: 0.6 },
+            { rotateY: 0, scale: 1, opacity: 1,
+              scrollTrigger: {
+                trigger: frame,
+                containerAnimation: undefined,
+                start: 'left 90%',
+                end: 'left 50%',
+                scrub: 0.3,
+                horizontal: true
+              }
+            }
+          );
+        });
+      }
+
+      /* ═══ SCENE 3 — 3D Book scrub open ═══ */
+      const bookScene = document.getElementById('bookScene');
+      const bookCover = document.getElementById('bookCover');
+      const bookShadow = document.getElementById('bookCoverShadow');
+      if (bookScene && bookCover) {
+        const bookTl = gsap.timeline({
+          scrollTrigger: {
+            trigger: bookScene,
+            start: 'top 80%',
+            end: 'top 15%',
+            scrub: 0.6,
+            toggleActions: 'play reverse play reverse'
+          }
+        });
+        if (bookShadow) {
+          bookTl.fromTo(bookShadow, { opacity: 0 }, { opacity: 0.7, duration: 0.3, ease: 'power1.in' }, 0);
+          bookTl.to(bookShadow, { opacity: 0, duration: 0.4, ease: 'power1.out' }, 0.6);
+        }
+        bookTl.fromTo(bookCover,
+          { rotateY: 0, z: 0 },
+          { rotateY: -8, z: 20, duration: 0.25, ease: 'power2.out' }, 0.1
+        );
+        bookTl.to(bookCover, {
+          rotateY: -165, z: 0, duration: 0.65, ease: 'power3.inOut'
+        }, 0.3);
+        bookTl.fromTo('#hukamnamaContent .hukamnama-meta',
+          { opacity: 0, y: 12 },
+          { opacity: 1, y: 0, duration: 0.2, ease: 'power2.out' }, 0.55
+        );
+        bookTl.to('.ink-reveal', {
+          maskPosition: '0% 0',
+          webkitMaskPosition: '0% 0',
+          duration: 0.35,
+          ease: 'power1.inOut',
+          stagger: 0.08
+        }, 0.6);
+        bookTl.fromTo('#hukamnamaContent .hukamnama-footer',
+          { opacity: 0, y: 10 },
+          { opacity: 1, y: 0, duration: 0.15, ease: 'power2.out' }, 0.88
+        );
+      }
+
+      /* ═══ SCENE 4 — Pinned Features ═══ */
+      const featuresSection = document.querySelector('.features');
+      const featureCards = gsap.utils.toArray('.feature-card');
+      if (featuresSection && featureCards.length) {
+        featureCards.forEach((card, i) => {
+          const fromLeft = i % 2 === 0;
+          gsap.fromTo(card,
+            { opacity: 0, x: fromLeft ? -80 : 80, rotateY: fromLeft ? 8 : -8 },
+            { opacity: 1, x: 0, rotateY: 0, duration: 0.7, ease: 'power3.out',
+              scrollTrigger: {
+                trigger: card,
+                start: 'top 85%',
+                end: 'top 55%',
+                scrub: 0.4
+              }
+            }
+          );
+        });
+      }
+
+      /* ═══ SCENE 5 — Gurbani Typography with Particle Convergence ═══ */
+      initGurbaniParticles();
+
+      /* ═══ SCENE 6 — Reviews horizontal river ═══ */
+      const reviewsSection = document.querySelector('.reviews');
+      const reviewScroll = document.querySelector('.reviews-scroll');
+      if (reviewsSection && reviewScroll) {
+        const reviewCards = gsap.utils.toArray('.review-card');
+        reviewCards.forEach(c => { c.style.opacity = '1'; c.style.transform = 'none'; });
+        const totalReviewScroll = reviewScroll.scrollWidth - reviewsSection.offsetWidth + 60;
+        if (totalReviewScroll > 0) {
+          gsap.to(reviewScroll, {
+            x: () => -totalReviewScroll,
+            ease: 'none',
+            scrollTrigger: {
+              trigger: reviewsSection,
+              start: 'top top',
+              end: () => '+=' + totalReviewScroll * 1.5,
+              scrub: 0.5,
+              pin: true,
+              anticipatePin: 1,
+              invalidateOnRefresh: true
+            }
+          });
+        }
+      }
+
+      /* ═══ SCENE 6b — Blog cards ═══ */
       gsap.utils.toArray('.blog-card').forEach((el, i) => {
         gsap.fromTo(el,
           { opacity: 0, y: 40 },
@@ -1873,68 +2084,199 @@
         );
       });
 
-      const bookScene = document.getElementById('bookScene');
-      const bookCover = document.getElementById('bookCover');
-      const bookShadow = document.getElementById('bookCoverShadow');
-      if (bookScene && bookCover) {
-        const bookTl = gsap.timeline({
-          scrollTrigger: {
-            trigger: bookScene,
-            start: 'top 85%',
-            end: 'bottom 40%',
-            toggleActions: 'play reverse play reverse'
-          }
+      /* ═══ SCENE 7 — CTA character reveal ═══ */
+      const ctaHeading = document.querySelector('.cta h2');
+      if (ctaHeading) {
+        const ctaText = ctaHeading.textContent;
+        ctaHeading.innerHTML = '';
+        ctaText.split('').forEach(ch => {
+          const span = document.createElement('span');
+          span.style.display = 'inline-block';
+          span.style.opacity = '0';
+          span.style.transform = 'translateY(30px)';
+          span.textContent = ch === ' ' ? '\u00A0' : ch;
+          ctaHeading.appendChild(span);
         });
-        var d = 1.5;
-        if (bookShadow) {
-          bookTl.to(bookShadow, {
-            opacity: 0.6, duration: 0.4, ease: 'power1.in'
-          }, d);
-          bookTl.to(bookShadow, {
-            opacity: 0, duration: 0.6, ease: 'power1.out'
-          }, d + 1.2);
+        gsap.to(ctaHeading.querySelectorAll('span'), {
+          opacity: 1, y: 0, duration: 0.04, stagger: 0.03, ease: 'power2.out',
+          scrollTrigger: { trigger: '.cta', start: 'top 75%', once: true }
+        });
+      }
+      const ctaBtn = document.getElementById('ctaDownloadBtn');
+      if (ctaBtn) {
+        gsap.fromTo(ctaBtn,
+          { scale: 0.8, opacity: 0 },
+          { scale: 1, opacity: 1, duration: 0.6, ease: 'back.out(1.7)',
+            scrollTrigger: { trigger: ctaBtn, start: 'top 90%', once: true }
+          }
+        );
+      }
+
+      /* ═══ Section title word reveals ═══ */
+      gsap.utils.toArray('.section-title').forEach(title => {
+        if (title.closest('.hero') || title.closest('.cta') || title.closest('.highlight')) return;
+        const html = title.innerHTML;
+        title.innerHTML = html.replace(/([^\s<]+)/g, '<span class="word">$1</span> ');
+        gsap.to(title.querySelectorAll('.word'), {
+          opacity: 1, y: 0, duration: 0.5, stagger: 0.06, ease: 'power2.out',
+          scrollTrigger: { trigger: title, start: 'top 85%', once: true }
+        });
+      });
+    }
+
+    /* ── Gurbani Particle Convergence (Scene 5) ── */
+    function initGurbaniParticles() {
+      var section = document.getElementById('gurbaniHighlight');
+      var canvas = document.getElementById('highlightCanvas');
+      var gurmukhiEl = document.getElementById('gurbaniGurmukhi');
+      var translationEl = document.getElementById('gurbaniTranslation');
+      var sourceEl = document.getElementById('gurbaniSource');
+      if (!section || !canvas || !gurmukhiEl) return;
+
+      var ctx = canvas.getContext('2d');
+      var particles = [];
+      var animId = null;
+      var convergenceProgress = 0;
+      var textImageData = null;
+      var textTargets = [];
+      var initiated = false;
+
+      function resizeCanvas() {
+        canvas.width = section.offsetWidth;
+        canvas.height = section.offsetHeight;
+      }
+
+      function getTextPixels() {
+        var offscreen = document.createElement('canvas');
+        offscreen.width = canvas.width;
+        offscreen.height = canvas.height;
+        var oc = offscreen.getContext('2d');
+        var fontSize = Math.min(canvas.width * 0.045, 42);
+        oc.font = '600 ' + fontSize + 'px "DM Sans", sans-serif';
+        oc.fillStyle = '#DAA520';
+        oc.textAlign = 'center';
+        oc.textBaseline = 'middle';
+        var text = gurmukhiEl.textContent;
+        var maxWidth = canvas.width * 0.7;
+        var words = text.split(' ');
+        var lines = [];
+        var line = '';
+        for (var w = 0; w < words.length; w++) {
+          var test = line + (line ? ' ' : '') + words[w];
+          if (oc.measureText(test).width > maxWidth && line) {
+            lines.push(line);
+            line = words[w];
+          } else {
+            line = test;
+          }
         }
-        bookTl.fromTo(bookCover,
-          { rotateY: 0, z: 0 },
-          { rotateY: -6, z: 15, duration: 0.4, ease: 'power2.out' }, d
-        );
-        bookTl.to(bookCover, {
-          rotateY: -165, z: 0, duration: 1.4, ease: 'power3.inOut'
-        }, d + 0.35);
-        bookTl.fromTo('#hukamnamaContent .hukamnama-meta',
-          { opacity: 0, y: 12 },
-          { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }, d + 1.0
-        );
-        bookTl.to('.ink-reveal', {
-          maskPosition: '0% 0',
-          webkitMaskPosition: '0% 0',
-          duration: 1.6,
-          ease: 'power1.inOut',
-          stagger: 0.35
-        }, d + 1.2);
-        bookTl.fromTo('#hukamnamaContent .hukamnama-footer',
-          { opacity: 0, y: 10 },
-          { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }, d + 2.4
-        );
+        if (line) lines.push(line);
+        var lineHeight = fontSize * 1.5;
+        var startY = canvas.height / 2 - (lines.length * lineHeight) / 2 + lineHeight / 2;
+        for (var l = 0; l < lines.length; l++) {
+          oc.fillText(lines[l], canvas.width / 2, startY + l * lineHeight);
+        }
+        var data = oc.getImageData(0, 0, offscreen.width, offscreen.height);
+        textTargets = [];
+        var step = 3;
+        for (var y = 0; y < data.height; y += step) {
+          for (var x = 0; x < data.width; x += step) {
+            var idx = (y * data.width + x) * 4;
+            if (data.data[idx + 3] > 128) {
+              textTargets.push({ x: x, y: y });
+            }
+          }
+        }
+        return textTargets;
       }
 
-      const highlightCard = document.querySelector('.highlight-card');
-      if (highlightCard) {
-        gsap.fromTo(highlightCard,
-          { scale: 0.96 },
-          { scale: 1, ease: 'none',
-            scrollTrigger: { trigger: highlightCard, start: 'top 80%', end: 'bottom 20%', scrub: 0.5 }
-          }
-        );
+      function createParticles() {
+        particles = [];
+        var targets = getTextPixels();
+        for (var i = 0; i < targets.length; i++) {
+          var angle = Math.random() * Math.PI * 2;
+          var dist = 300 + Math.random() * 500;
+          particles.push({
+            x: targets[i].x + Math.cos(angle) * dist,
+            y: targets[i].y + Math.sin(angle) * dist,
+            tx: targets[i].x,
+            ty: targets[i].y,
+            size: 1.5 + Math.random() * 2,
+            alpha: 0,
+            speed: 0.3 + Math.random() * 0.7
+          });
+        }
       }
 
-      gsap.utils.toArray('.screenshots-track .phone-frame').forEach((frame, i) => {
-        gsap.fromTo(frame,
-          { opacity: 0, y: 30 },
-          { opacity: 1, y: 0, duration: 0.6, delay: i * 0.07, ease: 'power2.out',
-            scrollTrigger: { trigger: '.screenshots', start: 'top 80%', once: true }
+      function drawParticles() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        var isDark = document.documentElement.getAttribute('data-theme') !== 'light';
+        for (var i = 0; i < particles.length; i++) {
+          var p = particles[i];
+          var progress = Math.min(convergenceProgress * (0.5 + p.speed * 0.5), 1);
+          var ease = progress < 0.5 ? 2 * progress * progress : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+          var cx = p.x + (p.tx - p.x) * ease;
+          var cy = p.y + (p.ty - p.y) * ease;
+          p.alpha = ease;
+          ctx.beginPath();
+          ctx.arc(cx, cy, p.size * (0.5 + ease * 0.5), 0, Math.PI * 2);
+          var color = isDark ? 'rgba(218,165,32,' + p.alpha + ')' : 'rgba(139,105,20,' + p.alpha + ')';
+          ctx.fillStyle = color;
+          ctx.fill();
+        }
+      }
+
+      function animate() {
+        drawParticles();
+        animId = requestAnimationFrame(animate);
+      }
+
+      function startAnimation() {
+        if (initiated) return;
+        initiated = true;
+        resizeCanvas();
+        createParticles();
+        animate();
+      }
+
+      function stopAnimation() {
+        if (animId) { cancelAnimationFrame(animId); animId = null; }
+        initiated = false;
+        particles = [];
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+
+      window.addEventListener('resize', function() {
+        if (initiated) {
+          resizeCanvas();
+          createParticles();
+        }
+      });
+
+      ScrollTrigger.create({
+        trigger: section,
+        start: 'top 80%',
+        end: 'bottom 20%',
+        onEnter: startAnimation,
+        onLeaveBack: stopAnimation,
+        onUpdate: function(self) {
+          convergenceProgress = self.progress;
+          if (convergenceProgress > 0.55 && gurmukhiEl.style.opacity !== '1') {
+            gurmukhiEl.style.opacity = '0';
+            canvas.style.opacity = '1';
           }
-        );
+          if (convergenceProgress > 0.7) {
+            gsap.to(canvas, { opacity: 0, duration: 0.5, overwrite: true });
+            gsap.to(gurmukhiEl, { opacity: 1, y: 0, duration: 0.6, overwrite: true });
+            gsap.to(translationEl, { opacity: 1, y: 0, duration: 0.6, delay: 0.15, overwrite: true });
+            gsap.to(sourceEl, { opacity: 1, y: 0, duration: 0.4, delay: 0.3, overwrite: true });
+          } else {
+            gsap.to(canvas, { opacity: 1, duration: 0.3, overwrite: true });
+            gsap.to(gurmukhiEl, { opacity: 0, duration: 0.3, overwrite: true });
+            gsap.to(translationEl, { opacity: 0, duration: 0.3, overwrite: true });
+            gsap.to(sourceEl, { opacity: 0, duration: 0.3, overwrite: true });
+          }
+        }
       });
     }
 

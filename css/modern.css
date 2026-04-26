@@ -1145,6 +1145,156 @@ hr.star-light {
 }
 
 /* ============================================
+   FEATURED WORK GRID - Analogue Agency Inspired
+   Bold, Visual, Immersive Cards
+   ============================================ */
+
+.featured-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+  padding: 40px 0;
+  text-align: left;
+}
+
+.featured-card {
+  position: relative;
+  border-radius: 20px;
+  overflow: hidden;
+  min-height: 500px;
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.5s ease;
+  cursor: pointer;
+}
+
+.featured-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
+  text-decoration: none;
+}
+
+/* Dark Card Variant */
+.featured-card-dark {
+  background: #0a0a0a;
+}
+
+.featured-card-dark .featured-card-title,
+.featured-card-dark .featured-card-desc {
+  color: #ffffff;
+}
+
+/* Light Card Variant */
+.featured-card-light {
+  background: #f5f5f0;
+}
+
+.featured-card-light .featured-card-title {
+  color: #1a1a1a;
+}
+
+.featured-card-light .featured-card-desc {
+  color: #666666;
+}
+
+/* Gradient Card Variant */
+.featured-card-gradient {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+}
+
+.featured-card-gradient .featured-card-title,
+.featured-card-gradient .featured-card-desc {
+  color: #ffffff;
+}
+
+.featured-card-content {
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  position: relative;
+  z-index: 2;
+}
+
+.featured-card-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.75rem, 3vw, 2.5rem);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  margin-bottom: 24px;
+}
+
+.featured-card-image {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 0;
+  overflow: hidden;
+}
+
+.featured-card-image img {
+  max-width: 85%;
+  max-height: 280px;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: 12px;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+}
+
+.featured-card:hover .featured-card-image img {
+  transform: scale(1.05) translateY(-5px);
+}
+
+.featured-card-desc {
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  line-height: 1.5;
+  margin-top: auto;
+  opacity: 0.85;
+}
+
+/* Responsive Featured Grid */
+@media (max-width: 991px) {
+  .featured-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  .featured-card {
+    min-height: 450px;
+  }
+}
+
+@media (max-width: 767px) {
+  .featured-grid {
+    padding: 20px 0;
+  }
+  
+  .featured-card {
+    min-height: 400px;
+    border-radius: 16px;
+  }
+  
+  .featured-card-content {
+    padding: 24px;
+  }
+  
+  .featured-card-title {
+    font-size: 1.5rem;
+    margin-bottom: 16px;
+  }
+  
+  .featured-card-image img {
+    max-height: 200px;
+  }
+}
+
+/* ============================================
    PORTFOLIO CARDS - Clean Minimal Style (Timeless-inspired)
    ============================================ */
 
