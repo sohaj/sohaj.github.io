@@ -751,7 +751,7 @@
       max-width: 1400px;
       margin: 0 auto;
     }
-    .feature-slide {
+    .features-pinned {
       height: 100vh;
       display: flex;
       align-items: center;
@@ -759,7 +759,7 @@
       position: relative;
       overflow: hidden;
     }
-    .feature-slide-bg {
+    .features-bg-text {
       position: absolute;
       inset: 0;
       display: flex;
@@ -767,9 +767,8 @@
       justify-content: center;
       z-index: 1;
       pointer-events: none;
-      overflow: hidden;
     }
-    .feature-slide-bg h3 {
+    .features-bg-text h3 {
       font-family: var(--font-display);
       font-size: clamp(6rem, 14vw, 16rem);
       font-weight: 900;
@@ -781,26 +780,45 @@
       white-space: nowrap;
       user-select: none;
       text-transform: uppercase;
+      transition: opacity 0.4s ease;
     }
-    .feature-slide-content {
+    .features-phone-wrap {
       position: relative;
       z-index: 2;
-      width: 100%;
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 0 48px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
     }
-    .feature-slide-meta {
+    .features-screen-img {
       position: absolute;
-      bottom: 30%;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      transition: opacity 0.35s ease;
+    }
+    .features-screen-img.active { opacity: 1; }
+    .features-meta-stack {
+      position: absolute;
+      bottom: 18%;
       left: 48px;
       z-index: 3;
       max-width: 380px;
     }
-    .feature-slide-meta .feature-tag {
+    .features-meta-slide {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.45s ease, transform 0.45s ease;
+      pointer-events: none;
+    }
+    .features-meta-slide.active {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+      position: relative;
+    }
+    .features-meta-slide .feature-tag {
       font-size: 0.78rem;
       text-transform: uppercase;
       letter-spacing: 0.15em;
@@ -808,7 +826,7 @@
       font-weight: 600;
       margin-bottom: 10px;
     }
-    .feature-slide-meta .feature-title {
+    .features-meta-slide .feature-title {
       font-family: var(--font-display);
       font-size: clamp(1.4rem, 2.6vw, 2rem);
       font-weight: 700;
@@ -821,10 +839,28 @@
       line-height: 1.7;
       color: var(--color-text-secondary);
     }
-    .feature-slide:nth-child(even) .feature-slide-meta {
-      left: auto;
+    .features-progress {
+      position: absolute;
       right: 48px;
-      text-align: right;
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      z-index: 4;
+    }
+    .features-progress-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--color-text-muted);
+      opacity: 0.3;
+      transition: all 0.4s ease;
+    }
+    .features-progress-dot.active {
+      opacity: 1;
+      background: var(--color-primary);
+      transform: scale(1.4);
     }
 
     /* ── 3D Android Device Frame (CSS) ── */
@@ -910,13 +946,11 @@
     }
 
     @media (max-width: 768px) {
-      .feature-slide { height: auto; min-height: 80vh; padding: 80px 0 120px; }
-      .feature-slide-bg h3 { font-size: clamp(3.5rem, 20vw, 7rem); }
-      .feature-slide-content { padding: 0 24px; }
+      .features-bg-text h3 { font-size: clamp(3.5rem, 20vw, 7rem); }
       .device-3d { width: 240px; height: 500px; border-radius: 24px; }
       .device-screen { top: 3px; left: 3px; right: 3px; bottom: 3px; border-radius: 21px; }
-      .feature-slide-meta { position: relative; bottom: auto; left: auto; right: auto; max-width: 100%; text-align: center; margin-top: 24px; }
-      .feature-slide:nth-child(even) .feature-slide-meta { text-align: center; right: auto; }
+      .features-meta-stack { position: relative; bottom: auto; left: auto; max-width: 100%; text-align: center; padding: 24px; }
+      .features-progress { right: 16px; }
       .features-header { padding: 60px 24px 0; }
     }
 
@@ -2112,147 +2146,76 @@
         <div class="section-label fade-up" data-i18n="featuresLabel">&#9670; Features</div>
         <h2 class="section-title fade-up" data-i18n="featuresTitle">Everything for your<br>Sikhi journey</h2>
       </div>
-
-      <div class="feature-slide">
-        <div class="feature-slide-bg"><h3 data-i18n="f1bg">Hukamnama</h3></div>
-        <div class="feature-slide-content">
-          <div class="device-3d-wrap">
-            <div class="device-3d">
-              <div class="device-screen"><img src="img/ss1-hukamnama.png" alt="Daily Hukamnama" loading="lazy"></div>
-              <div class="device-notch"></div>
-              <div class="device-btn-power"></div>
-              <div class="device-btn-vol up"></div>
-              <div class="device-btn-vol down"></div>
+    </div>
+    <div class="features-pinned" id="featuresPinned">
+      <div class="features-bg-text" id="featuresBgText">
+        <h3>Hukamnama</h3>
+      </div>
+      <div class="features-phone-wrap">
+        <div class="device-3d-wrap">
+          <div class="device-3d" id="featuresDevice">
+            <div class="device-screen" id="featuresScreen">
+              <img class="features-screen-img active" data-idx="0" src="img/ss1-hukamnama.png" alt="Daily Hukamnama">
+              <img class="features-screen-img" data-idx="1" src="img/ss5-nitnem.png" alt="Nitnem with Audio">
+              <img class="features-screen-img" data-idx="2" src="img/ss4-simran.png" alt="Simran Counter">
+              <img class="features-screen-img" data-idx="3" src="img/ss2-kirtan.png" alt="Golden Temple Kirtan">
+              <img class="features-screen-img" data-idx="4" src="img/ss8-saakhi.png" alt="Nanakshahi Calendar">
+              <img class="features-screen-img" data-idx="5" src="img/ss3-ai.png" alt="Chardi Kala AI">
+              <img class="features-screen-img" data-idx="6" src="img/ss7-sewa.png" alt="Sewa Pulse">
             </div>
+            <div class="device-notch"></div>
+            <div class="device-btn-power"></div>
+            <div class="device-btn-vol up"></div>
+            <div class="device-btn-vol down"></div>
           </div>
         </div>
-        <div class="feature-slide-meta">
+      </div>
+      <div class="features-meta-stack" id="featuresMetaStack">
+        <div class="features-meta-slide active" data-idx="0">
           <div class="feature-tag" data-i18n="f1tag">Gurbani</div>
           <div class="feature-title" data-i18n="f1title">Daily Hukamnama</div>
           <div class="feature-slide-desc" data-i18n="f1desc">Receive the daily divine order from Sri Darbar Sahib, Amritsar — with Gurmukhi text, English translation, and meaning delivered every morning.</div>
         </div>
-      </div>
-
-      <div class="feature-slide">
-        <div class="feature-slide-bg"><h3 data-i18n="f3bg">Nitnem</h3></div>
-        <div class="feature-slide-content">
-          <div class="device-3d-wrap">
-            <div class="device-3d">
-              <div class="device-screen"><img src="img/ss5-nitnem.png" alt="Nitnem with Audio" loading="lazy"></div>
-              <div class="device-notch"></div>
-              <div class="device-btn-power"></div>
-              <div class="device-btn-vol up"></div>
-              <div class="device-btn-vol down"></div>
-            </div>
-          </div>
-        </div>
-        <div class="feature-slide-meta">
+        <div class="features-meta-slide" data-idx="1">
           <div class="feature-tag" data-i18n="f3tag">Daily Practice</div>
           <div class="feature-title" data-i18n="f3title">Nitnem with Audio</div>
           <div class="feature-slide-desc" data-i18n="f3desc">Complete Nitnem Banis with professional audio playback. Read along or listen during your daily prayers and commute.</div>
         </div>
-      </div>
-
-      <div class="feature-slide">
-        <div class="feature-slide-bg"><h3 data-i18n="f4bg">Simran</h3></div>
-        <div class="feature-slide-content">
-          <div class="device-3d-wrap">
-            <div class="device-3d">
-              <div class="device-screen"><img src="img/ss4-simran.png" alt="Simran Counter" loading="lazy"></div>
-              <div class="device-notch"></div>
-              <div class="device-btn-power"></div>
-              <div class="device-btn-vol up"></div>
-              <div class="device-btn-vol down"></div>
-            </div>
-          </div>
-        </div>
-        <div class="feature-slide-meta">
+        <div class="features-meta-slide" data-idx="2">
           <div class="feature-tag" data-i18n="f4tag">Meditation</div>
           <div class="feature-title" data-i18n="f4title">Simran Counter</div>
           <div class="feature-slide-desc" data-i18n="f4desc">A meditative Simran experience with a counter, calming globe visualization showing worldwide meditators, and haptic feedback.</div>
         </div>
-      </div>
-
-      <div class="feature-slide">
-        <div class="feature-slide-bg"><h3 data-i18n="f5bg">Kirtan</h3></div>
-        <div class="feature-slide-content">
-          <div class="device-3d-wrap">
-            <div class="device-3d">
-              <div class="device-screen"><img src="img/ss2-kirtan.png" alt="Golden Temple Kirtan" loading="lazy"></div>
-              <div class="device-notch"></div>
-              <div class="device-btn-power"></div>
-              <div class="device-btn-vol up"></div>
-              <div class="device-btn-vol down"></div>
-            </div>
-          </div>
-        </div>
-        <div class="feature-slide-meta">
+        <div class="features-meta-slide" data-idx="3">
           <div class="feature-tag" data-i18n="f5tag">Live Stream</div>
           <div class="feature-title" data-i18n="f5title">Golden Temple Kirtan</div>
           <div class="feature-slide-desc" data-i18n="f5desc">Stream live Kirtan from Sri Harmandir Sahib directly in the app — anytime, anywhere in the world.</div>
         </div>
-      </div>
-
-      <div class="feature-slide">
-        <div class="feature-slide-bg"><h3 data-i18n="f6bg">Calendar</h3></div>
-        <div class="feature-slide-content">
-          <div class="device-3d-wrap">
-            <div class="device-3d">
-              <div class="device-screen"><img src="img/ss8-saakhi.png" alt="Nanakshahi Calendar" loading="lazy"></div>
-              <div class="device-notch"></div>
-              <div class="device-btn-power"></div>
-              <div class="device-btn-vol up"></div>
-              <div class="device-btn-vol down"></div>
-            </div>
-          </div>
-        </div>
-        <div class="feature-slide-meta">
+        <div class="features-meta-slide" data-idx="4">
           <div class="feature-tag" data-i18n="f6tag">Calendar</div>
           <div class="feature-title" data-i18n="f6title">Nanakshahi Calendar</div>
           <div class="feature-slide-desc" data-i18n="f6desc">Stay connected with Gurpurabs, important Sikh dates, and the complete Nanakshahi calendar year with notifications.</div>
         </div>
-      </div>
-
-      <div class="feature-slide">
-        <div class="feature-slide-bg"><h3 data-i18n="f7bg">Chardi Kala</h3></div>
-        <div class="feature-slide-content">
-          <div class="device-3d-wrap">
-            <div class="device-3d">
-              <div class="device-screen"><img src="img/ss3-ai.png" alt="Chardi Kala AI" loading="lazy"></div>
-              <div class="device-notch"></div>
-              <div class="device-btn-power"></div>
-              <div class="device-btn-vol up"></div>
-              <div class="device-btn-vol down"></div>
-            </div>
-          </div>
-        </div>
-        <div class="feature-slide-meta">
+        <div class="features-meta-slide" data-idx="5">
           <div class="feature-tag" data-i18n="f7tag">Artificial Intelligence</div>
           <div class="feature-title" data-i18n="f7title">Chardi Kala AI</div>
           <div class="feature-slide-desc" data-i18n="f7desc">Ask any question about Gurbani, Sikh history, or philosophy and receive thoughtful, Gurbani-referenced answers from your AI spiritual guide.</div>
         </div>
-      </div>
-
-      <div class="feature-slide">
-        <div class="feature-slide-bg"><h3 data-i18n="f8bg">Sewa</h3></div>
-        <div class="feature-slide-content">
-          <div class="device-3d-wrap">
-            <div class="device-3d">
-              <div class="device-screen"><img src="img/ss7-sewa.png" alt="Sewa Pulse" loading="lazy"></div>
-              <div class="device-notch"></div>
-              <div class="device-btn-power"></div>
-              <div class="device-btn-vol up"></div>
-              <div class="device-btn-vol down"></div>
-            </div>
-          </div>
-        </div>
-        <div class="feature-slide-meta">
+        <div class="features-meta-slide" data-idx="6">
           <div class="feature-tag" data-i18n="f8tag">Community Service</div>
           <div class="feature-title" data-i18n="f8title">Sewa Pulse</div>
           <div class="feature-slide-desc" data-i18n="f8desc">Discover volunteer opportunities and Sewa initiatives happening in the global Sikh community. Give back with trusted NGOs.</div>
         </div>
       </div>
-
+      <div class="features-progress" id="featuresProgress">
+        <div class="features-progress-dot active"></div>
+        <div class="features-progress-dot"></div>
+        <div class="features-progress-dot"></div>
+        <div class="features-progress-dot"></div>
+        <div class="features-progress-dot"></div>
+        <div class="features-progress-dot"></div>
+        <div class="features-progress-dot"></div>
+      </div>
     </div>
   </section>
 
@@ -2843,63 +2806,101 @@
         );
       }
 
-      /* ═══ SCENE 4 — 3D Phone Parallax Feature Slides ═══ */
-      var deviceEntrances = [
-        { y: -200, x: 0, rotateX: 70, rotateY: 0, scale: 0.6 },
-        { y: 200, x: 0, rotateX: -70, rotateY: 0, scale: 0.6 },
-        { y: 0, x: -300, rotateX: 0, rotateY: 50, scale: 0.7 },
-        { y: 0, x: 0, rotateX: 20, rotateY: 180, scale: 0.3 },
-        { y: 60, x: 250, rotateX: -15, rotateY: -35, scale: 0.5 },
-        { y: -180, x: 0, rotateX: 40, rotateY: 15, scale: 0.5 },
-        { y: 200, x: 0, rotateX: -45, rotateY: -20, scale: 0.6 }
-      ];
+      /* ═══ SCENE 4 — Pinned Phone with Transition Effects ═══ */
+      (function() {
+        var featSection = document.getElementById('features');
+        var pinned = document.getElementById('featuresPinned');
+        var device = document.getElementById('featuresDevice');
+        var bgTextEl = document.querySelector('#featuresBgText h3');
+        var screenImgs = document.querySelectorAll('.features-screen-img');
+        var metaSlides = document.querySelectorAll('.features-meta-slide');
+        var progressDots = document.querySelectorAll('.features-progress-dot');
+        if (!featSection || !pinned || !device || screenImgs.length === 0) return;
 
-      gsap.utils.toArray('.feature-slide').forEach(function(slide, i) {
-        var bgText = slide.querySelector('.feature-slide-bg h3');
-        var device = slide.querySelector('.device-3d');
-        var meta = slide.querySelector('.feature-slide-meta');
-        var entrance = deviceEntrances[i] || deviceEntrances[i % deviceEntrances.length];
+        var SLIDE_COUNT = screenImgs.length;
+        var bgTexts = ['Hukamnama', 'Nitnem', 'Simran', 'Kirtan', 'Calendar', 'Chardi Kala', 'Sewa'];
 
-        if (bgText) {
-          gsap.fromTo(bgText,
-            { opacity: 0, scale: 0.85, y: 60 },
-            { opacity: 0.07, scale: 1, y: 0, ease: 'power2.out',
-              scrollTrigger: { trigger: slide, start: 'top 85%', end: 'top 30%', scrub: 0.5 }
-            }
-          );
-          gsap.to(bgText, {
-            y: -80,
-            ease: 'none',
-            scrollTrigger: { trigger: slide, start: 'top bottom', end: 'bottom top', scrub: true }
+        var transitions = [
+          { rotateY: 0, rotateX: 0, scale: 1, y: 0, x: 0 },
+          { rotateY: 180, rotateX: 0, scale: 0.85, y: 0, x: 0 },
+          { rotateY: 0, rotateX: -90, scale: 0.8, y: 40, x: 0 },
+          { rotateY: -90, rotateX: 0, scale: 0.9, y: 0, x: 50 },
+          { rotateY: 0, rotateX: 0, scale: 0.4, y: 0, x: 0 },
+          { rotateY: 90, rotateX: 20, scale: 0.85, y: -30, x: -40 },
+          { rotateY: 0, rotateX: 90, scale: 0.8, y: -40, x: 0 }
+        ];
+
+        var currentIdx = 0;
+        var lastIdx = -1;
+
+        function easeIO(t) { return t < 0.5 ? 4*t*t*t : 1 - Math.pow(-2*t+2, 3)/2; }
+
+        function setActive(idx) {
+          if (idx === lastIdx) return;
+          lastIdx = idx;
+
+          screenImgs.forEach(function(img, i) {
+            img.classList.toggle('active', i === idx);
           });
-        }
-
-        if (device) {
-          gsap.fromTo(device,
-            { opacity: 0, y: entrance.y, x: entrance.x, rotateX: entrance.rotateX, rotateY: entrance.rotateY, scale: entrance.scale },
-            { opacity: 1, y: 0, x: 0, rotateX: 2, rotateY: 0, scale: 1, ease: 'power3.out',
-              scrollTrigger: { trigger: slide, start: 'top 85%', end: 'top 20%', scrub: 0.5 }
-            }
-          );
-          var exitDir = (i % 2 === 0) ? 1 : -1;
-          gsap.to(device, {
-            y: -70,
-            rotateY: -10 * exitDir,
-            rotateX: 5,
-            ease: 'none',
-            scrollTrigger: { trigger: slide, start: 'top 20%', end: 'bottom top', scrub: true }
+          metaSlides.forEach(function(m, i) {
+            m.classList.toggle('active', i === idx);
           });
+          progressDots.forEach(function(d, i) {
+            d.classList.toggle('active', i === idx);
+          });
+
+          if (bgTextEl) {
+            bgTextEl.style.opacity = '0';
+            setTimeout(function() {
+              bgTextEl.textContent = bgTexts[idx] || '';
+              bgTextEl.style.opacity = '0.07';
+            }, 200);
+          }
         }
 
-        if (meta) {
-          gsap.fromTo(meta,
-            { opacity: 0, y: 40 },
-            { opacity: 1, y: 0, duration: 0.7, ease: 'power2.out',
-              scrollTrigger: { trigger: slide, start: 'top 55%', end: 'top 25%', scrub: 0.4 }
-            }
-          );
+        function applyDeviceTransform(fromT, toT, lerp) {
+          var e = easeIO(lerp);
+          var rY = fromT.rotateY + (toT.rotateY - fromT.rotateY) * e;
+          var rX = fromT.rotateX + (toT.rotateX - fromT.rotateX) * e;
+          var sc = fromT.scale + (toT.scale - fromT.scale) * e;
+          var y = fromT.y + (toT.y - fromT.y) * e;
+          var x = fromT.x + (toT.x - fromT.x) * e;
+          device.style.transform = 'rotateY(' + rY + 'deg) rotateX(' + rX + 'deg) scale(' + sc + ') translate(' + x + 'px,' + y + 'px)';
         }
-      });
+
+        var restPose = { rotateY: -4, rotateX: 2, scale: 1, y: 0, x: 0 };
+
+        ScrollTrigger.create({
+          trigger: featSection,
+          start: 'top top',
+          end: '+=' + (SLIDE_COUNT * 100) + '%',
+          pin: pinned,
+          anticipatePin: 1,
+          scrub: 0,
+          onUpdate: function(self) {
+            var p = self.progress;
+            var totalSlots = SLIDE_COUNT;
+            var raw = p * totalSlots;
+            var idx = Math.min(Math.floor(raw), totalSlots - 1);
+            var frac = raw - idx;
+
+            setActive(idx);
+
+            var midT = transitions[idx];
+            if (frac < 0.25) {
+              var outLerp = frac / 0.25;
+              applyDeviceTransform(restPose, midT, outLerp);
+            } else if (frac < 0.5) {
+              var inLerp = (frac - 0.25) / 0.25;
+              applyDeviceTransform(midT, restPose, inLerp);
+            } else {
+              device.style.transform = 'rotateY(' + restPose.rotateY + 'deg) rotateX(' + restPose.rotateX + 'deg) scale(1)';
+            }
+          }
+        });
+
+        setActive(0);
+      })();
 
       /* ═══ SCENE 5 — Gurbani Typography with Particle Convergence ═══ */
       initGurbaniParticles();
