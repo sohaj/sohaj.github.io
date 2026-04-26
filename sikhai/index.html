@@ -676,9 +676,107 @@
       color: var(--color-text-secondary);
     }
 
-    /* ── FEATURES ── */
+    /* ── FEATURES (Full-screen showcase) ── */
     .features {
-      padding: 100px 0;
+      padding: 0;
+      position: relative;
+    }
+    .features > .container { max-width: none; padding: 0; }
+    .features-header {
+      text-align: center;
+      padding: 80px 24px 0;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    .feature-slide {
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .feature-slide-inner {
+      width: 100%;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 48px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center;
+    }
+    .feature-slide-text {
+      z-index: 2;
+    }
+    .feature-slide-text .feature-tag {
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--color-primary);
+      font-weight: 500;
+      margin-bottom: 16px;
+    }
+    .feature-slide-text h3 {
+      font-family: var(--font-display);
+      font-size: clamp(2.8rem, 6vw, 5rem);
+      font-weight: 700;
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+      margin-bottom: 0;
+      color: var(--color-text);
+    }
+    .feature-slide-desc {
+      position: absolute;
+      bottom: 48px;
+      right: 48px;
+      max-width: 340px;
+      font-size: 0.92rem;
+      line-height: 1.7;
+      color: var(--color-text-secondary);
+      text-align: right;
+    }
+    .feature-3d {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      perspective: 800px;
+      z-index: 1;
+    }
+    .feature-3d-obj {
+      font-size: clamp(8rem, 18vw, 14rem);
+      line-height: 1;
+      display: block;
+      transform-style: preserve-3d;
+      animation: float3d 6s ease-in-out infinite;
+      filter: drop-shadow(0 20px 40px rgba(0,0,0,0.3));
+      user-select: none;
+    }
+    @keyframes float3d {
+      0%, 100% { transform: rotateY(-8deg) rotateX(4deg) translateY(0); }
+      50% { transform: rotateY(8deg) rotateX(-4deg) translateY(-15px); }
+    }
+    .feature-slide:nth-child(even) .feature-slide-inner {
+      direction: rtl;
+    }
+    .feature-slide:nth-child(even) .feature-slide-inner > * {
+      direction: ltr;
+    }
+    .feature-slide:nth-child(even) .feature-slide-desc {
+      right: auto;
+      left: 48px;
+      text-align: left;
+    }
+
+    @media (max-width: 768px) {
+      .feature-slide { height: auto; min-height: 80vh; padding: 60px 0; }
+      .feature-slide-inner { grid-template-columns: 1fr; gap: 24px; padding: 0 24px; text-align: center; }
+      .feature-slide:nth-child(even) .feature-slide-inner { direction: ltr; }
+      .feature-3d { order: -1; }
+      .feature-3d-obj { font-size: 6rem; }
+      .feature-slide-desc { position: static; max-width: 100%; text-align: center; margin-top: 24px; }
+      .feature-slide:nth-child(even) .feature-slide-desc { text-align: center; }
+      .features-header { padding: 60px 24px 0; }
     }
 
     .section-label {
@@ -709,21 +807,6 @@
       line-height: 1.7;
       margin-bottom: 56px;
     }
-
-    .features-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 20px;
-    }
-
-    .feature-card {
-      background: var(--color-bg-white);
-      border: 1px solid var(--color-border-light);
-      border-radius: var(--radius-lg);
-      padding: 32px 28px;
-      transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    }
-    .feature-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
 
     .feature-icon {
       width: 52px;
@@ -884,8 +967,7 @@
       .hero-globe .globe-container { max-width: 400px; margin: 0 auto; }
       .stats-grid { grid-template-columns: repeat(3, 1fr); gap: 16px; }
       .stat-item h3 { font-size: 1.8rem; }
-      .features { padding: 60px 0; }
-      .features-grid { grid-template-columns: 1fr; }
+      .features-header { padding: 40px 24px 0; }
       .highlight-card { padding: 40px 24px; }
       .cta { padding: 60px 0; }
       .nav-cta span { display: none; }
@@ -1429,9 +1511,6 @@
     .hero-inner, .hero-globe { will-change: transform, opacity; }
 
     .features { overflow: hidden; }
-    .feature-card {
-      will-change: transform, opacity;
-    }
 
     .highlight {
       padding: 0;
@@ -1590,15 +1669,7 @@
       flex-shrink: 0; width: 280px; scroll-snap-align: center;
     }
 
-    /* ── CARD TILT GLOW ── */
-    .feature-card { position: relative; overflow: hidden; }
-    .feature-card::after {
-      content: ''; position: absolute; inset: 0;
-      background: radial-gradient(circle at var(--mx, 50%) var(--my, 50%), rgba(232,196,74,0.06) 0%, transparent 60%);
-      opacity: 0; transition: opacity 0.4s;
-      pointer-events: none;
-    }
-    .feature-card:hover::after { opacity: 1; }
+    /* ── CARD TILT GLOW (for other cards) ── */
 
     /* ── REDUCED MOTION ── */
     @media (prefers-reduced-motion: reduce) {
@@ -1829,61 +1900,99 @@
   <!-- Features -->
   <section class="features" id="features">
     <div class="container">
-      <div class="section-label fade-up" data-i18n="featuresLabel">&#9670; Features</div>
-      <h2 class="section-title fade-up" data-i18n="featuresTitle">Everything for your<br>Sikhi journey</h2>
-      <p class="section-subtitle fade-up" data-i18n="featuresSubtitle">A thoughtfully designed app that brings the richness of Gurbani and Sikh traditions to your fingertips.</p>
-
-      <div class="features-grid">
-
-        <div class="feature-card fade-up">
-          <div class="feature-icon fi-hukamnama">&#9737;</div>
-          <h3>Daily Hukamnama</h3>
-          <p>Receive the daily Hukamnama from Sri Darbar Sahib with Gurmukhi, English translation, and meaning.</p>
-        </div>
-
-        <div class="feature-card fade-up">
-          <div class="feature-icon fi-quotes">&#10077;</div>
-          <h3>108 Gurbani Quotes</h3>
-          <p>Curated verses from Sri Guru Granth Sahib Ji. Share as beautiful images or text with family and friends.</p>
-        </div>
-
-        <div class="feature-card fade-up">
-          <div class="feature-icon fi-nitnem">&#9835;</div>
-          <h3>Nitnem with Audio</h3>
-          <p>Complete Nitnem Banis with professional audio playback. Read along or listen during your daily prayers.</p>
-        </div>
-
-        <div class="feature-card fade-up">
-          <div class="feature-icon fi-simran">&#8634;</div>
-          <h3>Simran Counter</h3>
-          <p>A meditative Simran experience with a counter, calming globe visualization, and haptic feedback.</p>
-        </div>
-
-        <div class="feature-card fade-up">
-          <div class="feature-icon fi-kirtan">&#9654;</div>
-          <h3>Live Golden Temple Kirtan</h3>
-          <p>Stream live Kirtan from Sri Harmandir Sahib directly in the app, anytime, anywhere.</p>
-        </div>
-
-        <div class="feature-card fade-up">
-          <div class="feature-icon fi-calendar">&#9783;</div>
-          <h3>Sikh Nanakshahi Calendar</h3>
-          <p>Stay connected with Gurpurabs, important Sikh dates, and the Nanakshahi calendar year.</p>
-        </div>
-
-        <div class="feature-card fade-up">
-          <div class="feature-icon fi-ai">&#10024;</div>
-          <h3>Chardi Kala AI</h3>
-          <p>Ask any question about Gurbani, Sikh history, or philosophy and get thoughtful, referenced answers.</p>
-        </div>
-
-        <div class="feature-card fade-up">
-          <div class="feature-icon fi-sewa">&#10084;</div>
-          <h3>Sewa Pulse</h3>
-          <p>Discover volunteer opportunities and Sewa initiatives happening in the Sikh community near you.</p>
-        </div>
-
+      <div class="features-header">
+        <div class="section-label fade-up" data-i18n="featuresLabel">&#9670; Features</div>
+        <h2 class="section-title fade-up" data-i18n="featuresTitle">Everything for your<br>Sikhi journey</h2>
       </div>
+
+      <div class="feature-slide">
+        <div class="feature-slide-inner">
+          <div class="feature-slide-text">
+            <div class="feature-tag">Gurbani</div>
+            <h3>Daily<br>Hukamnama</h3>
+          </div>
+          <div class="feature-3d"><span class="feature-3d-obj">&#128591;</span></div>
+        </div>
+        <div class="feature-slide-desc">Receive the daily divine order from Sri Darbar Sahib, Amritsar — with Gurmukhi text, English translation, and meaning delivered every morning.</div>
+      </div>
+
+      <div class="feature-slide">
+        <div class="feature-slide-inner">
+          <div class="feature-slide-text">
+            <div class="feature-tag">Wisdom</div>
+            <h3>108 Gurbani<br>Quotes</h3>
+          </div>
+          <div class="feature-3d"><span class="feature-3d-obj">&#10077;</span></div>
+        </div>
+        <div class="feature-slide-desc">Curated verses from Sri Guru Granth Sahib Ji. Share as beautiful images or text with family, friends, and the world.</div>
+      </div>
+
+      <div class="feature-slide">
+        <div class="feature-slide-inner">
+          <div class="feature-slide-text">
+            <div class="feature-tag">Daily Practice</div>
+            <h3>Nitnem<br>with Audio</h3>
+          </div>
+          <div class="feature-3d"><span class="feature-3d-obj">&#128220;</span></div>
+        </div>
+        <div class="feature-slide-desc">Complete Nitnem Banis with professional audio playback. Read along or listen during your daily prayers and commute.</div>
+      </div>
+
+      <div class="feature-slide">
+        <div class="feature-slide-inner">
+          <div class="feature-slide-text">
+            <div class="feature-tag">Meditation</div>
+            <h3>Simran<br>Counter</h3>
+          </div>
+          <div class="feature-3d"><span class="feature-3d-obj">&#128330;</span></div>
+        </div>
+        <div class="feature-slide-desc">A meditative Simran experience with a counter, calming globe visualization showing worldwide meditators, and haptic feedback.</div>
+      </div>
+
+      <div class="feature-slide">
+        <div class="feature-slide-inner">
+          <div class="feature-slide-text">
+            <div class="feature-tag">Live Stream</div>
+            <h3>Golden Temple<br>Kirtan</h3>
+          </div>
+          <div class="feature-3d"><span class="feature-3d-obj">&#127926;</span></div>
+        </div>
+        <div class="feature-slide-desc">Stream live Kirtan from Sri Harmandir Sahib directly in the app — anytime, anywhere in the world.</div>
+      </div>
+
+      <div class="feature-slide">
+        <div class="feature-slide-inner">
+          <div class="feature-slide-text">
+            <div class="feature-tag">Calendar</div>
+            <h3>Nanakshahi<br>Calendar</h3>
+          </div>
+          <div class="feature-3d"><span class="feature-3d-obj">&#128197;</span></div>
+        </div>
+        <div class="feature-slide-desc">Stay connected with Gurpurabs, important Sikh dates, and the complete Nanakshahi calendar year with notifications.</div>
+      </div>
+
+      <div class="feature-slide">
+        <div class="feature-slide-inner">
+          <div class="feature-slide-text">
+            <div class="feature-tag">Artificial Intelligence</div>
+            <h3>Chardi<br>Kala AI</h3>
+          </div>
+          <div class="feature-3d"><span class="feature-3d-obj">&#10024;</span></div>
+        </div>
+        <div class="feature-slide-desc">Ask any question about Gurbani, Sikh history, or philosophy and receive thoughtful, Gurbani-referenced answers from your AI spiritual guide.</div>
+      </div>
+
+      <div class="feature-slide">
+        <div class="feature-slide-inner">
+          <div class="feature-slide-text">
+            <div class="feature-tag">Community Service</div>
+            <h3>Sewa<br>Pulse</h3>
+          </div>
+          <div class="feature-3d"><span class="feature-3d-obj">&#129309;</span></div>
+        </div>
+        <div class="feature-slide-desc">Discover volunteer opportunities and Sewa initiatives happening in the global Sikh community. Give back with trusted NGOs.</div>
+      </div>
+
     </div>
   </section>
 
@@ -2376,25 +2485,41 @@
         );
       }
 
-      /* ═══ SCENE 4 — Pinned Features ═══ */
-      const featuresSection = document.querySelector('.features');
-      const featureCards = gsap.utils.toArray('.feature-card');
-      if (featuresSection && featureCards.length) {
-        featureCards.forEach((card, i) => {
-          const fromLeft = i % 2 === 0;
-          gsap.fromTo(card,
-            { opacity: 0, x: fromLeft ? -80 : 80, rotateY: fromLeft ? 8 : -8 },
-            { opacity: 1, x: 0, rotateY: 0, duration: 0.7, ease: 'power3.out',
-              scrollTrigger: {
-                trigger: card,
-                start: 'top 85%',
-                end: 'top 55%',
-                scrub: 0.4
-              }
+      /* ═══ SCENE 4 — Full-screen Feature Slides ═══ */
+      gsap.utils.toArray('.feature-slide').forEach(function(slide) {
+        var textEl = slide.querySelector('.feature-slide-text');
+        var obj3d = slide.querySelector('.feature-3d-obj');
+        var desc = slide.querySelector('.feature-slide-desc');
+        if (textEl) {
+          gsap.fromTo(textEl,
+            { opacity: 0, x: -60 },
+            { opacity: 1, x: 0, duration: 0.8, ease: 'power3.out',
+              scrollTrigger: { trigger: slide, start: 'top 75%', end: 'top 40%', scrub: 0.4 }
             }
           );
-        });
-      }
+        }
+        if (obj3d) {
+          gsap.fromTo(obj3d,
+            { opacity: 0, scale: 0.6, rotateY: -30 },
+            { opacity: 1, scale: 1, rotateY: 0, duration: 1, ease: 'power2.out',
+              scrollTrigger: { trigger: slide, start: 'top 75%', end: 'top 35%', scrub: 0.4 }
+            }
+          );
+          gsap.to(obj3d, {
+            y: -30,
+            ease: 'none',
+            scrollTrigger: { trigger: slide, start: 'top bottom', end: 'bottom top', scrub: 0.3 }
+          });
+        }
+        if (desc) {
+          gsap.fromTo(desc,
+            { opacity: 0, y: 20 },
+            { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out',
+              scrollTrigger: { trigger: slide, start: 'top 50%', end: 'top 25%', scrub: 0.4 }
+            }
+          );
+        }
+      });
 
       /* ═══ SCENE 5 — Gurbani Typography with Particle Convergence ═══ */
       initGurbaniParticles();
