@@ -603,13 +603,14 @@
     .lang-toggle:hover { border-color: var(--color-primary); }
 
     /* ── SCREENSHOTS ── */
-    .screenshots { padding: 80px 0; overflow: hidden; }
+    .screenshots { padding: 80px 0; }
     .screenshots-header { margin-bottom: 40px; }
     .screenshots-track {
       display: flex; gap: 32px; padding: 20px 0 30px;
-      will-change: transform;
+      overflow-x: auto; -webkit-overflow-scrolling: touch;
+      scroll-snap-type: x mandatory; scrollbar-width: none;
     }
-    .screenshots .screenshots-header { max-width: 1200px; margin-left: auto; margin-right: auto; padding: 0 24px; }
+    .screenshots-track::-webkit-scrollbar { display: none; }
     .phone-frame {
       flex-shrink: 0; width: 280px;
       background: var(--color-bg-card); border: 1px solid var(--color-border);
@@ -1155,10 +1156,6 @@
     /* ── IMMERSIVE SCROLL SCENES ── */
     .hero { will-change: transform; }
     .hero-inner, .hero-globe { will-change: transform, opacity; }
-
-    .screenshots-pin {
-      overflow: hidden;
-    }
 
     .features { overflow: hidden; }
     .feature-card {
@@ -1946,44 +1943,15 @@
         );
       });
 
-      /* ═══ SCENE 2 — Pinned Horizontal Screenshots ═══ */
-      const ssSection = document.querySelector('.screenshots');
-      const ssTrack = document.querySelector('.screenshots-track');
-      if (ssSection && ssTrack) {
-        const frames = gsap.utils.toArray('.screenshots-track .phone-frame');
-        frames.forEach(f => { f.style.opacity = '1'; f.style.transform = 'none'; });
-
-        const totalScroll = ssTrack.scrollWidth - ssSection.offsetWidth + 100;
-        gsap.to(ssTrack, {
-          x: () => -totalScroll,
-          ease: 'none',
-          scrollTrigger: {
-            trigger: ssSection,
-            start: 'top top',
-            end: () => '+=' + totalScroll * 1.2,
-            scrub: 0.5,
-            pin: true,
-            anticipatePin: 1,
-            invalidateOnRefresh: true
+      /* ═══ SCENE 2 — Screenshots staggered entrance ═══ */
+      gsap.utils.toArray('.screenshots-track .phone-frame').forEach((frame, i) => {
+        gsap.fromTo(frame,
+          { opacity: 0, y: 30 },
+          { opacity: 1, y: 0, duration: 0.6, delay: i * 0.07, ease: 'power2.out',
+            scrollTrigger: { trigger: '.screenshots', start: 'top 80%', once: true }
           }
-        });
-
-        frames.forEach((frame, i) => {
-          gsap.fromTo(frame,
-            { rotateY: 15, scale: 0.92, opacity: 0.6 },
-            { rotateY: 0, scale: 1, opacity: 1,
-              scrollTrigger: {
-                trigger: frame,
-                containerAnimation: undefined,
-                start: 'left 90%',
-                end: 'left 50%',
-                scrub: 0.3,
-                horizontal: true
-              }
-            }
-          );
-        });
-      }
+        );
+      });
 
       /* ═══ SCENE 3 — 3D Book scrub open ═══ */
       const bookScene = document.getElementById('bookScene');
