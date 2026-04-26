@@ -1816,6 +1816,7 @@
         var isDark = next === 'dark';
         var bg = isDark ? '#010101' : '#FAFAFA';
         window._globe.scene().background = new THREE.Color(bg);
+        window._globe.globeImageUrl(isDark ? 'https://unpkg.com/three-globe/example/img/earth-night.jpg' : 'https://unpkg.com/three-globe/example/img/earth-day.jpg');
         window._globe.atmosphereColor(isDark ? '#D4A853' : '#8B6914');
         var mat = window._globe.globeMaterial();
         mat.emissive = new THREE.Color(isDark ? '#1a1200' : '#3E2E00');
@@ -2563,7 +2564,7 @@
       const container = document.getElementById('globeViz');
       if (!container || typeof Globe === 'undefined') return;
       const globe = Globe()
-        .globeImageUrl('https://unpkg.com/three-globe/example/img/earth-night.jpg')
+        .globeImageUrl(isDark ? 'https://unpkg.com/three-globe/example/img/earth-night.jpg' : 'https://unpkg.com/three-globe/example/img/earth-day.jpg')
         .bumpImageUrl('https://unpkg.com/three-globe/example/img/earth-topology.png')
         .backgroundImageUrl('')
         .showAtmosphere(true)
