@@ -696,86 +696,166 @@
       position: relative;
       overflow: hidden;
     }
-    .feature-slide-inner {
+    .feature-slide-bg {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    .feature-slide-bg h3 {
+      font-family: var(--font-display);
+      font-size: clamp(6rem, 14vw, 16rem);
+      font-weight: 900;
+      line-height: 0.95;
+      letter-spacing: -0.04em;
+      text-align: center;
+      color: var(--color-text);
+      opacity: 0.07;
+      white-space: nowrap;
+      user-select: none;
+      text-transform: uppercase;
+    }
+    .feature-slide-content {
+      position: relative;
+      z-index: 2;
       width: 100%;
       max-width: 1400px;
       margin: 0 auto;
       padding: 0 48px;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 60px;
-      align-items: center;
-    }
-    .feature-slide-text {
-      z-index: 2;
-    }
-    .feature-slide-text .feature-tag {
-      font-size: 0.82rem;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: var(--color-primary);
-      font-weight: 500;
-      margin-bottom: 16px;
-    }
-    .feature-slide-text h3 {
-      font-family: var(--font-display);
-      font-size: clamp(2.8rem, 6vw, 5rem);
-      font-weight: 700;
-      line-height: 1.05;
-      letter-spacing: -0.03em;
-      margin-bottom: 0;
-      color: var(--color-text);
-    }
-    .feature-slide-desc {
-      position: absolute;
-      bottom: 48px;
-      right: 48px;
-      max-width: 340px;
-      font-size: 0.92rem;
-      line-height: 1.7;
-      color: var(--color-text-secondary);
-      text-align: right;
-    }
-    .feature-3d {
       display: flex;
       align-items: center;
       justify-content: center;
-      perspective: 800px;
-      z-index: 1;
     }
-    .feature-3d-obj {
-      font-size: clamp(8rem, 18vw, 14rem);
-      line-height: 1;
-      display: block;
-      transform-style: preserve-3d;
-      animation: float3d 6s ease-in-out infinite;
-      filter: drop-shadow(0 20px 40px rgba(0,0,0,0.3));
-      user-select: none;
-    }
-    @keyframes float3d {
-      0%, 100% { transform: rotateY(-8deg) rotateX(4deg) translateY(0); }
-      50% { transform: rotateY(8deg) rotateX(-4deg) translateY(-15px); }
-    }
-    .feature-slide:nth-child(even) .feature-slide-inner {
-      direction: rtl;
-    }
-    .feature-slide:nth-child(even) .feature-slide-inner > * {
-      direction: ltr;
-    }
-    .feature-slide:nth-child(even) .feature-slide-desc {
-      right: auto;
+    .feature-slide-meta {
+      position: absolute;
+      bottom: 48px;
       left: 48px;
-      text-align: left;
+      z-index: 3;
+      max-width: 380px;
+    }
+    .feature-slide-meta .feature-tag {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--color-primary);
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+    .feature-slide-meta .feature-title {
+      font-family: var(--font-display);
+      font-size: clamp(1.4rem, 2.6vw, 2rem);
+      font-weight: 700;
+      line-height: 1.15;
+      color: var(--color-text);
+      margin-bottom: 10px;
+    }
+    .feature-slide-desc {
+      font-size: 0.88rem;
+      line-height: 1.7;
+      color: var(--color-text-secondary);
+    }
+    .feature-slide:nth-child(even) .feature-slide-meta {
+      left: auto;
+      right: 48px;
+      text-align: right;
+    }
+
+    /* ── 3D Android Device Frame (CSS) ── */
+    .device-3d-wrap {
+      perspective: 1200px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .device-3d {
+      width: 280px;
+      height: 580px;
+      position: relative;
+      transform-style: preserve-3d;
+      border-radius: 36px;
+      background: linear-gradient(145deg, #3a3a3a, #1a1a1a);
+      box-shadow:
+        0 0 0 2px #555,
+        0 0 0 4px #222,
+        0 30px 80px -20px rgba(0,0,0,0.7),
+        0 10px 30px -5px rgba(0,0,0,0.4),
+        inset 0 1px 0 rgba(255,255,255,0.08);
+      animation: deviceFloat 7s ease-in-out infinite;
+    }
+    .device-3d::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 36px;
+      background: linear-gradient(145deg, rgba(255,255,255,0.06) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 5;
+    }
+    .device-screen {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      right: 10px;
+      bottom: 10px;
+      border-radius: 26px;
+      overflow: hidden;
+      background: #000;
+      z-index: 2;
+    }
+    .device-screen img,
+    .device-screen video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .device-notch {
+      position: absolute;
+      top: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #111;
+      border: 1px solid #222;
+      z-index: 4;
+    }
+    .device-btn-power {
+      position: absolute;
+      right: -3px;
+      top: 120px;
+      width: 3px;
+      height: 50px;
+      border-radius: 0 2px 2px 0;
+      background: linear-gradient(to right, #555, #444);
+    }
+    .device-btn-vol {
+      position: absolute;
+      left: -3px;
+      width: 3px;
+      border-radius: 2px 0 0 2px;
+      background: linear-gradient(to left, #555, #444);
+    }
+    .device-btn-vol.up { top: 100px; height: 36px; }
+    .device-btn-vol.down { top: 148px; height: 36px; }
+    @keyframes deviceFloat {
+      0%, 100% { transform: rotateY(-4deg) rotateX(2deg) translateY(0); }
+      50% { transform: rotateY(4deg) rotateX(-2deg) translateY(-12px); }
     }
 
     @media (max-width: 768px) {
-      .feature-slide { height: auto; min-height: 80vh; padding: 60px 0; }
-      .feature-slide-inner { grid-template-columns: 1fr; gap: 24px; padding: 0 24px; text-align: center; }
-      .feature-slide:nth-child(even) .feature-slide-inner { direction: ltr; }
-      .feature-3d { order: -1; }
-      .feature-3d-obj { font-size: 6rem; }
-      .feature-slide-desc { position: static; max-width: 100%; text-align: center; margin-top: 24px; }
-      .feature-slide:nth-child(even) .feature-slide-desc { text-align: center; }
+      .feature-slide { height: auto; min-height: 80vh; padding: 80px 0 120px; }
+      .feature-slide-bg h3 { font-size: clamp(3.5rem, 20vw, 7rem); }
+      .feature-slide-content { padding: 0 24px; }
+      .device-3d { width: 200px; height: 416px; border-radius: 28px; }
+      .device-screen { top: 8px; left: 8px; right: 8px; bottom: 8px; border-radius: 20px; }
+      .feature-slide-meta { position: relative; bottom: auto; left: auto; right: auto; max-width: 100%; text-align: center; margin-top: 24px; }
+      .feature-slide:nth-child(even) .feature-slide-meta { text-align: center; right: auto; }
       .features-header { padding: 60px 24px 0; }
     }
 
@@ -1906,91 +1986,163 @@
       </div>
 
       <div class="feature-slide">
-        <div class="feature-slide-inner">
-          <div class="feature-slide-text">
-            <div class="feature-tag">Gurbani</div>
-            <h3>Daily<br>Hukamnama</h3>
+        <div class="feature-slide-bg"><h3>Hukamnama</h3></div>
+        <div class="feature-slide-content">
+          <div class="device-3d-wrap">
+            <div class="device-3d">
+              <div class="device-screen"><img src="img/ss1-hukamnama.png" alt="Daily Hukamnama" loading="lazy"></div>
+              <div class="device-notch"></div>
+              <div class="device-btn-power"></div>
+              <div class="device-btn-vol up"></div>
+              <div class="device-btn-vol down"></div>
+            </div>
           </div>
-          <div class="feature-3d"><span class="feature-3d-obj">&#128591;</span></div>
         </div>
-        <div class="feature-slide-desc">Receive the daily divine order from Sri Darbar Sahib, Amritsar — with Gurmukhi text, English translation, and meaning delivered every morning.</div>
+        <div class="feature-slide-meta">
+          <div class="feature-tag">Gurbani</div>
+          <div class="feature-title">Daily Hukamnama</div>
+          <div class="feature-slide-desc">Receive the daily divine order from Sri Darbar Sahib, Amritsar — with Gurmukhi text, English translation, and meaning delivered every morning.</div>
+        </div>
       </div>
 
       <div class="feature-slide">
-        <div class="feature-slide-inner">
-          <div class="feature-slide-text">
-            <div class="feature-tag">Wisdom</div>
-            <h3>108 Gurbani<br>Quotes</h3>
+        <div class="feature-slide-bg"><h3>Gurbani Quotes</h3></div>
+        <div class="feature-slide-content">
+          <div class="device-3d-wrap">
+            <div class="device-3d">
+              <div class="device-screen"><img src="img/ss6-stories.png" alt="Gurbani Quotes" loading="lazy"></div>
+              <div class="device-notch"></div>
+              <div class="device-btn-power"></div>
+              <div class="device-btn-vol up"></div>
+              <div class="device-btn-vol down"></div>
+            </div>
           </div>
-          <div class="feature-3d"><span class="feature-3d-obj">&#10077;</span></div>
         </div>
-        <div class="feature-slide-desc">Curated verses from Sri Guru Granth Sahib Ji. Share as beautiful images or text with family, friends, and the world.</div>
+        <div class="feature-slide-meta">
+          <div class="feature-tag">Wisdom</div>
+          <div class="feature-title">108 Gurbani Quotes</div>
+          <div class="feature-slide-desc">Curated verses from Sri Guru Granth Sahib Ji. Share as beautiful images or text with family, friends, and the world.</div>
+        </div>
       </div>
 
       <div class="feature-slide">
-        <div class="feature-slide-inner">
-          <div class="feature-slide-text">
-            <div class="feature-tag">Daily Practice</div>
-            <h3>Nitnem<br>with Audio</h3>
+        <div class="feature-slide-bg"><h3>Nitnem</h3></div>
+        <div class="feature-slide-content">
+          <div class="device-3d-wrap">
+            <div class="device-3d">
+              <div class="device-screen"><img src="img/ss5-nitnem.png" alt="Nitnem with Audio" loading="lazy"></div>
+              <div class="device-notch"></div>
+              <div class="device-btn-power"></div>
+              <div class="device-btn-vol up"></div>
+              <div class="device-btn-vol down"></div>
+            </div>
           </div>
-          <div class="feature-3d"><span class="feature-3d-obj">&#128220;</span></div>
         </div>
-        <div class="feature-slide-desc">Complete Nitnem Banis with professional audio playback. Read along or listen during your daily prayers and commute.</div>
+        <div class="feature-slide-meta">
+          <div class="feature-tag">Daily Practice</div>
+          <div class="feature-title">Nitnem with Audio</div>
+          <div class="feature-slide-desc">Complete Nitnem Banis with professional audio playback. Read along or listen during your daily prayers and commute.</div>
+        </div>
       </div>
 
       <div class="feature-slide">
-        <div class="feature-slide-inner">
-          <div class="feature-slide-text">
-            <div class="feature-tag">Meditation</div>
-            <h3>Simran<br>Counter</h3>
+        <div class="feature-slide-bg"><h3>Simran</h3></div>
+        <div class="feature-slide-content">
+          <div class="device-3d-wrap">
+            <div class="device-3d">
+              <div class="device-screen"><img src="img/ss4-simran.png" alt="Simran Counter" loading="lazy"></div>
+              <div class="device-notch"></div>
+              <div class="device-btn-power"></div>
+              <div class="device-btn-vol up"></div>
+              <div class="device-btn-vol down"></div>
+            </div>
           </div>
-          <div class="feature-3d"><span class="feature-3d-obj">&#128330;</span></div>
         </div>
-        <div class="feature-slide-desc">A meditative Simran experience with a counter, calming globe visualization showing worldwide meditators, and haptic feedback.</div>
+        <div class="feature-slide-meta">
+          <div class="feature-tag">Meditation</div>
+          <div class="feature-title">Simran Counter</div>
+          <div class="feature-slide-desc">A meditative Simran experience with a counter, calming globe visualization showing worldwide meditators, and haptic feedback.</div>
+        </div>
       </div>
 
       <div class="feature-slide">
-        <div class="feature-slide-inner">
-          <div class="feature-slide-text">
-            <div class="feature-tag">Live Stream</div>
-            <h3>Golden Temple<br>Kirtan</h3>
+        <div class="feature-slide-bg"><h3>Kirtan</h3></div>
+        <div class="feature-slide-content">
+          <div class="device-3d-wrap">
+            <div class="device-3d">
+              <div class="device-screen"><img src="img/ss2-kirtan.png" alt="Golden Temple Kirtan" loading="lazy"></div>
+              <div class="device-notch"></div>
+              <div class="device-btn-power"></div>
+              <div class="device-btn-vol up"></div>
+              <div class="device-btn-vol down"></div>
+            </div>
           </div>
-          <div class="feature-3d"><span class="feature-3d-obj">&#127926;</span></div>
         </div>
-        <div class="feature-slide-desc">Stream live Kirtan from Sri Harmandir Sahib directly in the app — anytime, anywhere in the world.</div>
+        <div class="feature-slide-meta">
+          <div class="feature-tag">Live Stream</div>
+          <div class="feature-title">Golden Temple Kirtan</div>
+          <div class="feature-slide-desc">Stream live Kirtan from Sri Harmandir Sahib directly in the app — anytime, anywhere in the world.</div>
+        </div>
       </div>
 
       <div class="feature-slide">
-        <div class="feature-slide-inner">
-          <div class="feature-slide-text">
-            <div class="feature-tag">Calendar</div>
-            <h3>Nanakshahi<br>Calendar</h3>
+        <div class="feature-slide-bg"><h3>Calendar</h3></div>
+        <div class="feature-slide-content">
+          <div class="device-3d-wrap">
+            <div class="device-3d">
+              <div class="device-screen"><img src="img/ss8-saakhi.png" alt="Nanakshahi Calendar" loading="lazy"></div>
+              <div class="device-notch"></div>
+              <div class="device-btn-power"></div>
+              <div class="device-btn-vol up"></div>
+              <div class="device-btn-vol down"></div>
+            </div>
           </div>
-          <div class="feature-3d"><span class="feature-3d-obj">&#128197;</span></div>
         </div>
-        <div class="feature-slide-desc">Stay connected with Gurpurabs, important Sikh dates, and the complete Nanakshahi calendar year with notifications.</div>
+        <div class="feature-slide-meta">
+          <div class="feature-tag">Calendar</div>
+          <div class="feature-title">Nanakshahi Calendar</div>
+          <div class="feature-slide-desc">Stay connected with Gurpurabs, important Sikh dates, and the complete Nanakshahi calendar year with notifications.</div>
+        </div>
       </div>
 
       <div class="feature-slide">
-        <div class="feature-slide-inner">
-          <div class="feature-slide-text">
-            <div class="feature-tag">Artificial Intelligence</div>
-            <h3>Chardi<br>Kala AI</h3>
+        <div class="feature-slide-bg"><h3>Chardi Kala</h3></div>
+        <div class="feature-slide-content">
+          <div class="device-3d-wrap">
+            <div class="device-3d">
+              <div class="device-screen"><img src="img/ss3-ai.png" alt="Chardi Kala AI" loading="lazy"></div>
+              <div class="device-notch"></div>
+              <div class="device-btn-power"></div>
+              <div class="device-btn-vol up"></div>
+              <div class="device-btn-vol down"></div>
+            </div>
           </div>
-          <div class="feature-3d"><span class="feature-3d-obj">&#10024;</span></div>
         </div>
-        <div class="feature-slide-desc">Ask any question about Gurbani, Sikh history, or philosophy and receive thoughtful, Gurbani-referenced answers from your AI spiritual guide.</div>
+        <div class="feature-slide-meta">
+          <div class="feature-tag">Artificial Intelligence</div>
+          <div class="feature-title">Chardi Kala AI</div>
+          <div class="feature-slide-desc">Ask any question about Gurbani, Sikh history, or philosophy and receive thoughtful, Gurbani-referenced answers from your AI spiritual guide.</div>
+        </div>
       </div>
 
       <div class="feature-slide">
-        <div class="feature-slide-inner">
-          <div class="feature-slide-text">
-            <div class="feature-tag">Community Service</div>
-            <h3>Sewa<br>Pulse</h3>
+        <div class="feature-slide-bg"><h3>Sewa</h3></div>
+        <div class="feature-slide-content">
+          <div class="device-3d-wrap">
+            <div class="device-3d">
+              <div class="device-screen"><img src="img/ss7-sewa.png" alt="Sewa Pulse" loading="lazy"></div>
+              <div class="device-notch"></div>
+              <div class="device-btn-power"></div>
+              <div class="device-btn-vol up"></div>
+              <div class="device-btn-vol down"></div>
+            </div>
           </div>
-          <div class="feature-3d"><span class="feature-3d-obj">&#129309;</span></div>
         </div>
-        <div class="feature-slide-desc">Discover volunteer opportunities and Sewa initiatives happening in the global Sikh community. Give back with trusted NGOs.</div>
+        <div class="feature-slide-meta">
+          <div class="feature-tag">Community Service</div>
+          <div class="feature-title">Sewa Pulse</div>
+          <div class="feature-slide-desc">Discover volunteer opportunities and Sewa initiatives happening in the global Sikh community. Give back with trusted NGOs.</div>
+        </div>
       </div>
 
     </div>
@@ -2485,37 +2637,48 @@
         );
       }
 
-      /* ═══ SCENE 4 — Full-screen Feature Slides ═══ */
-      gsap.utils.toArray('.feature-slide').forEach(function(slide) {
-        var textEl = slide.querySelector('.feature-slide-text');
-        var obj3d = slide.querySelector('.feature-3d-obj');
-        var desc = slide.querySelector('.feature-slide-desc');
-        if (textEl) {
-          gsap.fromTo(textEl,
-            { opacity: 0, x: -60 },
-            { opacity: 1, x: 0, duration: 0.8, ease: 'power3.out',
-              scrollTrigger: { trigger: slide, start: 'top 75%', end: 'top 40%', scrub: 0.4 }
+      /* ═══ SCENE 4 — 3D Phone Parallax Feature Slides ═══ */
+      gsap.utils.toArray('.feature-slide').forEach(function(slide, i) {
+        var bgText = slide.querySelector('.feature-slide-bg h3');
+        var device = slide.querySelector('.device-3d');
+        var meta = slide.querySelector('.feature-slide-meta');
+        var rotateDir = (i % 2 === 0) ? 1 : -1;
+
+        if (bgText) {
+          gsap.fromTo(bgText,
+            { opacity: 0, scale: 0.85, y: 60 },
+            { opacity: 0.07, scale: 1, y: 0, ease: 'power2.out',
+              scrollTrigger: { trigger: slide, start: 'top 85%', end: 'top 30%', scrub: 0.5 }
             }
           );
-        }
-        if (obj3d) {
-          gsap.fromTo(obj3d,
-            { opacity: 0, scale: 0.6, rotateY: -30 },
-            { opacity: 1, scale: 1, rotateY: 0, duration: 1, ease: 'power2.out',
-              scrollTrigger: { trigger: slide, start: 'top 75%', end: 'top 35%', scrub: 0.4 }
-            }
-          );
-          gsap.to(obj3d, {
-            y: -30,
+          gsap.to(bgText, {
+            y: -80,
             ease: 'none',
-            scrollTrigger: { trigger: slide, start: 'top bottom', end: 'bottom top', scrub: 0.3 }
+            scrollTrigger: { trigger: slide, start: 'top bottom', end: 'bottom top', scrub: true }
           });
         }
-        if (desc) {
-          gsap.fromTo(desc,
-            { opacity: 0, y: 20 },
-            { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out',
-              scrollTrigger: { trigger: slide, start: 'top 50%', end: 'top 25%', scrub: 0.4 }
+
+        if (device) {
+          gsap.fromTo(device,
+            { opacity: 0, y: 120, rotateY: 25 * rotateDir, rotateX: -8, scale: 0.8 },
+            { opacity: 1, y: 0, rotateY: -4 * rotateDir, rotateX: 2, scale: 1, duration: 1.2, ease: 'power3.out',
+              scrollTrigger: { trigger: slide, start: 'top 80%', end: 'top 25%', scrub: 0.6 }
+            }
+          );
+          gsap.to(device, {
+            y: -60,
+            rotateY: -12 * rotateDir,
+            rotateX: 6,
+            ease: 'none',
+            scrollTrigger: { trigger: slide, start: 'top 25%', end: 'bottom top', scrub: true }
+          });
+        }
+
+        if (meta) {
+          gsap.fromTo(meta,
+            { opacity: 0, y: 40 },
+            { opacity: 1, y: 0, duration: 0.7, ease: 'power2.out',
+              scrollTrigger: { trigger: slide, start: 'top 55%', end: 'top 25%', scrub: 0.4 }
             }
           );
         }
