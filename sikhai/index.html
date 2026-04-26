@@ -1655,13 +1655,10 @@
 
     .highlight {
       padding: 0;
-      min-height: 300vh;
       position: relative;
       overflow: hidden;
     }
     .highlight-pin {
-      position: sticky;
-      top: 0;
       width: 100%;
       height: 100vh;
       display: flex;
@@ -1669,6 +1666,7 @@
       justify-content: center;
       perspective: 1200px;
       overflow: hidden;
+      position: relative;
     }
     .highlight-tunnel {
       position: absolute;
@@ -1723,9 +1721,24 @@
     .highlight-vignette {
       position: absolute;
       inset: 0;
-      background: radial-gradient(circle at center, transparent 20%, var(--color-bg) 70%);
+      background: radial-gradient(circle at center, transparent 30%, var(--color-bg) 75%);
       pointer-events: none;
       z-index: 3;
+    }
+    .highlight-dot {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      border-radius: 50%;
+      pointer-events: none;
+      will-change: transform, opacity;
+      z-index: 1;
+      background: radial-gradient(circle, rgba(232,196,74,0.9) 0%, rgba(232,196,74,0) 70%);
+      box-shadow: 0 0 6px rgba(232,196,74,0.35);
+    }
+    [data-theme="light"] .highlight-dot {
+      background: radial-gradient(circle, rgba(160,120,30,0.85) 0%, rgba(160,120,30,0) 70%);
+      box-shadow: 0 0 6px rgba(160,120,30,0.3);
     }
 
     .reviews-pin {
@@ -1744,7 +1757,6 @@
     }
 
     @media (max-width: 768px) {
-      .highlight { min-height: 250vh; }
       .highlight-card .gurmukhi { font-size: clamp(1.3rem, 3vw, 1.8rem); }
       .highlight-fly-quote { font-size: clamp(0.7rem, 1.5vw, 1rem); }
     }
@@ -2353,6 +2365,7 @@
       <div class="highlight-fly-quote" data-fly="9" data-angle="180" data-depth="0.33">ਮੂਲ ਮੰਤਰ</div>
       <div class="highlight-fly-quote" data-fly="10" data-angle="45" data-depth="0.42">ਅਕਾਲ ਮੂਰਤਿ</div>
       <div class="highlight-fly-quote" data-fly="11" data-angle="225" data-depth="0.38">ਕਰਤਾ ਪੁਰਖੁ</div>
+      <div class="highlight-dots" id="highlightDots"></div>
       <div class="highlight-vignette"></div>
       <div class="container" style="position:relative;z-index:5;">
         <div class="highlight-card" id="highlightCard">
@@ -2984,30 +2997,66 @@
     /* ── Gurbani Zoom Tunnel (Scene 5) ── */
     function initGurbaniParticles() {
       var section = document.getElementById('gurbaniHighlight');
+      var pin = section && section.querySelector('.highlight-pin');
       var card = document.getElementById('highlightCard');
       var gurmukhiEl = document.getElementById('gurbaniGurmukhi');
       var translationEl = document.getElementById('gurbaniTranslation');
       var sourceEl = document.getElementById('gurbaniSource');
       var tunnel = document.getElementById('highlightTunnel');
-      if (!section || !card || !tunnel) return;
+      var dotsContainer = document.getElementById('highlightDots');
+      if (!section || !pin || !card || !tunnel) return;
 
       var rings = tunnel.querySelectorAll('.highlight-ring');
       var flyQuotes = section.querySelectorAll('.highlight-fly-quote');
 
+      var DOT_COUNT = 80;
+      var dots = [];
+      if (dotsContainer) {
+        for (var d = 0; d < DOT_COUNT; d++) {
+          var dot = document.createElement('div');
+          dot.className = 'highlight-dot';
+          var size = 3 + Math.random() * 6;
+          dot.style.width = size + 'px';
+          dot.style.height = size + 'px';
+          dotsContainer.appendChild(dot);
+          var angle = (d / DOT_COUNT) * Math.PI * 2 + (Math.random() - 0.5) * 0.6;
+          dots.push({ el: dot, angle: angle, maxR: 50 + Math.random() * 50, size: size });
+        }
+      }
+
       var tl = gsap.timeline({
         scrollTrigger: {
-          trigger: section,
+          trigger: pin,
           start: 'top top',
-          end: 'bottom bottom',
-          scrub: 0.8
+          end: '+=250%',
+          scrub: 0.6,
+          pin: true,
+          anticipatePin: 1,
+          onUpdate: function(self) {
+            var p = self.progress;
+            for (var i = 0; i < dots.length; i++) {
+              var dt = dots[i];
+              var localP = Math.max(0, Math.min((p - 0.05) / 0.65, 1));
+              var ease = localP < 0.5 ? 2 * localP * localP : 1 - Math.pow(-2 * localP + 2, 2) / 2;
+              var r = dt.maxR * ease;
+              var x = Math.cos(dt.angle) * r;
+              var y = Math.sin(dt.angle) * r;
+              var fadeIn = Math.min(localP * 5, 1);
+              var fadeOut = localP > 0.7 ? 1 - (localP - 0.7) / 0.3 : 1;
+              var opacity = fadeIn * fadeOut * 0.8;
+              var s = 0.4 + ease * 1.2;
+              dt.el.style.transform = 'translate(-50%,-50%) translate(' + x + 'vw,' + y + 'vh) scale(' + s + ')';
+              dt.el.style.opacity = opacity;
+            }
+          }
         }
       });
 
       rings.forEach(function(ring, i) {
-        var delay = i * 0.06;
+        var delay = i * 0.05;
         tl.fromTo(ring,
-          { scale: 0.3, opacity: 0.12 },
-          { scale: 4 + i * 1.5, opacity: 0, duration: 0.7, ease: 'power2.in' },
+          { scale: 0.3, opacity: 0.15 },
+          { scale: 5 + i * 1.8, opacity: 0, duration: 0.6, ease: 'power2.in' },
           delay
         );
       });
@@ -3016,44 +3065,40 @@
         var angleDeg = parseFloat(q.getAttribute('data-angle')) || 0;
         var depthStart = parseFloat(q.getAttribute('data-depth')) || 0.2;
         var angleRad = angleDeg * Math.PI / 180;
-        var flyDist = 900 + Math.random() * 500;
+        var flyDist = 1000 + Math.random() * 600;
         var endX = Math.cos(angleRad) * flyDist;
         var endY = Math.sin(angleRad) * flyDist;
 
         tl.fromTo(q,
           { x: '-50%', y: '-50%', scale: 0.3, opacity: 0 },
-          { opacity: 0.85, scale: 0.9, duration: 0.15, ease: 'power1.in' },
+          { opacity: 0.9, scale: 1, duration: 0.12, ease: 'power1.in' },
           depthStart
         );
         tl.to(q,
-          {
-            x: endX, y: endY, scale: 2.8,
-            opacity: 0, duration: 0.35,
-            ease: 'power2.in'
-          },
-          depthStart + 0.1
+          { x: endX, y: endY, scale: 3, opacity: 0, duration: 0.3, ease: 'power2.in' },
+          depthStart + 0.08
         );
       });
 
       tl.fromTo(card,
-        { opacity: 0, scale: 0.6 },
-        { opacity: 1, scale: 1, duration: 0.25, ease: 'power2.out' },
-        0.55
+        { opacity: 0, scale: 0.5 },
+        { opacity: 1, scale: 1, duration: 0.2, ease: 'power2.out' },
+        0.6
       );
       tl.fromTo(gurmukhiEl,
         { opacity: 0, y: 30 },
-        { opacity: 1, y: 0, duration: 0.2, ease: 'power2.out' },
-        0.6
+        { opacity: 1, y: 0, duration: 0.15, ease: 'power2.out' },
+        0.65
       );
       tl.fromTo(translationEl,
         { opacity: 0, y: 20 },
-        { opacity: 1, y: 0, duration: 0.15, ease: 'power2.out' },
-        0.7
+        { opacity: 1, y: 0, duration: 0.12, ease: 'power2.out' },
+        0.75
       );
       tl.fromTo(sourceEl,
         { opacity: 0, y: 15 },
-        { opacity: 1, y: 0, duration: 0.12, ease: 'power2.out' },
-        0.78
+        { opacity: 1, y: 0, duration: 0.1, ease: 'power2.out' },
+        0.82
       );
     }
 
