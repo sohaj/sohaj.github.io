@@ -744,22 +744,25 @@
       padding: 0;
       position: relative;
     }
-    .features > .container { max-width: none; padding: 0; }
     .features-header {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
       text-align: center;
-      padding: 80px 24px 0;
-      max-width: 1400px;
-      margin: 0 auto;
+      padding: 40px 24px 0;
+      z-index: 5;
     }
-    .feature-slide {
+    .features-pinned {
       height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
       position: relative;
-      overflow: visible;
+      overflow: hidden;
+      padding: 0 48px;
     }
-    .feature-slide-bg {
+    .features-bg-text {
       position: absolute;
       inset: 0;
       display: flex;
@@ -767,9 +770,8 @@
       justify-content: center;
       z-index: 1;
       pointer-events: none;
-      overflow: hidden;
     }
-    .feature-slide-bg h3 {
+    .features-bg-text h3 {
       font-family: var(--font-display);
       font-size: clamp(6rem, 14vw, 16rem);
       font-weight: 900;
@@ -781,51 +783,99 @@
       white-space: nowrap;
       user-select: none;
       text-transform: uppercase;
+      transition: opacity 0.4s ease;
     }
-    .feature-slide-content {
-      position: relative;
-      z-index: 2;
-      width: 100%;
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 0 48px;
+    .features-layout {
       display: flex;
       align-items: center;
       justify-content: center;
+      gap: clamp(40px, 6vw, 100px);
+      width: 100%;
+      max-width: 1200px;
+      position: relative;
+      z-index: 2;
     }
-    .feature-slide-meta {
+    .features-phone-wrap {
+      flex-shrink: 0;
+      position: relative;
+      z-index: 2;
+    }
+    .features-screen-img {
       position: absolute;
-      bottom: 48px;
-      left: 48px;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      transition: opacity 0.35s ease;
+    }
+    .features-screen-img.active { opacity: 1; }
+    .features-meta-stack {
+      position: relative;
       z-index: 3;
       max-width: 420px;
+      flex: 1;
+      min-width: 0;
     }
-    .feature-slide-meta .feature-tag {
+    .features-meta-slide {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.45s ease, transform 0.45s ease;
+      pointer-events: none;
+    }
+    .features-meta-slide.active {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+      position: relative;
+    }
+    .features-meta-slide .feature-tag {
       font-size: 0.78rem;
       text-transform: uppercase;
       letter-spacing: 0.15em;
       color: var(--color-primary);
       font-weight: 600;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
     }
-    .feature-slide-meta .feature-title {
+    .features-meta-slide .feature-title {
       font-family: var(--font-display);
-      font-size: clamp(1.4rem, 2.6vw, 2rem);
+      font-size: clamp(1.5rem, 2.8vw, 2.2rem);
       font-weight: 700;
       line-height: 1.15;
       color: var(--color-text);
-      margin-bottom: 10px;
+      margin-bottom: 14px;
     }
     .feature-slide-desc {
-      font-size: 0.88rem;
+      font-size: 0.92rem;
       line-height: 1.7;
       color: var(--color-text-secondary);
     }
-    .feature-slide:nth-child(even) .feature-slide-meta {
-      left: auto;
+    .features-progress {
+      position: absolute;
       right: 48px;
-      text-align: right;
-      bottom: 48px;
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      z-index: 4;
+    }
+    .features-progress-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--color-text-muted);
+      opacity: 0.3;
+      transition: all 0.4s ease;
+    }
+    .features-progress-dot.active {
+      opacity: 1;
+      background: var(--color-primary);
+      transform: scale(1.4);
     }
 
     /* ── 3D Android Device Frame (CSS) ── */
