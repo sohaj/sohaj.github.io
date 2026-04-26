@@ -2854,10 +2854,10 @@
         var restPose = { rotateY: -4, rotateX: 2, scale: 1, y: 0, x: 0 };
 
         ScrollTrigger.create({
-          trigger: featSection,
+          trigger: pinned,
           start: 'top top',
           end: '+=' + (SLIDE_COUNT * 100) + '%',
-          pin: pinned,
+          pin: true,
           anticipatePin: 1,
           scrub: 0,
           onUpdate: function(self) {
