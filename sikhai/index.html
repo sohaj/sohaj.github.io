@@ -757,7 +757,7 @@
       align-items: center;
       justify-content: center;
       position: relative;
-      overflow: hidden;
+      overflow: visible;
     }
     .feature-slide-bg {
       position: absolute;
@@ -846,7 +846,7 @@
         0 0 0 1.5px #444,
         0 30px 80px -20px rgba(0,0,0,0.7),
         0 10px 30px -5px rgba(0,0,0,0.4);
-      animation: deviceFloat 7s ease-in-out infinite;
+      will-change: transform;
     }
     .device-3d::before {
       content: '';
