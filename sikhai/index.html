@@ -758,6 +758,7 @@
       justify-content: center;
       position: relative;
       overflow: hidden;
+      padding: 0 48px;
     }
     .features-bg-text {
       position: absolute;
@@ -782,7 +783,18 @@
       text-transform: uppercase;
       transition: opacity 0.4s ease;
     }
+    .features-layout {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: clamp(40px, 6vw, 100px);
+      width: 100%;
+      max-width: 1200px;
+      position: relative;
+      z-index: 2;
+    }
     .features-phone-wrap {
+      flex-shrink: 0;
       position: relative;
       z-index: 2;
     }
@@ -797,16 +809,17 @@
     }
     .features-screen-img.active { opacity: 1; }
     .features-meta-stack {
-      position: absolute;
-      bottom: 18%;
-      left: 48px;
+      position: relative;
       z-index: 3;
-      max-width: 380px;
+      max-width: 420px;
+      flex: 1;
+      min-width: 0;
     }
     .features-meta-slide {
       position: absolute;
-      bottom: 0;
+      top: 0;
       left: 0;
+      right: 0;
       opacity: 0;
       transform: translateY(30px);
       transition: opacity 0.45s ease, transform 0.45s ease;
@@ -824,18 +837,18 @@
       letter-spacing: 0.15em;
       color: var(--color-primary);
       font-weight: 600;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
     }
     .features-meta-slide .feature-title {
       font-family: var(--font-display);
-      font-size: clamp(1.4rem, 2.6vw, 2rem);
+      font-size: clamp(1.5rem, 2.8vw, 2.2rem);
       font-weight: 700;
       line-height: 1.15;
       color: var(--color-text);
-      margin-bottom: 10px;
+      margin-bottom: 14px;
     }
     .feature-slide-desc {
-      font-size: 0.88rem;
+      font-size: 0.92rem;
       line-height: 1.7;
       color: var(--color-text-secondary);
     }
@@ -946,11 +959,14 @@
     }
 
     @media (max-width: 768px) {
+      .features-pinned { padding: 0 20px; }
+      .features-layout { flex-direction: column; gap: 24px; }
       .features-bg-text h3 { font-size: clamp(3.5rem, 20vw, 7rem); }
-      .device-3d { width: 240px; height: 500px; border-radius: 24px; }
+      .device-3d { width: 220px; height: 460px; border-radius: 24px; }
       .device-screen { top: 3px; left: 3px; right: 3px; bottom: 3px; border-radius: 21px; }
-      .features-meta-stack { position: relative; bottom: auto; left: auto; max-width: 100%; text-align: center; padding: 24px; }
-      .features-progress { right: 16px; }
+      .features-meta-stack { max-width: 100%; text-align: center; }
+      .features-progress { right: 12px; gap: 8px; }
+      .features-progress-dot { width: 6px; height: 6px; }
       .features-header { padding: 60px 24px 0; }
     }
 
@@ -2151,60 +2167,62 @@
       <div class="features-bg-text" id="featuresBgText">
         <h3>Hukamnama</h3>
       </div>
-      <div class="features-phone-wrap">
-        <div class="device-3d-wrap">
-          <div class="device-3d" id="featuresDevice">
-            <div class="device-screen" id="featuresScreen">
-              <img class="features-screen-img active" data-idx="0" src="img/ss1-hukamnama.png" alt="Daily Hukamnama">
-              <img class="features-screen-img" data-idx="1" src="img/ss5-nitnem.png" alt="Nitnem with Audio">
-              <img class="features-screen-img" data-idx="2" src="img/ss4-simran.png" alt="Simran Counter">
-              <img class="features-screen-img" data-idx="3" src="img/ss2-kirtan.png" alt="Golden Temple Kirtan">
-              <img class="features-screen-img" data-idx="4" src="img/ss8-saakhi.png" alt="Nanakshahi Calendar">
-              <img class="features-screen-img" data-idx="5" src="img/ss3-ai.png" alt="Chardi Kala AI">
-              <img class="features-screen-img" data-idx="6" src="img/ss7-sewa.png" alt="Sewa Pulse">
-            </div>
-            <div class="device-notch"></div>
-            <div class="device-btn-power"></div>
-            <div class="device-btn-vol up"></div>
-            <div class="device-btn-vol down"></div>
+      <div class="features-layout">
+        <div class="features-meta-stack" id="featuresMetaStack">
+          <div class="features-meta-slide active" data-idx="0">
+            <div class="feature-tag" data-i18n="f1tag">Gurbani</div>
+            <div class="feature-title" data-i18n="f1title">Daily Hukamnama</div>
+            <div class="feature-slide-desc" data-i18n="f1desc">Receive the daily divine order from Sri Darbar Sahib, Amritsar — with Gurmukhi text, English translation, and meaning delivered every morning.</div>
+          </div>
+          <div class="features-meta-slide" data-idx="1">
+            <div class="feature-tag" data-i18n="f3tag">Daily Practice</div>
+            <div class="feature-title" data-i18n="f3title">Nitnem with Audio</div>
+            <div class="feature-slide-desc" data-i18n="f3desc">Complete Nitnem Banis with professional audio playback. Read along or listen during your daily prayers and commute.</div>
+          </div>
+          <div class="features-meta-slide" data-idx="2">
+            <div class="feature-tag" data-i18n="f4tag">Meditation</div>
+            <div class="feature-title" data-i18n="f4title">Simran Counter</div>
+            <div class="feature-slide-desc" data-i18n="f4desc">A meditative Simran experience with a counter, calming globe visualization showing worldwide meditators, and haptic feedback.</div>
+          </div>
+          <div class="features-meta-slide" data-idx="3">
+            <div class="feature-tag" data-i18n="f5tag">Live Stream</div>
+            <div class="feature-title" data-i18n="f5title">Golden Temple Kirtan</div>
+            <div class="feature-slide-desc" data-i18n="f5desc">Stream live Kirtan from Sri Harmandir Sahib directly in the app — anytime, anywhere in the world.</div>
+          </div>
+          <div class="features-meta-slide" data-idx="4">
+            <div class="feature-tag" data-i18n="f6tag">Calendar</div>
+            <div class="feature-title" data-i18n="f6title">Nanakshahi Calendar</div>
+            <div class="feature-slide-desc" data-i18n="f6desc">Stay connected with Gurpurabs, important Sikh dates, and the complete Nanakshahi calendar year with notifications.</div>
+          </div>
+          <div class="features-meta-slide" data-idx="5">
+            <div class="feature-tag" data-i18n="f7tag">Artificial Intelligence</div>
+            <div class="feature-title" data-i18n="f7title">Chardi Kala AI</div>
+            <div class="feature-slide-desc" data-i18n="f7desc">Ask any question about Gurbani, Sikh history, or philosophy and receive thoughtful, Gurbani-referenced answers from your AI spiritual guide.</div>
+          </div>
+          <div class="features-meta-slide" data-idx="6">
+            <div class="feature-tag" data-i18n="f8tag">Community Service</div>
+            <div class="feature-title" data-i18n="f8title">Sewa Pulse</div>
+            <div class="feature-slide-desc" data-i18n="f8desc">Discover volunteer opportunities and Sewa initiatives happening in the global Sikh community. Give back with trusted NGOs.</div>
           </div>
         </div>
-      </div>
-      <div class="features-meta-stack" id="featuresMetaStack">
-        <div class="features-meta-slide active" data-idx="0">
-          <div class="feature-tag" data-i18n="f1tag">Gurbani</div>
-          <div class="feature-title" data-i18n="f1title">Daily Hukamnama</div>
-          <div class="feature-slide-desc" data-i18n="f1desc">Receive the daily divine order from Sri Darbar Sahib, Amritsar — with Gurmukhi text, English translation, and meaning delivered every morning.</div>
-        </div>
-        <div class="features-meta-slide" data-idx="1">
-          <div class="feature-tag" data-i18n="f3tag">Daily Practice</div>
-          <div class="feature-title" data-i18n="f3title">Nitnem with Audio</div>
-          <div class="feature-slide-desc" data-i18n="f3desc">Complete Nitnem Banis with professional audio playback. Read along or listen during your daily prayers and commute.</div>
-        </div>
-        <div class="features-meta-slide" data-idx="2">
-          <div class="feature-tag" data-i18n="f4tag">Meditation</div>
-          <div class="feature-title" data-i18n="f4title">Simran Counter</div>
-          <div class="feature-slide-desc" data-i18n="f4desc">A meditative Simran experience with a counter, calming globe visualization showing worldwide meditators, and haptic feedback.</div>
-        </div>
-        <div class="features-meta-slide" data-idx="3">
-          <div class="feature-tag" data-i18n="f5tag">Live Stream</div>
-          <div class="feature-title" data-i18n="f5title">Golden Temple Kirtan</div>
-          <div class="feature-slide-desc" data-i18n="f5desc">Stream live Kirtan from Sri Harmandir Sahib directly in the app — anytime, anywhere in the world.</div>
-        </div>
-        <div class="features-meta-slide" data-idx="4">
-          <div class="feature-tag" data-i18n="f6tag">Calendar</div>
-          <div class="feature-title" data-i18n="f6title">Nanakshahi Calendar</div>
-          <div class="feature-slide-desc" data-i18n="f6desc">Stay connected with Gurpurabs, important Sikh dates, and the complete Nanakshahi calendar year with notifications.</div>
-        </div>
-        <div class="features-meta-slide" data-idx="5">
-          <div class="feature-tag" data-i18n="f7tag">Artificial Intelligence</div>
-          <div class="feature-title" data-i18n="f7title">Chardi Kala AI</div>
-          <div class="feature-slide-desc" data-i18n="f7desc">Ask any question about Gurbani, Sikh history, or philosophy and receive thoughtful, Gurbani-referenced answers from your AI spiritual guide.</div>
-        </div>
-        <div class="features-meta-slide" data-idx="6">
-          <div class="feature-tag" data-i18n="f8tag">Community Service</div>
-          <div class="feature-title" data-i18n="f8title">Sewa Pulse</div>
-          <div class="feature-slide-desc" data-i18n="f8desc">Discover volunteer opportunities and Sewa initiatives happening in the global Sikh community. Give back with trusted NGOs.</div>
+        <div class="features-phone-wrap">
+          <div class="device-3d-wrap">
+            <div class="device-3d" id="featuresDevice">
+              <div class="device-screen" id="featuresScreen">
+                <img class="features-screen-img active" data-idx="0" src="img/ss1-hukamnama.png" alt="Daily Hukamnama">
+                <img class="features-screen-img" data-idx="1" src="img/ss5-nitnem.png" alt="Nitnem with Audio">
+                <img class="features-screen-img" data-idx="2" src="img/ss4-simran.png" alt="Simran Counter">
+                <img class="features-screen-img" data-idx="3" src="img/ss2-kirtan.png" alt="Golden Temple Kirtan">
+                <img class="features-screen-img" data-idx="4" src="img/ss8-saakhi.png" alt="Nanakshahi Calendar">
+                <img class="features-screen-img" data-idx="5" src="img/ss3-ai.png" alt="Chardi Kala AI">
+                <img class="features-screen-img" data-idx="6" src="img/ss7-sewa.png" alt="Sewa Pulse">
+              </div>
+              <div class="device-notch"></div>
+              <div class="device-btn-power"></div>
+              <div class="device-btn-vol up"></div>
+              <div class="device-btn-vol down"></div>
+            </div>
+          </div>
         </div>
       </div>
       <div class="features-progress" id="featuresProgress">
