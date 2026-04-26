@@ -2796,6 +2796,17 @@
           { opacity: 0, y: 10 },
           { opacity: 1, y: 0, duration: 0.15, ease: 'power2.out' }, 0.88
         );
+
+        ScrollTrigger.create({
+          trigger: bookScene,
+          start: 'top 40%',
+          once: true,
+          onEnter: function() {
+            gsap.set('#hukamnamaContent .hukamnama-meta', { opacity: 1, y: 0 });
+            gsap.set('.ink-reveal', { maskPosition: '0% 0', webkitMaskPosition: '0% 0' });
+            gsap.set('#hukamnamaContent .hukamnama-footer', { opacity: 1, y: 0 });
+          }
+        });
       }
 
       /* ═══ SCENE 4 — Pinned Phone with Transition Effects ═══ */
