@@ -359,9 +359,68 @@
       align-items: center;
       justify-content: center;
       min-height: 60vh;
+      position: relative;
+      overflow: hidden;
     }
     .about-intro .container {
       max-width: 1400px;
+      position: relative;
+      z-index: 2;
+    }
+    .about-ik-bg {
+      position: absolute;
+      right: -5%;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 55%;
+      max-width: 600px;
+      opacity: 0.06;
+      z-index: 1;
+      pointer-events: none;
+    }
+    .about-ik-bg svg {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+    .about-ik-bg svg path {
+      fill: none;
+      stroke: var(--color-text);
+      stroke-width: 6;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .about-ik-shine {
+      position: absolute;
+      right: -5%;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 55%;
+      max-width: 600px;
+      opacity: 1;
+      z-index: 1;
+      pointer-events: none;
+    }
+    .about-ik-shine svg {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+    .about-ik-shine svg path {
+      fill: none;
+      stroke-width: 6;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke: url(#aboutShineGrad);
+      stroke-dasharray: 200 3000;
+      animation: aboutShineStroke 6s linear infinite;
+    }
+    @keyframes aboutShineStroke {
+      0% { stroke-dashoffset: 3200; }
+      100% { stroke-dashoffset: 0; }
+    }
+    @media (max-width: 768px) {
+      .about-ik-bg, .about-ik-shine { width: 80%; right: -15%; opacity: 0.04; }
     }
     .about-text {
       font-size: clamp(1.5rem, 3vw, 2.2rem);
@@ -1847,6 +1906,20 @@
 
   <!-- About / Intro -->
   <section class="about-intro" id="aboutIntro">
+    <div class="about-ik-bg" id="aboutIkBg"></div>
+    <div class="about-ik-shine" id="aboutIkShine">
+      <svg viewBox="0 0 804 758" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="aboutShineGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="transparent"/>
+            <stop offset="40%" stop-color="rgba(212,168,83,0.6)"/>
+            <stop offset="50%" stop-color="rgba(232,196,74,0.9)"/>
+            <stop offset="60%" stop-color="rgba(212,168,83,0.6)"/>
+            <stop offset="100%" stop-color="transparent"/>
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
     <div class="container">
       <p class="about-text" id="aboutText" data-i18n="aboutText">Sikh AI is the ultimate spiritual companion for the modern Gursikh — combining the timeless wisdom of Gurbani with cutting-edge AI to keep you connected, informed, and in Chardikala. It delivers the daily Hukamnama, guides your Nitnem with audio, streams live Kirtan from the Golden Temple, and lets you meditate alongside thousands of Sikhs on a real-time globe. With Chardi Kala AI — the first dedicated AI mentor for the Sikh community — your spiritual practice is never a solitary journey but a shared experience, built with reverence for the Panth.</p>
     </div>
@@ -2614,7 +2687,30 @@
         });
       }
 
-      /* ═══ About Intro — word-by-word scroll reveal ═══ */
+      /* ═══ About Intro — Ik Onkar background + word reveal ═══ */
+      (function() {
+        var loaderSvg = document.getElementById('loaderSvg');
+        var bgWrap = document.getElementById('aboutIkBg');
+        var shineWrap = document.getElementById('aboutIkShine');
+        if (loaderSvg && bgWrap && shineWrap) {
+          var paths = loaderSvg.querySelectorAll('path');
+          var bgSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+          bgSvg.setAttribute('viewBox', '0 0 804 758');
+          bgSvg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+          var shineSvg = shineWrap.querySelector('svg');
+          paths.forEach(function(p) {
+            var bgPath = p.cloneNode(true);
+            bgPath.removeAttribute('class');
+            bgPath.removeAttribute('style');
+            bgSvg.appendChild(bgPath);
+            var shinePath = p.cloneNode(true);
+            shinePath.removeAttribute('class');
+            shinePath.removeAttribute('style');
+            shineSvg.appendChild(shinePath);
+          });
+          bgWrap.appendChild(bgSvg);
+        }
+      })();
       rebuildAboutWordReveal();
 
       /* ═══ SCENE 1b — Stats counter entrance ═══ */
