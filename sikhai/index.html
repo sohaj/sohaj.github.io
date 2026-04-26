@@ -2161,8 +2161,12 @@
       /* ═══ Section title word reveals ═══ */
       gsap.utils.toArray('.section-title').forEach(title => {
         if (title.closest('.hero') || title.closest('.cta') || title.closest('.highlight')) return;
-        const html = title.innerHTML;
-        title.innerHTML = html.replace(/([^\s<]+)/g, '<span class="word">$1</span> ');
+        var html = title.innerHTML;
+        html = html.replace(/(<[^>]+>)|(\S+)/g, function(m, tag, word) {
+          if (tag) return tag;
+          return '<span class="word">' + word + '</span> ';
+        });
+        title.innerHTML = html;
         gsap.to(title.querySelectorAll('.word'), {
           opacity: 1, y: 0, duration: 0.5, stagger: 0.06, ease: 'power2.out',
           scrollTrigger: { trigger: title, start: 'top 85%', once: true }
