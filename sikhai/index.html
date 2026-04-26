@@ -1846,37 +1846,37 @@
   <!-- About / Intro -->
   <section class="about-intro" id="aboutIntro">
     <div class="container">
-      <p class="about-text" id="aboutText">Sikh AI is the ultimate spiritual companion for the modern Gursikh — combining the timeless wisdom of Gurbani with cutting-edge AI to keep you connected, informed, and in Chardikala. It delivers the daily Hukamnama, guides your Nitnem with audio, streams live Kirtan from the Golden Temple, and lets you meditate alongside thousands of Sikhs on a real-time globe. With Chardi Kala AI — the first dedicated AI mentor for the Sikh community — your spiritual practice is never a solitary journey but a shared experience, built with reverence for the Panth.</p>
+      <p class="about-text" id="aboutText" data-i18n="aboutText">Sikh AI is the ultimate spiritual companion for the modern Gursikh — combining the timeless wisdom of Gurbani with cutting-edge AI to keep you connected, informed, and in Chardikala. It delivers the daily Hukamnama, guides your Nitnem with audio, streams live Kirtan from the Golden Temple, and lets you meditate alongside thousands of Sikhs on a real-time globe. With Chardi Kala AI — the first dedicated AI mentor for the Sikh community — your spiritual practice is never a solitary journey but a shared experience, built with reverence for the Panth.</p>
     </div>
   </section>
 
   <!-- Chardi Kala AI -->
   <section class="ai-chat-section" id="chardiKalaAI">
     <div class="container">
-      <div class="section-label fade-up">&#10024; Spiritual AI Guide</div>
-      <h2 class="section-title fade-up">Ask anything about Sikhi</h2>
-      <p class="section-subtitle fade-up">Chardi Kala AI is your personal spiritual companion — powered by Gurbani wisdom, Sikh history, and the teachings of the Ten Gurus.</p>
+      <div class="section-label fade-up" data-i18n="aiLabel">&#10024; Spiritual AI Guide</div>
+      <h2 class="section-title fade-up" data-i18n="aiTitle">Ask anything about Sikhi</h2>
+      <p class="section-subtitle fade-up" data-i18n="aiSubtitle">Chardi Kala AI is your personal spiritual companion — powered by Gurbani wisdom, Sikh history, and the teachings of the Ten Gurus.</p>
       <div class="ai-chat-card" id="aiChatSection">
         <div class="ai-chat-header">
           <div class="ai-avatar">&#9737;</div>
           <div class="ai-chat-header-text">
-            <h4>ChardiKala AI</h4>
-            <span>Spiritual Guide</span>
+            <h4 data-i18n="aiName">ChardiKala AI</h4>
+            <span data-i18n="aiRole">Spiritual Guide</span>
           </div>
         </div>
         <div class="ai-messages" id="aiMsgsSection">
           <div class="ai-msg-row">
             <div class="ai-avatar">&#9737;</div>
-            <div class="ai-msg ai-msg--ai">Sat Sri Akal! I'm ChardiKala AI — your spiritual guide. Ask me anything about Gurbani, Sikh history, the Gurus, or daily practice.</div>
+            <div class="ai-msg ai-msg--ai" data-i18n="aiGreeting">Sat Sri Akal! I'm ChardiKala AI — your spiritual guide. Ask me anything about Gurbani, Sikh history, the Gurus, or daily practice.</div>
           </div>
         </div>
         <div class="ai-suggestions" id="aiChipsSection">
-          <button class="ai-chip" onclick="aiAsk(this.textContent,'section')">What is Chardi Kala?</button>
-          <button class="ai-chip" onclick="aiAsk(this.textContent,'section')">Tell me about Guru Nanak Dev Ji</button>
-          <button class="ai-chip" onclick="aiAsk(this.textContent,'section')">Share a Shabad for peace</button>
+          <button class="ai-chip" onclick="aiAsk(this.textContent,'section')" data-i18n="aiChip1">What is Chardi Kala?</button>
+          <button class="ai-chip" onclick="aiAsk(this.textContent,'section')" data-i18n="aiChip2">Tell me about Guru Nanak Dev Ji</button>
+          <button class="ai-chip" onclick="aiAsk(this.textContent,'section')" data-i18n="aiChip3">Share a Shabad for peace</button>
         </div>
         <div class="ai-input-bar" id="aiInputSection">
-          <input class="ai-input" id="aiInputFieldSection" type="text" placeholder="Ask about Gurbani, Sikh history, or life guidance..." onkeydown="if(event.key==='Enter')aiSendSection()">
+          <input class="ai-input" id="aiInputFieldSection" type="text" data-i18n-placeholder="aiPlaceholder" placeholder="Ask about Gurbani, Sikh history, or life guidance..." onkeydown="if(event.key==='Enter')aiSendSection()">
           <button class="ai-send" id="aiSendBtnSection" onclick="aiSendSection()" aria-label="Send message">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
           </button>
@@ -1986,7 +1986,7 @@
       </div>
 
       <div class="feature-slide">
-        <div class="feature-slide-bg"><h3>Hukamnama</h3></div>
+        <div class="feature-slide-bg"><h3 data-i18n="f1bg">Hukamnama</h3></div>
         <div class="feature-slide-content">
           <div class="device-3d-wrap">
             <div class="device-3d">
@@ -1999,14 +1999,14 @@
           </div>
         </div>
         <div class="feature-slide-meta">
-          <div class="feature-tag">Gurbani</div>
-          <div class="feature-title">Daily Hukamnama</div>
-          <div class="feature-slide-desc">Receive the daily divine order from Sri Darbar Sahib, Amritsar — with Gurmukhi text, English translation, and meaning delivered every morning.</div>
+          <div class="feature-tag" data-i18n="f1tag">Gurbani</div>
+          <div class="feature-title" data-i18n="f1title">Daily Hukamnama</div>
+          <div class="feature-slide-desc" data-i18n="f1desc">Receive the daily divine order from Sri Darbar Sahib, Amritsar — with Gurmukhi text, English translation, and meaning delivered every morning.</div>
         </div>
       </div>
 
       <div class="feature-slide">
-        <div class="feature-slide-bg"><h3>Gurbani Quotes</h3></div>
+        <div class="feature-slide-bg"><h3 data-i18n="f2bg">Gurbani Quotes</h3></div>
         <div class="feature-slide-content">
           <div class="device-3d-wrap">
             <div class="device-3d">
@@ -2019,14 +2019,14 @@
           </div>
         </div>
         <div class="feature-slide-meta">
-          <div class="feature-tag">Wisdom</div>
-          <div class="feature-title">108 Gurbani Quotes</div>
-          <div class="feature-slide-desc">Curated verses from Sri Guru Granth Sahib Ji. Share as beautiful images or text with family, friends, and the world.</div>
+          <div class="feature-tag" data-i18n="f2tag">Wisdom</div>
+          <div class="feature-title" data-i18n="f2title">108 Gurbani Quotes</div>
+          <div class="feature-slide-desc" data-i18n="f2desc">Curated verses from Sri Guru Granth Sahib Ji. Share as beautiful images or text with family, friends, and the world.</div>
         </div>
       </div>
 
       <div class="feature-slide">
-        <div class="feature-slide-bg"><h3>Nitnem</h3></div>
+        <div class="feature-slide-bg"><h3 data-i18n="f3bg">Nitnem</h3></div>
         <div class="feature-slide-content">
           <div class="device-3d-wrap">
             <div class="device-3d">
@@ -2039,14 +2039,14 @@
           </div>
         </div>
         <div class="feature-slide-meta">
-          <div class="feature-tag">Daily Practice</div>
-          <div class="feature-title">Nitnem with Audio</div>
-          <div class="feature-slide-desc">Complete Nitnem Banis with professional audio playback. Read along or listen during your daily prayers and commute.</div>
+          <div class="feature-tag" data-i18n="f3tag">Daily Practice</div>
+          <div class="feature-title" data-i18n="f3title">Nitnem with Audio</div>
+          <div class="feature-slide-desc" data-i18n="f3desc">Complete Nitnem Banis with professional audio playback. Read along or listen during your daily prayers and commute.</div>
         </div>
       </div>
 
       <div class="feature-slide">
-        <div class="feature-slide-bg"><h3>Simran</h3></div>
+        <div class="feature-slide-bg"><h3 data-i18n="f4bg">Simran</h3></div>
         <div class="feature-slide-content">
           <div class="device-3d-wrap">
             <div class="device-3d">
@@ -2059,14 +2059,14 @@
           </div>
         </div>
         <div class="feature-slide-meta">
-          <div class="feature-tag">Meditation</div>
-          <div class="feature-title">Simran Counter</div>
-          <div class="feature-slide-desc">A meditative Simran experience with a counter, calming globe visualization showing worldwide meditators, and haptic feedback.</div>
+          <div class="feature-tag" data-i18n="f4tag">Meditation</div>
+          <div class="feature-title" data-i18n="f4title">Simran Counter</div>
+          <div class="feature-slide-desc" data-i18n="f4desc">A meditative Simran experience with a counter, calming globe visualization showing worldwide meditators, and haptic feedback.</div>
         </div>
       </div>
 
       <div class="feature-slide">
-        <div class="feature-slide-bg"><h3>Kirtan</h3></div>
+        <div class="feature-slide-bg"><h3 data-i18n="f5bg">Kirtan</h3></div>
         <div class="feature-slide-content">
           <div class="device-3d-wrap">
             <div class="device-3d">
@@ -2079,14 +2079,14 @@
           </div>
         </div>
         <div class="feature-slide-meta">
-          <div class="feature-tag">Live Stream</div>
-          <div class="feature-title">Golden Temple Kirtan</div>
-          <div class="feature-slide-desc">Stream live Kirtan from Sri Harmandir Sahib directly in the app — anytime, anywhere in the world.</div>
+          <div class="feature-tag" data-i18n="f5tag">Live Stream</div>
+          <div class="feature-title" data-i18n="f5title">Golden Temple Kirtan</div>
+          <div class="feature-slide-desc" data-i18n="f5desc">Stream live Kirtan from Sri Harmandir Sahib directly in the app — anytime, anywhere in the world.</div>
         </div>
       </div>
 
       <div class="feature-slide">
-        <div class="feature-slide-bg"><h3>Calendar</h3></div>
+        <div class="feature-slide-bg"><h3 data-i18n="f6bg">Calendar</h3></div>
         <div class="feature-slide-content">
           <div class="device-3d-wrap">
             <div class="device-3d">
@@ -2099,14 +2099,14 @@
           </div>
         </div>
         <div class="feature-slide-meta">
-          <div class="feature-tag">Calendar</div>
-          <div class="feature-title">Nanakshahi Calendar</div>
-          <div class="feature-slide-desc">Stay connected with Gurpurabs, important Sikh dates, and the complete Nanakshahi calendar year with notifications.</div>
+          <div class="feature-tag" data-i18n="f6tag">Calendar</div>
+          <div class="feature-title" data-i18n="f6title">Nanakshahi Calendar</div>
+          <div class="feature-slide-desc" data-i18n="f6desc">Stay connected with Gurpurabs, important Sikh dates, and the complete Nanakshahi calendar year with notifications.</div>
         </div>
       </div>
 
       <div class="feature-slide">
-        <div class="feature-slide-bg"><h3>Chardi Kala</h3></div>
+        <div class="feature-slide-bg"><h3 data-i18n="f7bg">Chardi Kala</h3></div>
         <div class="feature-slide-content">
           <div class="device-3d-wrap">
             <div class="device-3d">
@@ -2119,14 +2119,14 @@
           </div>
         </div>
         <div class="feature-slide-meta">
-          <div class="feature-tag">Artificial Intelligence</div>
-          <div class="feature-title">Chardi Kala AI</div>
-          <div class="feature-slide-desc">Ask any question about Gurbani, Sikh history, or philosophy and receive thoughtful, Gurbani-referenced answers from your AI spiritual guide.</div>
+          <div class="feature-tag" data-i18n="f7tag">Artificial Intelligence</div>
+          <div class="feature-title" data-i18n="f7title">Chardi Kala AI</div>
+          <div class="feature-slide-desc" data-i18n="f7desc">Ask any question about Gurbani, Sikh history, or philosophy and receive thoughtful, Gurbani-referenced answers from your AI spiritual guide.</div>
         </div>
       </div>
 
       <div class="feature-slide">
-        <div class="feature-slide-bg"><h3>Sewa</h3></div>
+        <div class="feature-slide-bg"><h3 data-i18n="f8bg">Sewa</h3></div>
         <div class="feature-slide-content">
           <div class="device-3d-wrap">
             <div class="device-3d">
@@ -2139,9 +2139,9 @@
           </div>
         </div>
         <div class="feature-slide-meta">
-          <div class="feature-tag">Community Service</div>
-          <div class="feature-title">Sewa Pulse</div>
-          <div class="feature-slide-desc">Discover volunteer opportunities and Sewa initiatives happening in the global Sikh community. Give back with trusted NGOs.</div>
+          <div class="feature-tag" data-i18n="f8tag">Community Service</div>
+          <div class="feature-title" data-i18n="f8title">Sewa Pulse</div>
+          <div class="feature-slide-desc" data-i18n="f8desc">Discover volunteer opportunities and Sewa initiatives happening in the global Sikh community. Give back with trusted NGOs.</div>
         </div>
       </div>
 
@@ -2314,8 +2314,8 @@
       <div class="ai-chat-header">
         <div class="ai-avatar">&#9737;</div>
         <div class="ai-chat-header-text">
-          <h4>ChardiKala AI</h4>
-          <span>Spiritual Guide</span>
+          <h4 data-i18n="aiName">ChardiKala AI</h4>
+          <span data-i18n="aiRole">Spiritual Guide</span>
         </div>
         <div class="ai-fab-share-btns">
           <button onclick="shareWhatsApp()" title="Share on WhatsApp" aria-label="Share on WhatsApp">&#128172;</button>
@@ -2327,16 +2327,16 @@
       <div class="ai-messages" id="aiMsgsFab">
         <div class="ai-msg-row">
           <div class="ai-avatar">&#9737;</div>
-          <div class="ai-msg ai-msg--ai">Sat Sri Akal! I'm ChardiKala AI — your spiritual guide. Ask me anything about Gurbani, Sikh history, the Gurus, or daily practice.</div>
+          <div class="ai-msg ai-msg--ai" data-i18n="aiGreeting">Sat Sri Akal! I'm ChardiKala AI — your spiritual guide. Ask me anything about Gurbani, Sikh history, the Gurus, or daily practice.</div>
         </div>
       </div>
       <div class="ai-suggestions" id="aiChipsFab">
-        <button class="ai-chip" onclick="aiAsk(this.textContent,'fab')">What is Chardi Kala?</button>
-        <button class="ai-chip" onclick="aiAsk(this.textContent,'fab')">Tell me about Guru Nanak Dev Ji</button>
-        <button class="ai-chip" onclick="aiAsk(this.textContent,'fab')">Share a Shabad for peace</button>
+        <button class="ai-chip" onclick="aiAsk(this.textContent,'fab')" data-i18n="aiChip1">What is Chardi Kala?</button>
+        <button class="ai-chip" onclick="aiAsk(this.textContent,'fab')" data-i18n="aiChip2">Tell me about Guru Nanak Dev Ji</button>
+        <button class="ai-chip" onclick="aiAsk(this.textContent,'fab')" data-i18n="aiChip3">Share a Shabad for peace</button>
       </div>
       <div class="ai-input-bar" id="aiInputFab">
-        <input class="ai-input" id="aiInputFieldFab" type="text" placeholder="Ask anything about Sikhi..." onkeydown="if(event.key==='Enter')aiSendFab()">
+        <input class="ai-input" id="aiInputFieldFab" type="text" data-i18n-placeholder="aiPlaceholderShort" placeholder="Ask anything about Sikhi..." onkeydown="if(event.key==='Enter')aiSendFab()">
         <button class="ai-send" id="aiSendBtnFab" onclick="aiSendFab()" aria-label="Send message">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
         </button>
@@ -2427,7 +2427,22 @@
         blog7Text: 'Sewa (selfless service) is one of the three pillars of Sikhi, alongside Naam Japna (meditation) and Vand Chakna (sharing). It means serving others without expectation of reward. From langar (community kitchen) to community cleanups, Sewa is practiced daily by Sikhs worldwide. Guru Nanak Dev Ji taught that serving humanity is serving God. Sikh AI\u2019s Sewa Pulse feature highlights active volunteer opportunities and trusted Sikh-led NGOs where you can contribute.',
         captureTitle: 'Stay connected', captureDesc: 'Get notified when new features drop. No spam, only updates.', captureBtn: 'Notify Me',
         ctaTitle: 'Begin your journey today', ctaDesc: 'Join 20,000+ Sikhs who start their day with Hukamnama, Gurbani, and Simran through Sikh AI.',
-        ctaBtn: 'Download on Google Play', qrLabel: 'Scan to download'
+        ctaBtn: 'Download on Google Play', qrLabel: 'Scan to download',
+        aboutText: 'Sikh AI is the ultimate spiritual companion for the modern Gursikh \u2014 combining the timeless wisdom of Gurbani with cutting-edge AI to keep you connected, informed, and in Chardikala. It delivers the daily Hukamnama, guides your Nitnem with audio, streams live Kirtan from the Golden Temple, and lets you meditate alongside thousands of Sikhs on a real-time globe. With Chardi Kala AI \u2014 the first dedicated AI mentor for the Sikh community \u2014 your spiritual practice is never a solitary journey but a shared experience, built with reverence for the Panth.',
+        aiLabel: '\u2728 Spiritual AI Guide', aiTitle: 'Ask anything about Sikhi',
+        aiSubtitle: 'Chardi Kala AI is your personal spiritual companion \u2014 powered by Gurbani wisdom, Sikh history, and the teachings of the Ten Gurus.',
+        aiName: 'ChardiKala AI', aiRole: 'Spiritual Guide',
+        aiGreeting: 'Sat Sri Akal! I\u2019m ChardiKala AI \u2014 your spiritual guide. Ask me anything about Gurbani, Sikh history, the Gurus, or daily practice.',
+        aiChip1: 'What is Chardi Kala?', aiChip2: 'Tell me about Guru Nanak Dev Ji', aiChip3: 'Share a Shabad for peace',
+        aiPlaceholder: 'Ask about Gurbani, Sikh history, or life guidance...', aiPlaceholderShort: 'Ask anything about Sikhi...',
+        f1bg: 'Hukamnama', f1tag: 'Gurbani', f1title: 'Daily Hukamnama', f1desc: 'Receive the daily divine order from Sri Darbar Sahib, Amritsar \u2014 with Gurmukhi text, English translation, and meaning delivered every morning.',
+        f2bg: 'Gurbani Quotes', f2tag: 'Wisdom', f2title: '108 Gurbani Quotes', f2desc: 'Curated verses from Sri Guru Granth Sahib Ji. Share as beautiful images or text with family, friends, and the world.',
+        f3bg: 'Nitnem', f3tag: 'Daily Practice', f3title: 'Nitnem with Audio', f3desc: 'Complete Nitnem Banis with professional audio playback. Read along or listen during your daily prayers and commute.',
+        f4bg: 'Simran', f4tag: 'Meditation', f4title: 'Simran Counter', f4desc: 'A meditative Simran experience with a counter, calming globe visualization showing worldwide meditators, and haptic feedback.',
+        f5bg: 'Kirtan', f5tag: 'Live Stream', f5title: 'Golden Temple Kirtan', f5desc: 'Stream live Kirtan from Sri Harmandir Sahib directly in the app \u2014 anytime, anywhere in the world.',
+        f6bg: 'Calendar', f6tag: 'Calendar', f6title: 'Nanakshahi Calendar', f6desc: 'Stay connected with Gurpurabs, important Sikh dates, and the complete Nanakshahi calendar year with notifications.',
+        f7bg: 'Chardi Kala', f7tag: 'Artificial Intelligence', f7title: 'Chardi Kala AI', f7desc: 'Ask any question about Gurbani, Sikh history, or philosophy and receive thoughtful, Gurbani-referenced answers from your AI spiritual guide.',
+        f8bg: 'Sewa', f8tag: 'Community Service', f8title: 'Sewa Pulse', f8desc: 'Discover volunteer opportunities and Sewa initiatives happening in the global Sikh community. Give back with trusted NGOs.'
       },
       pa: {
         heroBadge: '\u0A05\u0A71\u0A1C \u0A38\u0A3F\u0A2E\u0A30\u0A28 \u0A15\u0A30\u0A28 \u0A35\u0A3E\u0A32\u0A47 \u0A30\u0A42\u0A39\u0A3E\u0A02', heroTitle: '\u0A38\u0A3F\u0A71\u0A16\u0A3E\u0A02 \u0A28\u0A3E\u0A32 \u0A38\u0A3F\u0A2E\u0A30\u0A28 \u0A15\u0A30\u0A4B<br>', heroSikhi: '\u0A2A\u0A42\u0A30\u0A40 \u0A26\u0A41\u0A28\u0A40\u0A06 \u0A28\u0A3E\u0A32',
@@ -2452,7 +2467,22 @@
         captureTitle: '\u0A1C\u0A41\u0A5C\u0A47 \u0A30\u0A39\u0A4B', captureDesc: '\u0A28\u0A35\u0A47\u0A02 \u0A2B\u0A3C\u0A40\u0A1A\u0A30 \u0A06\u0A09\u0A23 \u0A24\u0A47 \u0A38\u0A42\u0A1A\u0A28\u0A3E \u0A2A\u0A4D\u0A30\u0A3E\u0A2A\u0A24 \u0A15\u0A30\u0A4B\u0964', captureBtn: '\u0A38\u0A42\u0A1A\u0A3F\u0A24 \u0A15\u0A30\u0A4B',
         ctaTitle: '\u0A05\u0A71\u0A1C \u0A39\u0A40 \u0A06\u0A2A\u0A23\u0A40 \u0A2F\u0A3E\u0A24\u0A30\u0A3E \u0A36\u0A41\u0A30\u0A42 \u0A15\u0A30\u0A4B',
         ctaDesc: '20,000+ \u0A38\u0A3F\u0A71\u0A16\u0A3E\u0A02 \u0A28\u0A3E\u0A32 \u0A1C\u0A41\u0A5C\u0A4B \u0A1C\u0A4B \u0A39\u0A30 \u0A30\u0A4B\u0A1C\u0A3C \u0A39\u0A41\u0A15\u0A2E\u0A28\u0A3E\u0A2E\u0A3E, \u0A17\u0A41\u0A30\u0A2C\u0A3E\u0A23\u0A40, \u0A05\u0A24\u0A47 \u0A38\u0A3F\u0A2E\u0A30\u0A28 \u0A28\u0A3E\u0A32 \u0A36\u0A41\u0A30\u0A42 \u0A15\u0A30\u0A26\u0A47 \u0A39\u0A28\u0964',
-        ctaBtn: 'Google Play \u0A24\u0A4B\u0A02 \u0A21\u0A3E\u0A0A\u0A28\u0A32\u0A4B\u0A21 \u0A15\u0A30\u0A4B', qrLabel: '\u0A38\u0A15\u0A48\u0A28 \u0A15\u0A30\u0A4B'
+        ctaBtn: 'Google Play \u0A24\u0A4B\u0A02 \u0A21\u0A3E\u0A0A\u0A28\u0A32\u0A4B\u0A21 \u0A15\u0A30\u0A4B', qrLabel: '\u0A38\u0A15\u0A48\u0A28 \u0A15\u0A30\u0A4B',
+        aboutText: '\u0A38\u0A3F\u0A71\u0A16 AI \u0A06\u0A27\u0A41\u0A28\u0A3F\u0A15 \u0A17\u0A41\u0A30\u0A38\u0A3F\u0A71\u0A16 \u0A32\u0A08 \u0A38\u0A2D \u0A24\u0A4B\u0A02 \u0A35\u0A27\u0A40\u0A06 \u0A30\u0A42\u0A39\u0A3E\u0A28\u0A40 \u0A38\u0A3E\u0A25\u0A40 \u0A39\u0A48 \u2014 \u0A17\u0A41\u0A30\u0A2C\u0A3E\u0A23\u0A40 \u0A26\u0A40 \u0A38\u0A26\u0A40\u0A35\u0A40 \u0A38\u0A3F\u0A06\u0A23\u0A2A \u0A28\u0A42\u0A70 AI \u0A28\u0A3E\u0A32 \u0A1C\u0A4B\u0A5C \u0A15\u0A47 \u0A24\u0A41\u0A39\u0A3E\u0A28\u0A42\u0A70 \u0A1C\u0A41\u0A5C\u0A47 \u0A30\u0A71\u0A16\u0A23, \u0A1C\u0A3E\u0A23\u0A15\u0A3E\u0A30\u0A40 \u0A26\u0A47\u0A23 \u0A05\u0A24\u0A47 \u0A1A\u0A5C\u0A4D\u0A39\u0A26\u0A40 \u0A15\u0A32\u0A3E \u0A35\u0A3F\u0A71\u0A1A \u0A30\u0A71\u0A16\u0A23 \u0A32\u0A08\u0964 \u0A07\u0A39 \u0A30\u0A4B\u0A1C\u0A3C\u0A3E\u0A28\u0A3E \u0A39\u0A41\u0A15\u0A2E\u0A28\u0A3E\u0A2E\u0A3E \u0A26\u0A3F\u0A70\u0A26\u0A3E \u0A39\u0A48, \u0A06\u0A21\u0A3F\u0A13 \u0A28\u0A3E\u0A32 \u0A28\u0A3F\u0A24\u0A28\u0A47\u0A2E \u0A26\u0A40 \u0A05\u0A17\u0A35\u0A3E\u0A08 \u0A15\u0A30\u0A26\u0A3E \u0A39\u0A48, \u0A38\u0A4D\u0A30\u0A40 \u0A39\u0A30\u0A3F\u0A2E\u0A70\u0A26\u0A30 \u0A38\u0A3E\u0A39\u0A3F\u0A2C \u0A24\u0A4B\u0A02 \u0A32\u0A3E\u0A08\u0A35 \u0A15\u0A40\u0A30\u0A24\u0A28 \u0A38\u0A41\u0A23\u0A3E\u0A09\u0A02\u0A26\u0A3E \u0A39\u0A48, \u0A05\u0A24\u0A47 \u0A26\u0A41\u0A28\u0A40\u0A06 \u0A2D\u0A30 \u0A26\u0A47 \u0A38\u0A3F\u0A71\u0A16\u0A3E\u0A02 \u0A28\u0A3E\u0A32 \u0A38\u0A3F\u0A2E\u0A30\u0A28 \u0A15\u0A30\u0A28 \u0A26\u0A3F\u0A70\u0A26\u0A3E \u0A39\u0A48\u0964 \u0A1A\u0A5C\u0A4D\u0A39\u0A26\u0A40 \u0A15\u0A32\u0A3E AI \u0A28\u0A3E\u0A32 \u2014 \u0A38\u0A3F\u0A71\u0A16 \u0A2D\u0A3E\u0A08\u0A1A\u0A3E\u0A30\u0A47 \u0A32\u0A08 \u0A2A\u0A39\u0A3F\u0A32\u0A3E AI \u0A2E\u0A3E\u0A30\u0A17\u0A26\u0A30\u0A36\u0A15 \u2014 \u0A24\u0A41\u0A39\u0A3E\u0A21\u0A3E \u0A30\u0A42\u0A39\u0A3E\u0A28\u0A40 \u0A38\u0A2B\u0A3C\u0A30 \u0A07\u0A15\u0A71\u0A32\u0A3E \u0A28\u0A39\u0A40\u0A02 \u0A38\u0A17\u0A4B\u0A02 \u0A38\u0A3E\u0A02\u0A1D\u0A3E \u0A24\u0A1C\u0A30\u0A2C\u0A3E \u0A39\u0A48, \u0A2A\u0A70\u0A25 \u0A2A\u0A4D\u0A30\u0A24\u0A40 \u0A38\u0A24\u0A3F\u0A15\u0A3E\u0A30 \u0A28\u0A3E\u0A32\u0964',
+        aiLabel: '\u2728 \u0A30\u0A42\u0A39\u0A3E\u0A28\u0A40 AI \u0A17\u0A3E\u0A08\u0A21', aiTitle: '\u0A38\u0A3F\u0A71\u0A16\u0A40 \u0A2C\u0A3E\u0A30\u0A47 \u0A15\u0A41\u0A1D \u0A35\u0A40 \u0A2A\u0A41\u0A71\u0A1B\u0A4B',
+        aiSubtitle: '\u0A1A\u0A5C\u0A4D\u0A39\u0A26\u0A40 \u0A15\u0A32\u0A3E AI \u0A24\u0A41\u0A39\u0A3E\u0A21\u0A3E \u0A28\u0A3F\u0A71\u0A1C\u0A40 \u0A30\u0A42\u0A39\u0A3E\u0A28\u0A40 \u0A38\u0A3E\u0A25\u0A40 \u0A39\u0A48 \u2014 \u0A17\u0A41\u0A30\u0A2C\u0A3E\u0A23\u0A40 \u0A26\u0A40 \u0A38\u0A3F\u0A06\u0A23\u0A2A, \u0A38\u0A3F\u0A71\u0A16 \u0A07\u0A24\u0A3F\u0A39\u0A3E\u0A38, \u0A05\u0A24\u0A47 \u0A26\u0A38\u0A3E\u0A02 \u0A17\u0A41\u0A30\u0A42\u0A06\u0A02 \u0A26\u0A40\u0A06\u0A02 \u0A38\u0A3F\u0A71\u0A16\u0A3F\u0A06\u0A35\u0A3E\u0A02 \u0A28\u0A3E\u0A32\u0964',
+        aiName: '\u0A1A\u0A5C\u0A4D\u0A39\u0A26\u0A40 \u0A15\u0A32\u0A3E AI', aiRole: '\u0A30\u0A42\u0A39\u0A3E\u0A28\u0A40 \u0A17\u0A3E\u0A08\u0A21',
+        aiGreeting: '\u0A38\u0A24\u0A3F \u0A38\u0A4D\u0A30\u0A40 \u0A05\u0A15\u0A3E\u0A32! \u0A2E\u0A48\u0A02 \u0A1A\u0A5C\u0A4D\u0A39\u0A26\u0A40 \u0A15\u0A32\u0A3E AI \u0A39\u0A3E\u0A02 \u2014 \u0A24\u0A41\u0A39\u0A3E\u0A21\u0A3E \u0A30\u0A42\u0A39\u0A3E\u0A28\u0A40 \u0A17\u0A3E\u0A08\u0A21\u0964 \u0A17\u0A41\u0A30\u0A2C\u0A3E\u0A23\u0A40, \u0A38\u0A3F\u0A71\u0A16 \u0A07\u0A24\u0A3F\u0A39\u0A3E\u0A38, \u0A17\u0A41\u0A30\u0A42 \u0A38\u0A3E\u0A39\u0A3F\u0A2C\u0A3E\u0A28, \u0A1C\u0A3E\u0A02 \u0A30\u0A4B\u0A1C\u0A3C\u0A3E\u0A28\u0A3E \u0A05\u0A2D\u0A3F\u0A06\u0A38 \u0A2C\u0A3E\u0A30\u0A47 \u0A15\u0A41\u0A1D \u0A35\u0A40 \u0A2A\u0A41\u0A71\u0A1B\u0A4B\u0964',
+        aiChip1: '\u0A1A\u0A5C\u0A4D\u0A39\u0A26\u0A40 \u0A15\u0A32\u0A3E \u0A15\u0A40 \u0A39\u0A48?', aiChip2: '\u0A17\u0A41\u0A30\u0A42 \u0A28\u0A3E\u0A28\u0A15 \u0A26\u0A47\u0A35 \u0A1C\u0A40 \u0A2C\u0A3E\u0A30\u0A47 \u0A26\u0A71\u0A38\u0A4B', aiChip3: '\u0A36\u0A3E\u0A02\u0A24\u0A40 \u0A32\u0A08 \u0A36\u0A2C\u0A26 \u0A38\u0A41\u0A23\u0A3E\u0A13',
+        aiPlaceholder: '\u0A17\u0A41\u0A30\u0A2C\u0A3E\u0A23\u0A40, \u0A38\u0A3F\u0A71\u0A16 \u0A07\u0A24\u0A3F\u0A39\u0A3E\u0A38, \u0A1C\u0A3E\u0A02 \u0A1C\u0A40\u0A35\u0A28 \u0A2E\u0A3E\u0A30\u0A17\u0A26\u0A30\u0A36\u0A28 \u0A2C\u0A3E\u0A30\u0A47 \u0A2A\u0A41\u0A71\u0A1B\u0A4B...', aiPlaceholderShort: '\u0A38\u0A3F\u0A71\u0A16\u0A40 \u0A2C\u0A3E\u0A30\u0A47 \u0A15\u0A41\u0A1D \u0A35\u0A40 \u0A2A\u0A41\u0A71\u0A1B\u0A4B...',
+        f1bg: '\u0A39\u0A41\u0A15\u0A2E\u0A28\u0A3E\u0A2E\u0A3E', f1tag: '\u0A17\u0A41\u0A30\u0A2C\u0A3E\u0A23\u0A40', f1title: '\u0A30\u0A4B\u0A1C\u0A3C\u0A3E\u0A28\u0A3E \u0A39\u0A41\u0A15\u0A2E\u0A28\u0A3E\u0A2E\u0A3E', f1desc: '\u0A38\u0A4D\u0A30\u0A40 \u0A26\u0A30\u0A2C\u0A3E\u0A30 \u0A38\u0A3E\u0A39\u0A3F\u0A2C, \u0A05\u0A70\u0A2E\u0A4D\u0A30\u0A3F\u0A24\u0A38\u0A30 \u0A24\u0A4B\u0A02 \u0A30\u0A4B\u0A1C\u0A3C\u0A3E\u0A28\u0A3E \u0A39\u0A41\u0A15\u0A2E \u0A2A\u0A4D\u0A30\u0A3E\u0A2A\u0A24 \u0A15\u0A30\u0A4B \u2014 \u0A17\u0A41\u0A30\u0A2E\u0A41\u0A16\u0A40 \u0A2A\u0A3E\u0A20, \u0A05\u0A70\u0A17\u0A4D\u0A30\u0A47\u0A1C\u0A3C\u0A40 \u0A05\u0A28\u0A41\u0A35\u0A3E\u0A26 \u0A05\u0A24\u0A47 \u0A05\u0A30\u0A25 \u0A28\u0A3E\u0A32\u0964',
+        f2bg: '\u0A17\u0A41\u0A30\u0A2C\u0A3E\u0A23\u0A40 \u0A39\u0A35\u0A3E\u0A32\u0A47', f2tag: '\u0A38\u0A3F\u0A06\u0A23\u0A2A', f2title: '108 \u0A17\u0A41\u0A30\u0A2C\u0A3E\u0A23\u0A40 \u0A39\u0A35\u0A3E\u0A32\u0A47', f2desc: '\u0A38\u0A4D\u0A30\u0A40 \u0A17\u0A41\u0A30\u0A42 \u0A17\u0A4D\u0A30\u0A70\u0A25 \u0A38\u0A3E\u0A39\u0A3F\u0A2C \u0A1C\u0A40 \u0A26\u0A47 \u0A1A\u0A41\u0A23\u0A47 \u0A39\u0A4B\u0A0F \u0A36\u0A2C\u0A26\u0964 \u0A38\u0A41\u0A70\u0A26\u0A30 \u0A24\u0A38\u0A35\u0A40\u0A30\u0A3E\u0A02 \u0A1C\u0A3E\u0A02 \u0A2A\u0A3E\u0A20 \u0A35\u0A1C\u0A4B\u0A02 \u0A2A\u0A30\u0A3F\u0A35\u0A3E\u0A30 \u0A05\u0A24\u0A47 \u0A26\u0A41\u0A28\u0A40\u0A06 \u0A28\u0A3E\u0A32 \u0A38\u0A3E\u0A02\u0A1D\u0A47 \u0A15\u0A30\u0A4B\u0964',
+        f3bg: '\u0A28\u0A3F\u0A24\u0A28\u0A47\u0A2E', f3tag: '\u0A30\u0A4B\u0A1C\u0A3C\u0A3E\u0A28\u0A3E \u0A05\u0A2D\u0A3F\u0A06\u0A38', f3title: '\u0A06\u0A21\u0A3F\u0A13 \u0A28\u0A3E\u0A32 \u0A28\u0A3F\u0A24\u0A28\u0A47\u0A2E', f3desc: '\u0A2A\u0A47\u0A36\u0A47\u0A35\u0A30 \u0A06\u0A21\u0A3F\u0A13 \u0A28\u0A3E\u0A32 \u0A2E\u0A41\u0A15\u0A70\u0A2E\u0A32 \u0A28\u0A3F\u0A24\u0A28\u0A47\u0A2E \u0A2C\u0A3E\u0A23\u0A40\u0A06\u0A02\u0964 \u0A30\u0A4B\u0A1C\u0A3C\u0A3E\u0A28\u0A3E \u0A2A\u0A3E\u0A20 \u0A26\u0A47 \u0A28\u0A3E\u0A32 \u0A2A\u0A5C\u0A4D\u0A39\u0A4B \u0A1C\u0A3E\u0A02 \u0A38\u0A2B\u0A3C\u0A30 \u0A26\u0A4C\u0A30\u0A3E\u0A28 \u0A38\u0A41\u0A23\u0A4B\u0964',
+        f4bg: '\u0A38\u0A3F\u0A2E\u0A30\u0A28', f4tag: '\u0A38\u0A3F\u0A2E\u0A30\u0A28', f4title: '\u0A38\u0A3F\u0A2E\u0A30\u0A28 \u0A15\u0A3E\u0A0A\u0A02\u0A1F\u0A30', f4desc: '\u0A15\u0A3E\u0A0A\u0A02\u0A1F\u0A30, \u0A26\u0A41\u0A28\u0A40\u0A06 \u0A2D\u0A30 \u0A26\u0A47 \u0A38\u0A3F\u0A2E\u0A30\u0A28 \u0A15\u0A30\u0A28 \u0A35\u0A3E\u0A32\u0A3F\u0A06\u0A02 \u0A26\u0A3E \u0A17\u0A4D\u0A32\u0A4B\u0A2C \u0A05\u0A24\u0A47 \u0A36\u0A3E\u0A02\u0A24\u0A40 \u0A2D\u0A30\u0A2A\u0A42\u0A30 \u0A38\u0A3F\u0A2E\u0A30\u0A28 \u0A24\u0A1C\u0A30\u0A2C\u0A3E\u0964',
+        f5bg: '\u0A15\u0A40\u0A30\u0A24\u0A28', f5tag: '\u0A32\u0A3E\u0A08\u0A35 \u0A38\u0A4D\u0A1F\u0A4D\u0A30\u0A40\u0A2E', f5title: '\u0A38\u0A4D\u0A30\u0A40 \u0A39\u0A30\u0A3F\u0A2E\u0A70\u0A26\u0A30 \u0A38\u0A3E\u0A39\u0A3F\u0A2C \u0A15\u0A40\u0A30\u0A24\u0A28', f5desc: '\u0A38\u0A4D\u0A30\u0A40 \u0A39\u0A30\u0A3F\u0A2E\u0A70\u0A26\u0A30 \u0A38\u0A3E\u0A39\u0A3F\u0A2C \u0A24\u0A4B\u0A02 \u0A32\u0A3E\u0A08\u0A35 \u0A15\u0A40\u0A30\u0A24\u0A28 \u0A10\u0A2A \u0A35\u0A3F\u0A71\u0A1A \u0A38\u0A41\u0A23\u0A4B \u2014 \u0A15\u0A3F\u0A38\u0A47 \u0A35\u0A40 \u0A38\u0A2E\u0A47\u0A02, \u0A15\u0A3F\u0A24\u0A47 \u0A35\u0A40\u0964',
+        f6bg: '\u0A15\u0A48\u0A32\u0A70\u0A21\u0A30', f6tag: '\u0A15\u0A48\u0A32\u0A70\u0A21\u0A30', f6title: '\u0A28\u0A3E\u0A28\u0A15\u0A36\u0A3E\u0A39\u0A40 \u0A15\u0A48\u0A32\u0A70\u0A21\u0A30', f6desc: '\u0A17\u0A41\u0A30\u0A2A\u0A41\u0A30\u0A2C, \u0A38\u0A3F\u0A71\u0A16 \u0A24\u0A3F\u0A09\u0A39\u0A3E\u0A30\u0A3E\u0A02, \u0A05\u0A24\u0A47 \u0A2A\u0A42\u0A30\u0A47 \u0A28\u0A3E\u0A28\u0A15\u0A36\u0A3E\u0A39\u0A40 \u0A15\u0A48\u0A32\u0A70\u0A21\u0A30 \u0A38\u0A3E\u0A32 \u0A28\u0A3E\u0A32 \u0A28\u0A4B\u0A1F\u0A3F\u0A2B\u0A3C\u0A3F\u0A15\u0A47\u0A36\u0A28\u0A3E\u0A02 \u0A28\u0A3E\u0A32 \u0A1C\u0A41\u0A5C\u0A47 \u0A30\u0A39\u0A4B\u0964',
+        f7bg: '\u0A1A\u0A5C\u0A4D\u0A39\u0A26\u0A40 \u0A15\u0A32\u0A3E', f7tag: '\u0A28\u0A15\u0A32\u0A40 \u0A2C\u0A41\u0A71\u0A27\u0A40', f7title: '\u0A1A\u0A5C\u0A4D\u0A39\u0A26\u0A40 \u0A15\u0A32\u0A3E AI', f7desc: '\u0A17\u0A41\u0A30\u0A2C\u0A3E\u0A23\u0A40, \u0A38\u0A3F\u0A71\u0A16 \u0A07\u0A24\u0A3F\u0A39\u0A3E\u0A38, \u0A1C\u0A3E\u0A02 \u0A2B\u0A3C\u0A3F\u0A32\u0A3E\u0A38\u0A2B\u0A3C\u0A40 \u0A2C\u0A3E\u0A30\u0A47 \u0A15\u0A4B\u0A08 \u0A35\u0A40 \u0A38\u0A35\u0A3E\u0A32 \u0A2A\u0A41\u0A71\u0A1B\u0A4B \u0A05\u0A24\u0A47 \u0A17\u0A41\u0A30\u0A2C\u0A3E\u0A23\u0A40 \u0A05\u0A27\u0A3E\u0A30\u0A3F\u0A24 \u0A1C\u0A35\u0A3E\u0A2C \u0A2A\u0A4D\u0A30\u0A3E\u0A2A\u0A24 \u0A15\u0A30\u0A4B\u0964',
+        f8bg: '\u0A38\u0A47\u0A35\u0A3E', f8tag: '\u0A38\u0A2E\u0A3E\u0A1C \u0A38\u0A47\u0A35\u0A3E', f8title: '\u0A38\u0A47\u0A35\u0A3E \u0A2A\u0A32\u0A38', f8desc: '\u0A35\u0A3F\u0A36\u0A35 \u0A38\u0A3F\u0A71\u0A16 \u0A2D\u0A3E\u0A08\u0A1A\u0A3E\u0A30\u0A47 \u0A35\u0A3F\u0A71\u0A1A \u0A38\u0A47\u0A35\u0A3E \u0A26\u0A47 \u0A2E\u0A4C\u0A15\u0A47 \u0A05\u0A24\u0A47 \u0A2A\u0A39\u0A3F\u0A32\u0A15\u0A26\u0A2E\u0A40\u0A06\u0A02 \u0A32\u0A71\u0A2D\u0A4B\u0964 \u0A2D\u0A30\u0A4B\u0A38\u0A47\u0A2F\u0A4B\u0A17 NGO\u0A06\u0A02 \u0A28\u0A3E\u0A32 \u0A38\u0A47\u0A35\u0A3E \u0A15\u0A30\u0A4B\u0964'
       }
     };
     let currentLang = localStorage.getItem('sikhai-lang') || 'en';
@@ -2467,7 +2497,41 @@
         const key = el.getAttribute('data-i18n');
         if (i18n[currentLang][key]) el.innerHTML = i18n[currentLang][key];
       });
+      document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+        const key = el.getAttribute('data-i18n-placeholder');
+        if (i18n[currentLang][key]) el.placeholder = i18n[currentLang][key];
+      });
+      rebuildAboutWordReveal();
       if (typeof fetchDailyMeditationCount === 'function') fetchDailyMeditationCount();
+    }
+    function rebuildAboutWordReveal() {
+      var el = document.getElementById('aboutText');
+      if (!el) return;
+      var key = el.getAttribute('data-i18n');
+      var text = (i18n[currentLang] && i18n[currentLang][key]) || el.textContent;
+      el.innerHTML = '';
+      text.trim().split(/(\s+)/).forEach(function(token) {
+        if (/^\s+$/.test(token)) {
+          el.appendChild(document.createTextNode(' '));
+        } else {
+          var span = document.createElement('span');
+          span.className = 'about-word';
+          span.textContent = token;
+          el.appendChild(span);
+        }
+      });
+      var words = el.querySelectorAll('.about-word');
+      if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+        ScrollTrigger.getAll().forEach(function(t) {
+          if (t.vars && t.vars.trigger === '#aboutIntro') t.kill();
+        });
+        var tl = gsap.timeline({
+          scrollTrigger: { trigger: '#aboutIntro', start: 'top 75%', end: 'bottom 35%', scrub: true }
+        });
+        words.forEach(function(w, i) {
+          tl.to(w, { color: 'var(--color-text)', duration: 0.1, ease: 'none' }, i * 0.1);
+        });
+      }
     }
     if (currentLang !== 'en') applyLang();
 
@@ -2546,34 +2610,7 @@
       }
 
       /* ═══ About Intro — word-by-word scroll reveal ═══ */
-      (function() {
-        var el = document.getElementById('aboutText');
-        if (!el) return;
-        var raw = el.textContent.trim();
-        el.innerHTML = '';
-        raw.split(/(\s+)/).forEach(function(token) {
-          if (/^\s+$/.test(token)) {
-            el.appendChild(document.createTextNode(' '));
-          } else {
-            var span = document.createElement('span');
-            span.className = 'about-word';
-            span.textContent = token;
-            el.appendChild(span);
-          }
-        });
-        var words = el.querySelectorAll('.about-word');
-        var tl = gsap.timeline({
-          scrollTrigger: {
-            trigger: '#aboutIntro',
-            start: 'top 75%',
-            end: 'bottom 35%',
-            scrub: true
-          }
-        });
-        words.forEach(function(w, i) {
-          tl.to(w, { color: 'var(--color-text)', duration: 0.1, ease: 'none' }, i * 0.1);
-        });
-      })();
+      rebuildAboutWordReveal();
 
       /* ═══ SCENE 1b — Stats counter entrance ═══ */
       gsap.utils.toArray('.stat-item').forEach((el, i) => {
