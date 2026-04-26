@@ -2254,6 +2254,7 @@
     /* ── SIMRAN SESSION ── */
     let simranActive = false, simranStart = 0, particleInterval = null;
     let userGeoLat = null, userGeoLng = null;
+    try { var _g = JSON.parse(localStorage.getItem('sikhai-geo')); if (_g) { userGeoLat = _g.lat; userGeoLng = _g.lng; } } catch(e) {}
     const simranAudio = new Audio('audio/waheguru.mp3');
     simranAudio.loop = true;
     simranAudio.preload = 'auto';
@@ -2262,6 +2263,7 @@
       if (!window._globe) return;
       userGeoLat = lat;
       userGeoLng = lng;
+      try { localStorage.setItem('sikhai-geo', JSON.stringify({ lat: lat, lng: lng })); } catch(e) {}
       var pts = window._globe.pointsData().filter(function(p) { return !p._isUser; });
       pts.push({ lat: lat, lng: lng, altitude: 0.02, radius: 0.6, color: 'rgba(255,180,40,1)', _isUser: true });
       window._globe.pointsData(pts);
