@@ -1972,40 +1972,34 @@
       }
 
       /* ═══ About Intro — word-by-word scroll reveal ═══ */
-      var aboutText = document.getElementById('aboutText');
-      if (aboutText) {
-        var raw = aboutText.textContent;
-        aboutText.innerHTML = '';
+      (function() {
+        var el = document.getElementById('aboutText');
+        if (!el) return;
+        var raw = el.textContent.trim();
+        el.innerHTML = '';
         raw.split(/(\s+)/).forEach(function(token) {
           if (/^\s+$/.test(token)) {
-            aboutText.appendChild(document.createTextNode(token));
+            el.appendChild(document.createTextNode(' '));
           } else {
             var span = document.createElement('span');
             span.className = 'about-word';
             span.textContent = token;
-            aboutText.appendChild(span);
+            el.appendChild(span);
           }
         });
-        var aboutWords = aboutText.querySelectorAll('.about-word');
-        var progressObj = { value: 0 };
-        gsap.to(progressObj, {
-          value: 1,
-          ease: 'none',
+        var words = el.querySelectorAll('.about-word');
+        var tl = gsap.timeline({
           scrollTrigger: {
-            trigger: '.about-intro',
-            start: 'top 70%',
-            end: 'bottom 40%',
-            scrub: 0.3
-          },
-          onUpdate: function() {
-            var activeCount = Math.round(progressObj.value * aboutWords.length);
-            aboutWords.forEach(function(w, i) {
-              if (i < activeCount) w.classList.add('active');
-              else w.classList.remove('active');
-            });
+            trigger: '#aboutIntro',
+            start: 'top 75%',
+            end: 'bottom 35%',
+            scrub: true
           }
         });
-      }
+        words.forEach(function(w, i) {
+          tl.to(w, { color: 'var(--color-text)', duration: 0.1, ease: 'none' }, i * 0.1);
+        });
+      })();
 
       /* ═══ SCENE 1b — Stats counter entrance ═══ */
       gsap.utils.toArray('.stat-item').forEach((el, i) => {
