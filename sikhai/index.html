@@ -2852,11 +2852,22 @@
       }
 
       /* ═══ SCENE 4 — 3D Phone Parallax Feature Slides ═══ */
+      var deviceEntrances = [
+        { y: -200, x: 0, rotateX: 70, rotateY: 0, scale: 0.6 },
+        { y: 0, x: 300, rotateX: 0, rotateY: -50, scale: 0.7 },
+        { y: 200, x: 0, rotateX: -70, rotateY: 0, scale: 0.6 },
+        { y: 0, x: -300, rotateX: 0, rotateY: 50, scale: 0.7 },
+        { y: 0, x: 0, rotateX: 20, rotateY: 180, scale: 0.3 },
+        { y: 60, x: 250, rotateX: -15, rotateY: -35, scale: 0.5 },
+        { y: -180, x: 0, rotateX: 40, rotateY: 15, scale: 0.5 },
+        { y: 200, x: 0, rotateX: -45, rotateY: -20, scale: 0.6 }
+      ];
+
       gsap.utils.toArray('.feature-slide').forEach(function(slide, i) {
         var bgText = slide.querySelector('.feature-slide-bg h3');
         var device = slide.querySelector('.device-3d');
         var meta = slide.querySelector('.feature-slide-meta');
-        var rotateDir = (i % 2 === 0) ? 1 : -1;
+        var entrance = deviceEntrances[i] || deviceEntrances[i % deviceEntrances.length];
 
         if (bgText) {
           gsap.fromTo(bgText,
@@ -2874,17 +2885,18 @@
 
         if (device) {
           gsap.fromTo(device,
-            { opacity: 0, y: 120, rotateY: 25 * rotateDir, rotateX: -8, scale: 0.8 },
-            { opacity: 1, y: 0, rotateY: -4 * rotateDir, rotateX: 2, scale: 1, duration: 1.2, ease: 'power3.out',
-              scrollTrigger: { trigger: slide, start: 'top 80%', end: 'top 25%', scrub: 0.6 }
+            { opacity: 0, y: entrance.y, x: entrance.x, rotateX: entrance.rotateX, rotateY: entrance.rotateY, scale: entrance.scale },
+            { opacity: 1, y: 0, x: 0, rotateX: 2, rotateY: 0, scale: 1, ease: 'power3.out',
+              scrollTrigger: { trigger: slide, start: 'top 85%', end: 'top 20%', scrub: 0.5 }
             }
           );
+          var exitDir = (i % 2 === 0) ? 1 : -1;
           gsap.to(device, {
-            y: -60,
-            rotateY: -12 * rotateDir,
-            rotateX: 6,
+            y: -70,
+            rotateY: -10 * exitDir,
+            rotateX: 5,
             ease: 'none',
-            scrollTrigger: { trigger: slide, start: 'top 25%', end: 'bottom top', scrub: true }
+            scrollTrigger: { trigger: slide, start: 'top 20%', end: 'bottom top', scrub: true }
           });
         }
 
