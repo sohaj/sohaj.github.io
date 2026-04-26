@@ -1237,6 +1237,9 @@
       .cursor-dot { display: none; }
     }
   </style>
+  <script>
+    (function(){var t=localStorage.getItem('sikhai-theme');if(t)document.documentElement.setAttribute('data-theme',t);})();
+  </script>
 </head>
 
 <body>
@@ -1669,11 +1672,8 @@
       }
     }
     (function() {
-      const s = localStorage.getItem('sikhai-theme');
-      if (s) {
-        document.documentElement.setAttribute('data-theme', s);
-        document.getElementById('themeIcon').innerHTML = s === 'dark' ? '\u263D' : '\u2600';
-      }
+      var s = document.documentElement.getAttribute('data-theme');
+      document.getElementById('themeIcon').innerHTML = s === 'light' ? '\u2600' : '\u263D';
     })();
 
     /* ── LANGUAGE ── */
