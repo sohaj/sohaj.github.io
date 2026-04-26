@@ -894,69 +894,89 @@
       content: '';
       position: absolute;
       inset: 0;
-      border-radius: 32px;
-      background: linear-gradient(135deg, #2a2a2e 0%, #1a1a1e 50%, #111114 100%);
+      border-radius: 30px;
+      background:
+        linear-gradient(165deg, rgba(255,255,255,0.07) 0%, transparent 35%),
+        linear-gradient(135deg, #2a2a2e 0%, #1e1e22 40%, #111114 100%);
       transform: translateZ(7px);
       box-shadow:
-        inset 0 0 0 1.5px rgba(255,255,255,0.08),
-        0 2px 6px rgba(0,0,0,0.5),
-        0 20px 60px -10px rgba(0,0,0,0.7);
+        inset 0 0 0 1px rgba(255,255,255,0.06),
+        inset 0 1px 0 rgba(255,255,255,0.10),
+        inset 0 -1px 0 rgba(0,0,0,0.3),
+        0 2px 8px rgba(0,0,0,0.4),
+        0 25px 70px -15px rgba(0,0,0,0.65);
     }
     .device-3d::after {
       content: '';
       position: absolute;
       inset: 0;
-      border-radius: 32px;
-      background: linear-gradient(135deg, #18181c 0%, #0e0e12 50%, #080808 100%);
+      border-radius: 30px;
+      background: linear-gradient(135deg, #18181c 0%, #0e0e12 50%, #060608 100%);
       transform: translateZ(-7px);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.03);
     }
     .device-side {
       position: absolute;
-      background: linear-gradient(160deg, #3a3a3e 0%, #2a2a2e 50%, #1a1a1e 100%);
+      backface-visibility: visible;
     }
-    .device-side-back { display: none; }
     .device-side-left {
       top: 0; bottom: 0; left: 0;
       width: 14px;
       transform-origin: left center;
-      transform: rotateY(-90deg) translateZ(0px);
-      background: linear-gradient(to bottom, #3a3a3e 0%, #2a2a2e 30%, #1a1a1e 70%, #2a2a2e 100%);
+      transform: translateZ(-7px) rotateY(-90deg);
+      background: linear-gradient(to right,
+        #1a1a1e 0%, #2a2a2e 15%, #3a3a3e 40%,
+        #4a4a4e 50%,
+        #3a3a3e 60%, #2a2a2e 85%, #1a1a1e 100%);
+      box-shadow: inset 0 0 0 0.5px rgba(255,255,255,0.04);
     }
     .device-side-right {
       top: 0; bottom: 0; right: 0;
       width: 14px;
       transform-origin: right center;
-      transform: rotateY(90deg) translateZ(0px);
-      background: linear-gradient(to bottom, #3a3a3e 0%, #2a2a2e 30%, #1a1a1e 70%, #2a2a2e 100%);
+      transform: translateZ(-7px) rotateY(90deg);
+      background: linear-gradient(to right,
+        #1a1a1e 0%, #2a2a2e 15%, #3a3a3e 40%,
+        #4a4a4e 50%,
+        #3a3a3e 60%, #2a2a2e 85%, #1a1a1e 100%);
+      box-shadow: inset 0 0 0 0.5px rgba(255,255,255,0.04);
     }
     .device-side-top {
       top: 0; left: 0; right: 0;
       height: 14px;
-      transform-origin: top center;
-      transform: rotateX(90deg) translateZ(0px);
-      background: linear-gradient(to right, #2a2a2e 0%, #3a3a3e 30%, #3a3a3e 70%, #2a2a2e 100%);
+      transform-origin: center top;
+      transform: translateZ(-7px) rotateX(90deg);
+      background: linear-gradient(to bottom,
+        #1e1e22 0%, #2e2e32 15%, #3a3a3e 40%,
+        #454549 50%,
+        #3a3a3e 60%, #2e2e32 85%, #1e1e22 100%);
+      box-shadow: inset 0 0 0 0.5px rgba(255,255,255,0.04);
     }
     .device-side-bottom {
       bottom: 0; left: 0; right: 0;
       height: 14px;
-      transform-origin: bottom center;
-      transform: rotateX(-90deg) translateZ(0px);
-      background: linear-gradient(to right, #1a1a1e 0%, #2a2a2e 30%, #2a2a2e 70%, #1a1a1e 100%);
+      transform-origin: center bottom;
+      transform: translateZ(-7px) rotateX(-90deg);
+      background: linear-gradient(to bottom,
+        #141418 0%, #1e1e22 15%, #2a2a2e 40%,
+        #333337 50%,
+        #2a2a2e 60%, #1e1e22 85%, #141418 100%);
+      box-shadow: inset 0 0 0 0.5px rgba(255,255,255,0.03);
     }
     .device-screen {
       position: absolute;
-      top: 6px;
-      left: 6px;
-      right: 6px;
-      bottom: 6px;
-      border-radius: 26px;
+      top: 5px;
+      left: 5px;
+      right: 5px;
+      bottom: 5px;
+      border-radius: 25px;
       overflow: hidden;
       background: #000;
       z-index: 2;
       transform: translateZ(8px);
       box-shadow:
-        inset 0 0 0 0.5px rgba(0,0,0,0.8),
-        inset 0 0 3px rgba(0,0,0,0.4);
+        inset 0 0 0 0.5px rgba(0,0,0,0.9),
+        inset 0 0 4px rgba(0,0,0,0.5);
     }
     .device-screen img,
     .device-screen video {
@@ -973,49 +993,30 @@
       width: 10px;
       height: 10px;
       border-radius: 50%;
-      background: radial-gradient(circle at 40% 35%, #1a1a2a 0%, #050508 60%);
-      border: 0.5px solid rgba(255,255,255,0.06);
-      box-shadow: 0 0 3px rgba(0,0,0,0.5);
+      background: radial-gradient(circle at 35% 30%, #1a1a2e 0%, #050508 55%, #000 100%);
+      border: 0.5px solid rgba(255,255,255,0.05);
+      box-shadow:
+        0 0 2px rgba(0,0,0,0.6),
+        inset 0 0.5px 1px rgba(255,255,255,0.06);
       z-index: 4;
-    }
-    .device-btn-power {
-      position: absolute;
-      right: -4px;
-      top: 140px;
-      width: 4px;
-      height: 50px;
-      border-radius: 0 3px 3px 0;
-      background: linear-gradient(to right, #3a3a3e, #4a4a4e 40%, #3a3a3e);
-      transform: translateZ(0px);
-      box-shadow:
-        1px 0 2px rgba(0,0,0,0.3),
-        inset 0 0.5px 0 rgba(255,255,255,0.15);
-    }
-    .device-btn-vol {
-      position: absolute;
-      left: -4px;
-      width: 4px;
-      border-radius: 3px 0 0 3px;
-      background: linear-gradient(to left, #3a3a3e, #4a4a4e 40%, #3a3a3e);
-      transform: translateZ(0px);
-      box-shadow:
-        -1px 0 2px rgba(0,0,0,0.3),
-        inset 0 0.5px 0 rgba(255,255,255,0.15);
-    }
-    .device-btn-vol.up { top: 120px; height: 36px; }
-    .device-btn-vol.down { top: 168px; height: 36px; }
-    @keyframes deviceFloat {
-      0%, 100% { transform: rotateY(-4deg) rotateX(2deg) translateY(0); }
-      50% { transform: rotateY(4deg) rotateX(-2deg) translateY(-12px); }
     }
 
     @media (max-width: 768px) {
       .features-pinned { padding: 0 20px; }
       .features-layout { flex-direction: column; gap: 24px; }
       .features-bg-text h3 { font-size: clamp(3.5rem, 20vw, 7rem); }
-      .device-3d { width: 220px; height: 460px; border-radius: 24px; }
-      .device-3d::after { border-radius: 27px; }
-      .device-screen { top: 4px; left: 4px; right: 4px; bottom: 4px; border-radius: 20px; }
+      .device-3d { width: 220px; height: 460px; }
+      .device-screen { top: 3px; left: 3px; right: 3px; bottom: 3px; border-radius: 20px; }
+      .device-side-left, .device-side-right { width: 10px; }
+      .device-side-top, .device-side-bottom { height: 10px; }
+      .device-side-left { transform: translateZ(-5px) rotateY(-90deg); }
+      .device-side-right { transform: translateZ(-5px) rotateY(90deg); }
+      .device-side-top { transform: translateZ(-5px) rotateX(90deg); }
+      .device-side-bottom { transform: translateZ(-5px) rotateX(-90deg); }
+      .device-3d::before { transform: translateZ(5px); border-radius: 24px; }
+      .device-3d::after { transform: translateZ(-5px); border-radius: 24px; }
+      .device-screen { transform: translateZ(6px); }
+      .device-notch { transform: translateX(-50%) translateZ(6px); }
       .features-meta-stack { max-width: 100%; text-align: center; }
       .features-progress { right: 12px; gap: 8px; }
       .features-progress-dot { width: 6px; height: 6px; }
@@ -2257,10 +2258,6 @@
                 <img class="features-screen-img" data-idx="6" src="img/ss7-sewa.png" alt="Sewa Pulse">
               </div>
               <div class="device-notch"></div>
-              <div class="device-btn-power"></div>
-              <div class="device-btn-vol up"></div>
-              <div class="device-btn-vol down"></div>
-              <div class="device-side device-side-back"></div>
               <div class="device-side device-side-left"></div>
               <div class="device-side device-side-right"></div>
               <div class="device-side device-side-top"></div>
