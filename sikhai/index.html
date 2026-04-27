@@ -1767,7 +1767,8 @@
       align-items: center;
       justify-content: center;
       perspective: 1200px;
-      overflow: visible;
+      overflow: hidden;
+      background: var(--color-bg);
     }
     .highlight-tunnel {
       position: absolute;
@@ -3075,6 +3076,18 @@
 
       function easeIO(t) { return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2; }
 
+      /* Pre-compute random fly distance per quote so animation is smooth */
+      var quoteData = [];
+      flyQuotes.forEach(function(q) {
+        quoteData.push({
+          el: q,
+          depthStart: parseFloat(q.getAttribute('data-depth')) || 0.2,
+          angleRad: (parseFloat(q.getAttribute('data-angle')) || 0) * Math.PI / 180,
+          flyDist: 600 + Math.random() * 400
+        });
+      });
+
+      /* Create dots */
       var DOT_COUNT = 400;
       var dots = [];
       if (dotsContainer) {
@@ -3094,7 +3107,9 @@
       var scrollProgress = 0;
       var autoProgress = 0;
       var lastTime = 0;
-      var AUTO_SPEED = 0.015;
+      var isActive = false;
+      var rafId = null;
+      var AUTO_SPEED = 0.012;
 
       ScrollTrigger.create({
         trigger: section,
@@ -3102,17 +3117,26 @@
         end: '+=300%',
         pin: pin,
         scrub: false,
-        onUpdate: function(self) { scrollProgress = self.progress; }
+        anticipatePin: 1,
+        onUpdate: function(self) { scrollProgress = self.progress; },
+        onToggle: function(self) {
+          isActive = self.isActive;
+          if (isActive && !rafId) {
+            lastTime = 0;
+            autoProgress = 0;
+            rafId = requestAnimationFrame(tick);
+          }
+        }
       });
 
       function renderRings(p) {
-        rings.forEach(function(ring, i) {
+        for (var i = 0; i < rings.length; i++) {
           var start = i * 0.06;
           var local = Math.max(0, Math.min(1, (p - start) / 0.7));
           var ease = local * local;
-          ring.style.transform = 'scale(' + (0.3 + ease * (3.7 + i * 1.5)) + ')';
-          ring.style.opacity = 0.12 * (1 - ease);
-        });
+          rings[i].style.transform = 'scale(' + (0.3 + ease * (3.7 + i * 1.5)) + ')';
+          rings[i].style.opacity = 0.12 * (1 - ease);
+        }
       }
 
       function renderDots(p) {
@@ -3133,25 +3157,25 @@
       }
 
       function renderQuotes(p) {
-        flyQuotes.forEach(function(q) {
-          var depthStart = parseFloat(q.getAttribute('data-depth')) || 0.2;
-          var angleDeg = parseFloat(q.getAttribute('data-angle')) || 0;
-          var angleRad = angleDeg * Math.PI / 180;
-          if (p < depthStart) { q.style.opacity = 0; q.style.filter = 'blur(8px)'; return; }
-          var localAppear = Math.min(1, (p - depthStart) / 0.18);
+        for (var i = 0; i < quoteData.length; i++) {
+          var qd = quoteData[i];
+          var q = qd.el;
+          if (p < qd.depthStart) { q.style.opacity = 0; q.style.filter = 'blur(6px)'; continue; }
+          var localAppear = Math.min(1, (p - qd.depthStart) / 0.18);
           var fadeIn = easeIO(localAppear);
           var blur = (1 - fadeIn) * 6;
-          var flyStart = depthStart + 0.09;
-          var localFly = Math.max(0, Math.min(1, (p - flyStart) / 0.28));
+          var flyStart = qd.depthStart + 0.09;
+          var localFly = Math.max(0, Math.min(1, (p - flyStart) / 0.3));
           var flyEase = localFly * localFly;
-          var dist = flyEase * (900 + 500 * Math.random());
-          var scale = 0.3 + fadeIn * 0.6 + flyEase * 1.8;
-          var x = Math.cos(angleRad) * dist;
-          var y = Math.sin(angleRad) * dist;
-          q.style.transform = 'translate(calc(-50% + ' + x + 'px), calc(-50% + ' + y + 'px)) scale(' + scale + ')';
-          q.style.opacity = Math.max(0, fadeIn * (1 - Math.pow(localFly, 2)));
+          var dist = flyEase * qd.flyDist;
+          var sc = 0.3 + fadeIn * 0.6 + flyEase * 1.6;
+          var x = Math.cos(qd.angleRad) * dist;
+          var y = Math.sin(qd.angleRad) * dist;
+          var opacity = fadeIn * (1 - Math.pow(localFly, 2));
+          q.style.transform = 'translate(calc(-50% + ' + x + 'px), calc(-50% + ' + y + 'px)) scale(' + sc + ')';
+          q.style.opacity = Math.max(0, opacity);
           q.style.filter = 'blur(' + blur + 'px)';
-        });
+        }
       }
 
       function renderCard(p) {
@@ -3159,16 +3183,20 @@
         var ce = easeIO(cp);
         card.style.opacity = ce;
         card.style.transform = 'scale(' + (0.6 + ce * 0.4) + ')';
-        gurmukhiEl.style.opacity = easeIO(Math.max(0, Math.min(1, (p - 0.6) / 0.2)));
-        gurmukhiEl.style.transform = 'translateY(' + (30 * (1 - easeIO(Math.max(0, Math.min(1, (p - 0.6) / 0.2))))) + 'px)';
+        var gp = Math.max(0, Math.min(1, (p - 0.6) / 0.2));
+        var ge = easeIO(gp);
+        gurmukhiEl.style.opacity = ge;
+        gurmukhiEl.style.transform = 'translateY(' + (30 * (1 - ge)) + 'px)';
         if (translationEl) {
           var trp = Math.max(0, Math.min(1, (p - 0.7) / 0.15));
-          translationEl.style.opacity = easeIO(trp);
-          translationEl.style.transform = 'translateY(' + (20 * (1 - easeIO(trp))) + 'px)';
+          var tre = easeIO(trp);
+          translationEl.style.opacity = tre;
+          translationEl.style.transform = 'translateY(' + (20 * (1 - tre)) + 'px)';
         }
       }
 
       function tick(time) {
+        if (!isActive) { rafId = null; return; }
         if (lastTime) { autoProgress += ((time - lastTime) / 1000) * AUTO_SPEED; }
         lastTime = time;
         var p = Math.min(scrollProgress + autoProgress, 1);
@@ -3176,9 +3204,8 @@
         renderDots(p);
         renderQuotes(p);
         renderCard(p);
-        if (p < 1) requestAnimationFrame(tick);
+        rafId = requestAnimationFrame(tick);
       }
-      requestAnimationFrame(tick);
     }
 
     if (document.readyState === 'complete') { initAnimations(); }
