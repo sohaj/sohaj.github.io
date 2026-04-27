@@ -1824,6 +1824,19 @@
       transform: translateY(20px);
       transition: none;
     }
+    .highlight-dots {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+    }
+    .highlight-dot {
+      position: absolute;
+      border-radius: 50%;
+      background: var(--color-primary);
+      opacity: 0;
+      will-change: transform, opacity;
+    }
     .highlight-vignette {
       position: absolute;
       inset: 0;
@@ -2367,12 +2380,22 @@
       <div class="highlight-fly-quote" data-fly="9" data-angle="180" data-depth="0.33">ਮੂਲ ਮੰਤਰ</div>
       <div class="highlight-fly-quote" data-fly="10" data-angle="45" data-depth="0.42">ਅਕਾਲ ਮੂਰਤਿ</div>
       <div class="highlight-fly-quote" data-fly="11" data-angle="225" data-depth="0.38">ਕਰਤਾ ਪੁਰਖੁ</div>
+      <div class="highlight-fly-quote" data-fly="12" data-angle="315" data-depth="0.17">ਇਕ ਓਂਕਾਰ</div>
+      <div class="highlight-fly-quote" data-fly="13" data-angle="135" data-depth="0.44">ਨਿਰਭਉ</div>
+      <div class="highlight-fly-quote" data-fly="14" data-angle="60" data-depth="0.27">ਅਜੂਨੀ ਸੈਭਂ</div>
+      <div class="highlight-fly-quote" data-fly="15" data-angle="240" data-depth="0.32">ਗੁਰਬਾਣੀ</div>
+      <div class="highlight-fly-quote" data-fly="16" data-angle="15" data-depth="0.45">ਹੁਕਮਨਾਮਾ</div>
+      <div class="highlight-fly-quote" data-fly="17" data-angle="195" data-depth="0.21">ਰਹਿਰਾਸ</div>
+      <div class="highlight-fly-quote" data-fly="18" data-angle="270" data-depth="0.36">ਕੀਰਤਨ</div>
+      <div class="highlight-fly-quote" data-fly="19" data-angle="90" data-depth="0.41">ਆਨੰਦੁ</div>
+      <div class="highlight-fly-quote" data-fly="20" data-angle="345" data-depth="0.24">ਸਤਿਨਾਮੁ</div>
+      <div class="highlight-fly-quote" data-fly="21" data-angle="165" data-depth="0.47">ਨਿਤਨੇਮ</div>
+      <div class="highlight-dots" id="highlightDots"></div>
       <div class="highlight-vignette"></div>
       <div class="container" style="position:relative;z-index:5;">
         <div class="highlight-card" id="highlightCard">
-          <div class="gurmukhi" id="gurbaniGurmukhi">ਸੋਚੈ ਸੋਚਿ ਨ ਹੋਵਈ ਜੇ ਸੋਚੀ ਲਖ ਵਾਰ ॥</div>
-          <div class="translation" id="gurbaniTranslation" style="opacity:0">"By thinking, He cannot be reduced to thought, even by thinking hundreds of thousands of times."</div>
-          <div class="source" id="gurbaniSource" style="opacity:0">Sri Guru Granth Sahib Ji &middot; Ang 1 &middot; Japji Sahib</div>
+          <h2 class="gurmukhi" id="gurbaniGurmukhi" style="font-weight:700;margin-bottom:16px;">100+ Gurbani Quotes</h2>
+          <div class="translation" id="gurbaniTranslation" style="opacity:0">Curated verses from Sri Guru Granth Sahib Ji. Share as beautiful images or text with family, friends, and the world.</div>
         </div>
       </div>
     </div>
@@ -3043,78 +3066,123 @@
     /* ── Gurbani Zoom Tunnel (Scene 5) ── */
     function initGurbaniParticles() {
       var section = document.getElementById('gurbaniHighlight');
+      var pin = section ? section.querySelector('.highlight-pin') : null;
       var card = document.getElementById('highlightCard');
       var gurmukhiEl = document.getElementById('gurbaniGurmukhi');
       var translationEl = document.getElementById('gurbaniTranslation');
-      var sourceEl = document.getElementById('gurbaniSource');
       var tunnel = document.getElementById('highlightTunnel');
-      if (!section || !card || !tunnel) return;
+      var dotsContainer = document.getElementById('highlightDots');
+      if (!section || !pin || !card || !tunnel) return;
 
       var rings = tunnel.querySelectorAll('.highlight-ring');
       var flyQuotes = section.querySelectorAll('.highlight-fly-quote');
 
-      var tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: section,
-          start: 'top top',
-          end: 'bottom bottom',
-          scrub: 0.8,
-          onUpdate: function() {}
+      function easeIO(t) { return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2; }
+
+      var DOT_COUNT = 400;
+      var dots = [];
+      if (dotsContainer) {
+        for (var i = 0; i < DOT_COUNT; i++) {
+          var el = document.createElement('div');
+          el.className = 'highlight-dot';
+          var sz = 2 + Math.random() * 5;
+          el.style.width = sz + 'px';
+          el.style.height = sz + 'px';
+          el.style.left = '50%';
+          el.style.top = '50%';
+          dotsContainer.appendChild(el);
+          dots.push({ el: el, angle: Math.random() * Math.PI * 2, spawnAt: Math.random() * 0.65, maxR: 20 + Math.random() * 80, size: sz });
         }
+      }
+
+      var scrollProgress = 0;
+      var autoProgress = 0;
+      var lastTime = 0;
+      var AUTO_SPEED = 0.015;
+
+      ScrollTrigger.create({
+        trigger: section,
+        start: 'top top',
+        end: '+=300%',
+        pin: pin,
+        scrub: false,
+        onUpdate: function(self) { scrollProgress = self.progress; }
       });
 
-      rings.forEach(function(ring, i) {
-        var delay = i * 0.06;
-        tl.fromTo(ring,
-          { scale: 0.3, opacity: 0.12 },
-          { scale: 4 + i * 1.5, opacity: 0, duration: 0.7, ease: 'power2.in' },
-          delay
-        );
-      });
+      function renderRings(p) {
+        rings.forEach(function(ring, i) {
+          var start = i * 0.06;
+          var local = Math.max(0, Math.min(1, (p - start) / 0.7));
+          var ease = local * local;
+          ring.style.transform = 'scale(' + (0.3 + ease * (3.7 + i * 1.5)) + ')';
+          ring.style.opacity = 0.12 * (1 - ease);
+        });
+      }
 
-      flyQuotes.forEach(function(q) {
-        var angleDeg = parseFloat(q.getAttribute('data-angle')) || 0;
-        var depthStart = parseFloat(q.getAttribute('data-depth')) || 0.2;
-        var angleRad = angleDeg * Math.PI / 180;
-        var flyDist = 900 + Math.random() * 500;
-        var endX = Math.cos(angleRad) * flyDist;
-        var endY = Math.sin(angleRad) * flyDist;
+      function renderDots(p) {
+        for (var i = 0; i < dots.length; i++) {
+          var dt = dots[i];
+          if (p < dt.spawnAt) { dt.el.style.opacity = 0; continue; }
+          var localP = (p - dt.spawnAt) / 0.38;
+          if (localP > 1) { dt.el.style.opacity = 0; continue; }
+          var ease = localP * localP;
+          var r = dt.maxR * ease * (4 + p * 8);
+          var x = Math.cos(dt.angle) * r;
+          var y = Math.sin(dt.angle) * r;
+          var fadeIn = Math.min(localP * 3, 1);
+          var fadeOut = 1 - Math.pow(localP, 3);
+          dt.el.style.transform = 'translate(' + x + 'px,' + y + 'px) scale(' + (0.2 + ease * (1.2 + dt.size * 0.15)) + ')';
+          dt.el.style.opacity = fadeIn * fadeOut * (0.5 + dt.size / 14);
+        }
+      }
 
-        tl.fromTo(q,
-          { x: '-50%', y: '-50%', scale: 0.3, opacity: 0 },
-          { opacity: 0.85, scale: 0.9, duration: 0.15, ease: 'power1.in' },
-          depthStart
-        );
-        tl.to(q,
-          {
-            x: endX, y: endY, scale: 2.8,
-            opacity: 0, duration: 0.35,
-            ease: 'power2.in'
-          },
-          depthStart + 0.1
-        );
-      });
+      function renderQuotes(p) {
+        flyQuotes.forEach(function(q) {
+          var depthStart = parseFloat(q.getAttribute('data-depth')) || 0.2;
+          var angleDeg = parseFloat(q.getAttribute('data-angle')) || 0;
+          var angleRad = angleDeg * Math.PI / 180;
+          if (p < depthStart) { q.style.opacity = 0; q.style.filter = 'blur(8px)'; return; }
+          var localAppear = Math.min(1, (p - depthStart) / 0.18);
+          var fadeIn = easeIO(localAppear);
+          var blur = (1 - fadeIn) * 6;
+          var flyStart = depthStart + 0.09;
+          var localFly = Math.max(0, Math.min(1, (p - flyStart) / 0.28));
+          var flyEase = localFly * localFly;
+          var dist = flyEase * (900 + 500 * Math.random());
+          var scale = 0.3 + fadeIn * 0.6 + flyEase * 1.8;
+          var x = Math.cos(angleRad) * dist;
+          var y = Math.sin(angleRad) * dist;
+          q.style.transform = 'translate(calc(-50% + ' + x + 'px), calc(-50% + ' + y + 'px)) scale(' + scale + ')';
+          q.style.opacity = Math.max(0, fadeIn * (1 - Math.pow(localFly, 2)));
+          q.style.filter = 'blur(' + blur + 'px)';
+        });
+      }
 
-      tl.fromTo(card,
-        { opacity: 0, scale: 0.6 },
-        { opacity: 1, scale: 1, duration: 0.25, ease: 'power2.out' },
-        0.55
-      );
-      tl.fromTo(gurmukhiEl,
-        { opacity: 0, y: 30 },
-        { opacity: 1, y: 0, duration: 0.2, ease: 'power2.out' },
-        0.6
-      );
-      tl.fromTo(translationEl,
-        { opacity: 0, y: 20 },
-        { opacity: 1, y: 0, duration: 0.15, ease: 'power2.out' },
-        0.7
-      );
-      tl.fromTo(sourceEl,
-        { opacity: 0, y: 15 },
-        { opacity: 1, y: 0, duration: 0.12, ease: 'power2.out' },
-        0.78
-      );
+      function renderCard(p) {
+        var cp = Math.max(0, Math.min(1, (p - 0.55) / 0.25));
+        var ce = easeIO(cp);
+        card.style.opacity = ce;
+        card.style.transform = 'scale(' + (0.6 + ce * 0.4) + ')';
+        gurmukhiEl.style.opacity = easeIO(Math.max(0, Math.min(1, (p - 0.6) / 0.2)));
+        gurmukhiEl.style.transform = 'translateY(' + (30 * (1 - easeIO(Math.max(0, Math.min(1, (p - 0.6) / 0.2))))) + 'px)';
+        if (translationEl) {
+          var trp = Math.max(0, Math.min(1, (p - 0.7) / 0.15));
+          translationEl.style.opacity = easeIO(trp);
+          translationEl.style.transform = 'translateY(' + (20 * (1 - easeIO(trp))) + 'px)';
+        }
+      }
+
+      function tick(time) {
+        if (lastTime) { autoProgress += ((time - lastTime) / 1000) * AUTO_SPEED; }
+        lastTime = time;
+        var p = Math.min(scrollProgress + autoProgress, 1);
+        renderRings(p);
+        renderDots(p);
+        renderQuotes(p);
+        renderCard(p);
+        if (p < 1) requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
     }
 
     if (document.readyState === 'complete') { initAnimations(); }
