@@ -464,6 +464,10 @@
       border-radius: var(--radius-full);
       padding: 6px 6px 6px 24px;
     }
+    .ai-prompt-bar:focus-within {
+      border-color: rgba(232,196,74,0.45);
+      box-shadow: 0 0 0 1px rgba(232,196,74,0.15), 0 8px 32px rgba(0,0,0,0.2);
+    }
     .ai-prompt-input {
       flex: 1;
       background: transparent;
@@ -471,8 +475,16 @@
       color: var(--color-text);
       font-size: 1rem;
       font-family: var(--font-body);
-      outline: none;
+      outline: none !important;
+      box-shadow: none !important;
+      -webkit-appearance: none;
+      -moz-appearance: none;
       padding: 12px 0;
+    }
+    .ai-prompt-input:focus {
+      outline: none !important;
+      box-shadow: none !important;
+      border: none !important;
     }
     .ai-prompt-input::placeholder { color: var(--color-text-muted); }
     .ai-prompt-send {
