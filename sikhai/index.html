@@ -2826,12 +2826,16 @@
   <section class="highlight" id="gurbaniHighlight">
     <div class="highlight-pin">
       <div class="highlight-tunnel" id="highlightTunnel">
-        <div class="highlight-ring" style="width:80px;height:80px;"></div>
-        <div class="highlight-ring" style="width:200px;height:200px;"></div>
-        <div class="highlight-ring" style="width:380px;height:380px;"></div>
-        <div class="highlight-ring" style="width:600px;height:600px;"></div>
-        <div class="highlight-ring" style="width:900px;height:900px;"></div>
+        <div class="highlight-ring" style="width:60px;height:60px;"></div>
+        <div class="highlight-ring" style="width:140px;height:140px;"></div>
+        <div class="highlight-ring" style="width:260px;height:260px;"></div>
+        <div class="highlight-ring" style="width:400px;height:400px;"></div>
+        <div class="highlight-ring" style="width:580px;height:580px;"></div>
+        <div class="highlight-ring" style="width:780px;height:780px;"></div>
+        <div class="highlight-ring" style="width:1020px;height:1020px;"></div>
         <div class="highlight-ring" style="width:1300px;height:1300px;"></div>
+        <div class="highlight-ring" style="width:1650px;height:1650px;"></div>
+        <div class="highlight-ring" style="width:2100px;height:2100px;"></div>
       </div>
       <div class="highlight-fly-quote" data-fly="0" data-angle="30" data-depth="0.15">ਵਾਹਿਗੁਰੂ</div>
       <div class="highlight-fly-quote" data-fly="1" data-angle="150" data-depth="0.2">ੴ ਸਤਿ ਨਾਮੁ</div>
@@ -2855,6 +2859,17 @@
       <div class="highlight-fly-quote" data-fly="19" data-angle="90" data-depth="0.41">ਆਨੰਦੁ</div>
       <div class="highlight-fly-quote" data-fly="20" data-angle="345" data-depth="0.24">ਸਤਿਨਾਮੁ</div>
       <div class="highlight-fly-quote" data-fly="21" data-angle="165" data-depth="0.47">ਨਿਤਨੇਮ</div>
+      <div class="highlight-fly-quote" data-fly="22" data-angle="80" data-depth="0.50">ਜਪੁ ਤਪੁ ਸੰਜਮ</div>
+      <div class="highlight-fly-quote" data-fly="23" data-angle="200" data-depth="0.52">ਮਿਟ੍ਤ ਪਿਆਰਾ</div>
+      <div class="highlight-fly-quote" data-fly="24" data-angle="310" data-depth="0.48">ਗੁਰਮੁਖਿ</div>
+      <div class="highlight-fly-quote" data-fly="25" data-angle="40" data-depth="0.54">ਹੁਕਮੁ ਰਜਾਈ</div>
+      <div class="highlight-fly-quote" data-fly="26" data-angle="170" data-depth="0.56">ਪੰਜ ਪਿਆਰੇ</div>
+      <div class="highlight-fly-quote" data-fly="27" data-angle="260" data-depth="0.51">ਖਾਲਸਾ ਰਾਜ</div>
+      <div class="highlight-fly-quote" data-fly="28" data-angle="120" data-depth="0.58">ਚੜ੍ਹਦੀ ਕਲਾ</div>
+      <div class="highlight-fly-quote" data-fly="29" data-angle="340" data-depth="0.53">ਸੇਵਾ</div>
+      <div class="highlight-fly-quote" data-fly="30" data-angle="190" data-depth="0.60">ਵੰਡ ਛਕੋ</div>
+      <div class="highlight-fly-quote" data-fly="31" data-angle="55" data-depth="0.55">ਸਿਮਰਨ</div>
+      <div class="highlight-fly-quote" data-fly="32" data-angle="280" data-depth="0.62">ਸੰਗਤ</div>
       <div class="highlight-dots" id="highlightDots"></div>
       <div class="highlight-vignette"></div>
       <div class="container" style="position:relative;z-index:5;">
@@ -3578,12 +3593,12 @@
           el: q,
           depthStart: parseFloat(q.getAttribute('data-depth')) || 0.2,
           angleRad: (parseFloat(q.getAttribute('data-angle')) || 0) * Math.PI / 180,
-          flyDist: 900 + Math.random() * 700
+          flyDist: 900 + Math.random() * 1100
         });
       });
 
       /* Create dots */
-      var DOT_COUNT = 400;
+      var DOT_COUNT = 600;
       var dots = [];
       if (dotsContainer) {
         for (var i = 0; i < DOT_COUNT; i++) {
@@ -3595,7 +3610,7 @@
           el.style.left = '50%';
           el.style.top = '50%';
           dotsContainer.appendChild(el);
-          dots.push({ el: el, angle: Math.random() * Math.PI * 2, spawnAt: Math.random() * 0.65, maxR: 40 + Math.random() * 160, size: sz });
+          dots.push({ el: el, angle: Math.random() * Math.PI * 2, spawnAt: Math.random() * 0.75, maxR: 50 + Math.random() * 200, size: sz });
         }
       }
 
@@ -3609,7 +3624,7 @@
       ScrollTrigger.create({
         trigger: section,
         start: 'top top',
-        end: '+=300%',
+        end: '+=500%',
         pin: pin,
         scrub: false,
         anticipatePin: 1,
@@ -3685,16 +3700,16 @@
       }
 
       function renderCard(p) {
-        var cp = Math.max(0, Math.min(1, (p - 0.55) / 0.25));
+        var cp = Math.max(0, Math.min(1, (p - 0.65) / 0.2));
         var ce = easeIO(cp);
         card.style.opacity = ce;
         card.style.transform = 'scale(' + (0.6 + ce * 0.4) + ')';
-        var gp = Math.max(0, Math.min(1, (p - 0.6) / 0.2));
+        var gp = Math.max(0, Math.min(1, (p - 0.7) / 0.15));
         var ge = easeIO(gp);
         gurmukhiEl.style.opacity = ge;
         gurmukhiEl.style.transform = 'translateY(' + (30 * (1 - ge)) + 'px)';
         if (translationEl) {
-          var trp = Math.max(0, Math.min(1, (p - 0.7) / 0.15));
+          var trp = Math.max(0, Math.min(1, (p - 0.78) / 0.12));
           var tre = easeIO(trp);
           translationEl.style.opacity = tre;
           translationEl.style.transform = 'translateY(' + (20 * (1 - tre)) + 'px)';
