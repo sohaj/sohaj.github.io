@@ -445,24 +445,165 @@
     /* ── CHARDI KALA AI CHAT ── */
     .ai-chat-section {
       padding: 100px 0;
+      text-align: center;
     }
-    .ai-chat-card {
-      background: var(--color-bg-card);
-      border: 1px solid var(--color-border);
-      border-radius: var(--radius-xl);
-      overflow: hidden;
-      max-width: 720px;
-      margin: 40px auto 0;
-      display: flex;
-      flex-direction: column;
-      height: 520px;
+    .ai-chat-section .section-subtitle {
+      margin-left: auto;
+      margin-right: auto;
     }
-    .ai-chat-header {
+    .ai-prompt-wrap {
+      max-width: 640px;
+      margin: 0 auto;
+    }
+    .ai-prompt-bar {
       display: flex;
       align-items: center;
       gap: 12px;
-      padding: 18px 24px;
+      background: var(--color-bg-card);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-full);
+      padding: 6px 6px 6px 24px;
+      transition: border-color 0.4s ease, box-shadow 0.4s ease;
+    }
+    .ai-prompt-bar:focus-within {
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px rgba(232,196,74,0.1), 0 8px 32px rgba(0,0,0,0.2);
+    }
+    .ai-prompt-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: var(--color-text);
+      font-size: 1rem;
+      font-family: var(--font-body);
+      outline: none;
+      padding: 12px 0;
+    }
+    .ai-prompt-input::placeholder { color: var(--color-text-muted); }
+    .ai-prompt-send {
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      border: none;
+      background: var(--color-primary);
+      color: var(--color-primary-text);
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      transition: transform 0.3s ease, background 0.3s ease;
+    }
+    .ai-prompt-send:hover { transform: scale(1.06); background: var(--color-primary-hover); }
+    .ai-prompt-chips {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    .ai-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 9000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.4s ease, visibility 0.4s ease;
+    }
+    .ai-overlay.open {
+      opacity: 1;
+      visibility: visible;
+    }
+    .ai-overlay-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+    }
+    .ai-overlay-panel {
+      position: relative;
+      width: 90vw;
+      max-width: 680px;
+      height: 80vh;
+      max-height: 720px;
+      background: var(--color-bg-card);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-xl);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.5);
+      transform: translateY(30px) scale(0.95);
+      transition: transform 0.4s cubic-bezier(0.16,1,0.3,1);
+    }
+    .ai-overlay.open .ai-overlay-panel {
+      transform: translateY(0) scale(1);
+    }
+    .ai-overlay-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 20px 24px;
       border-bottom: 1px solid var(--color-border-light);
+    }
+    .ai-overlay-header-text h4 {
+      font-size: 1rem; font-weight: 600; margin: 0;
+      color: var(--color-text);
+    }
+    .ai-overlay-header-text span {
+      font-size: 0.78rem; color: var(--color-primary);
+    }
+    .ai-overlay-close {
+      margin-left: auto;
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      border: 1px solid var(--color-border);
+      background: transparent;
+      color: var(--color-text-muted);
+      font-size: 1.3rem;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: border-color 0.3s ease, color 0.3s ease, background 0.3s ease;
+    }
+    .ai-overlay-close:hover {
+      border-color: var(--color-text-secondary);
+      color: var(--color-text);
+      background: rgba(255,255,255,0.05);
+    }
+    .ai-overlay .ai-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .ai-overlay-input-bar {
+      display: flex;
+      gap: 10px;
+      padding: 16px 24px;
+      border-top: 1px solid var(--color-border-light);
+      align-items: center;
+    }
+    .ai-overlay-input-bar .ai-input {
+      flex: 1;
+      background: transparent;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-full);
+      padding: 12px 20px;
+      color: var(--color-text);
+      font-size: 0.95rem;
+      font-family: var(--font-body);
+      outline: none;
+      transition: border-color 0.3s ease;
+    }
+    .ai-overlay-input-bar .ai-input:focus { border-color: var(--color-primary); }
+    .ai-overlay-input-bar .ai-input::placeholder { color: var(--color-text-muted); }
+    @media (max-width: 768px) {
+      .ai-overlay-panel { width: 96vw; height: 90vh; max-height: none; border-radius: 16px; }
+      .ai-prompt-chips { gap: 8px; }
+      .ai-chip { font-size: 0.78rem; padding: 6px 12px; }
     }
     .ai-avatar {
       width: 36px; height: 36px;
@@ -706,7 +847,6 @@
 
     @media (max-width: 768px) {
       .ai-chat-section { padding: 60px 0; }
-      .ai-chat-card { height: 460px; margin-top: 24px; }
       .ai-fab-panel { width: calc(100vw - 32px); right: 16px; bottom: 80px; height: 480px; }
       .ai-fab { bottom: 16px; right: 16px; }
     }
@@ -2085,31 +2225,18 @@
     <div class="container">
       <div class="section-label fade-up" data-i18n="aiLabel">&#10024; Spiritual AI Guide</div>
       <h2 class="section-title fade-up" data-i18n="aiTitle">Ask anything about Sikhi</h2>
-      <p class="section-subtitle fade-up" data-i18n="aiSubtitle">Chardi Kala AI is your personal spiritual companion — powered by Gurbani wisdom, Sikh history, and the teachings of the Ten Gurus.</p>
-      <div class="ai-chat-card" id="aiChatSection">
-        <div class="ai-chat-header">
-          <div class="ai-avatar">&#9737;</div>
-          <div class="ai-chat-header-text">
-            <h4 data-i18n="aiName">ChardiKala AI</h4>
-            <span data-i18n="aiRole">Spiritual Guide</span>
-          </div>
-        </div>
-        <div class="ai-messages" id="aiMsgsSection">
-          <div class="ai-msg-row">
-            <div class="ai-avatar">&#9737;</div>
-            <div class="ai-msg ai-msg--ai" data-i18n="aiGreeting">Sat Sri Akal! I'm ChardiKala AI — your spiritual guide. Ask me anything about Gurbani, Sikh history, the Gurus, or daily practice.</div>
-          </div>
-        </div>
-        <div class="ai-suggestions" id="aiChipsSection">
-          <button class="ai-chip" onclick="aiAsk(this.textContent,'section')" data-i18n="aiChip1">What is Chardi Kala?</button>
-          <button class="ai-chip" onclick="aiAsk(this.textContent,'section')" data-i18n="aiChip2">Tell me about Guru Nanak Dev Ji</button>
-          <button class="ai-chip" onclick="aiAsk(this.textContent,'section')" data-i18n="aiChip3">Share a Shabad for peace</button>
-        </div>
-        <div class="ai-input-bar" id="aiInputSection">
-          <input class="ai-input" id="aiInputFieldSection" type="text" data-i18n-placeholder="aiPlaceholder" placeholder="Ask about Gurbani, Sikh history, or life guidance..." onkeydown="if(event.key==='Enter')aiSendSection()">
-          <button class="ai-send" id="aiSendBtnSection" onclick="aiSendSection()" aria-label="Send message">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+      <p class="section-subtitle fade-up" data-i18n="aiSubtitle">Chardi Kala AI is your personal spiritual companion &mdash; powered by Gurbani wisdom, Sikh history, and the teachings of the Ten Gurus.</p>
+      <div class="ai-prompt-wrap fade-up">
+        <div class="ai-prompt-bar">
+          <input class="ai-prompt-input" id="aiPromptInput" type="text" data-i18n-placeholder="aiPlaceholder" placeholder="Ask about Gurbani, Sikh history, or life guidance..." onkeydown="if(event.key==='Enter')openAiChat()">
+          <button class="ai-prompt-send" onclick="openAiChat()" aria-label="Send message">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
           </button>
+        </div>
+        <div class="ai-prompt-chips">
+          <button class="ai-chip" onclick="openAiChat(this.textContent)" data-i18n="aiChip1">What is Chardi Kala?</button>
+          <button class="ai-chip" onclick="openAiChat(this.textContent)" data-i18n="aiChip2">Tell me about Guru Nanak Dev Ji</button>
+          <button class="ai-chip" onclick="openAiChat(this.textContent)" data-i18n="aiChip3">Share a Shabad for peace</button>
         </div>
       </div>
     </div>
@@ -2515,6 +2642,33 @@
       </div>
     </div>
     <button class="ai-fab-btn" onclick="toggleAiFab()" aria-label="Chat with ChardiKala AI">&#9737;</button>
+  </div>
+
+  <!-- AI Chat Overlay -->
+  <div class="ai-overlay" id="aiOverlay">
+    <div class="ai-overlay-backdrop" onclick="closeAiChat()"></div>
+    <div class="ai-overlay-panel">
+      <div class="ai-overlay-header">
+        <div class="ai-avatar">&#9737;</div>
+        <div class="ai-overlay-header-text">
+          <h4>ChardiKala AI</h4>
+          <span>Spiritual Guide</span>
+        </div>
+        <button class="ai-overlay-close" onclick="closeAiChat()" aria-label="Close chat">&times;</button>
+      </div>
+      <div class="ai-messages" id="aiMsgsOverlay">
+        <div class="ai-msg-row">
+          <div class="ai-avatar">&#9737;</div>
+          <div class="ai-msg ai-msg--ai" data-i18n="aiGreeting">Sat Sri Akal! I&#8217;m ChardiKala AI &#8212; your spiritual guide. Ask me anything about Gurbani, Sikh history, the Gurus, or daily practice.</div>
+        </div>
+      </div>
+      <div class="ai-overlay-input-bar">
+        <input class="ai-input" id="aiInputFieldOverlay" type="text" placeholder="Ask anything about Sikhi..." onkeydown="if(event.key==='Enter')aiSendOverlay()">
+        <button class="ai-send" id="aiSendBtnOverlay" onclick="aiSendOverlay()" aria-label="Send message">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+        </button>
+      </div>
+    </div>
   </div>
   <div class="copy-toast" id="copyToast">Link copied!</div>
 
@@ -3847,15 +4001,44 @@
       }
     }
 
+    var aiStateOverlay = { messages: [], count: 0, loading: false };
+
+    function openAiChat(text) {
+      var overlay = document.getElementById('aiOverlay');
+      var input = document.getElementById('aiInputFieldOverlay');
+      overlay.classList.add('open');
+      document.body.style.overflow = 'hidden';
+      if (!text) {
+        var promptInput = document.getElementById('aiPromptInput');
+        text = promptInput ? promptInput.value.trim() : '';
+        if (promptInput) promptInput.value = '';
+      }
+      if (text) {
+        input.value = text;
+        setTimeout(function() { aiSendOverlay(); }, 100);
+      } else {
+        setTimeout(function() { input.focus(); }, 400);
+      }
+    }
+
+    function closeAiChat() {
+      var overlay = document.getElementById('aiOverlay');
+      overlay.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    function aiSendOverlay() { aiSend('overlay', aiStateOverlay); }
+
     function aiSendSection() { aiSend('section', aiStateSection); }
     function aiSendFab() { aiSend('fab', aiStateFab); }
 
     function aiSend(target, state) {
-      var inputEl = document.getElementById('aiInputField' + (target === 'section' ? 'Section' : 'Fab'));
-      var msgsEl = document.getElementById('aiMsgs' + (target === 'section' ? 'Section' : 'Fab'));
-      var chipsEl = document.getElementById('aiChips' + (target === 'section' ? 'Section' : 'Fab'));
-      var inputBar = document.getElementById('aiInput' + (target === 'section' ? 'Section' : 'Fab'));
-      var sendBtn = document.getElementById('aiSendBtn' + (target === 'section' ? 'Section' : 'Fab'));
+      var suffix = target === 'section' ? 'Section' : target === 'overlay' ? 'Overlay' : 'Fab';
+      var inputEl = document.getElementById('aiInputField' + suffix);
+      var msgsEl = document.getElementById('aiMsgs' + suffix);
+      var chipsEl = document.getElementById('aiChips' + suffix);
+      var inputBar = document.getElementById('aiInput' + suffix);
+      var sendBtn = document.getElementById('aiSendBtn' + suffix);
 
       var text = inputEl.value.trim();
       if (!text || state.loading) return;
@@ -3965,6 +4148,10 @@
       card.appendChild(cta);
     }
 
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') closeAiChat();
+    });
     function getFallbackResponse(msg) {
       var m = msg.toLowerCase();
       if (m.indexOf('chardi kala') !== -1 || m.indexOf('chardikala') !== -1)
