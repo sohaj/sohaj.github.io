@@ -1012,128 +1012,172 @@
     }
 
     /* ── 3D Android Device Frame ── */
-    @property --frame-shine {
-      syntax: '<angle>';
-      initial-value: 120deg;
-      inherits: false;
-    }
-
     .device-3d-wrap {
       perspective: 1200px;
       display: flex;
       align-items: center;
       justify-content: center;
+      filter: drop-shadow(0 8px 24px rgba(0,0,0,0.3)) drop-shadow(0 32px 80px rgba(0,0,0,0.4));
     }
 
     .device-3d {
+      --depth: 14px;
+      --half-depth: 7px;
       --bezel: 10px;
-      --radius-outer: 48px;
-      --radius-inner: 40px;
+      --r-out: 48px;
+      --r-in: 40px;
+      --r-inset: 50px;
       width: 340px;
       height: 700px;
       position: relative;
       transform-style: preserve-3d;
       will-change: transform;
-      border-radius: var(--radius-outer);
+    }
+
+    /* ── FRONT FACE ── */
+    .device-front {
+      position: absolute;
+      inset: 0;
+      border-radius: var(--r-out);
+      transform: translateZ(var(--half-depth));
       background:
         linear-gradient(172deg,
-          #4a4a4f 0%,
-          #3a3a3f 4%,
-          #2e2e33 12%,
-          #222226 30%,
-          #1c1c20 55%,
-          #161619 80%,
-          #111114 100%);
+          #4a4a4f 0%, #3a3a3f 4%, #2e2e33 12%,
+          #222226 30%, #1c1c20 55%, #161619 80%, #111114 100%);
       box-shadow:
         inset 0 0.5px 0 rgba(255,255,255,0.14),
         inset 0 -0.5px 0 rgba(0,0,0,0.5),
         inset 0.5px 0 0 rgba(255,255,255,0.05),
-        inset -0.5px 0 0 rgba(255,255,255,0.05),
-        0 1px 1px rgba(0,0,0,0.2),
-        0 2px 4px rgba(0,0,0,0.2),
-        0 6px 16px -2px rgba(0,0,0,0.3),
-        0 16px 48px -8px rgba(0,0,0,0.4),
-        0 32px 80px -16px rgba(0,0,0,0.45);
+        inset -0.5px 0 0 rgba(255,255,255,0.05);
     }
-
-    /* Clearcoat / glass top highlight */
-    .device-3d::before {
+    /* Clearcoat highlight */
+    .device-front::before {
       content: '';
       position: absolute;
       inset: 0;
-      border-radius: var(--radius-outer);
+      border-radius: var(--r-out);
       background:
         radial-gradient(ellipse 80% 50% at 30% 0%, rgba(255,255,255,0.12) 0%, transparent 60%),
         linear-gradient(175deg, rgba(255,255,255,0.06) 0%, transparent 30%);
       pointer-events: none;
-      z-index: 9;
     }
-
-    /* Animated edge shine */
-    .device-3d::after {
+    /* Edge definition ring */
+    .device-front::after {
       content: '';
       position: absolute;
       inset: 0;
-      border-radius: var(--radius-outer);
-      background: linear-gradient(
-        var(--frame-shine),
-        transparent 0%,
-        transparent 42%,
-        rgba(255,255,255,0.07) 48%,
-        rgba(255,255,255,0.14) 50%,
-        rgba(255,255,255,0.07) 52%,
-        transparent 58%,
-        transparent 100%
-      );
+      border-radius: var(--r-out);
+      border: 0.5px solid rgba(255,255,255,0.08);
       pointer-events: none;
-      z-index: 10;
-      animation: frameShine 5s ease-in-out infinite;
-    }
-    @keyframes frameShine {
-      0%   { --frame-shine: 110deg; }
-      50%  { --frame-shine: 250deg; }
-      100% { --frame-shine: 470deg; }
     }
 
-    /* Inner chamfer — the subtle highlight ring around the screen cutout */
+    /* ── BACK FACE ── */
+    .device-back {
+      position: absolute;
+      inset: 0;
+      border-radius: var(--r-out);
+      transform: translateZ(calc(var(--half-depth) * -1));
+      background:
+        linear-gradient(172deg,
+          #222226 0%, #1a1a1e 20%, #141418 50%, #0e0e12 80%, #0a0a0e 100%);
+      box-shadow:
+        inset 0 0 0 0.5px rgba(255,255,255,0.03);
+    }
+
+    /* ── SIDE PANELS (connecting front to back) ── */
+    .device-depth {
+      position: absolute;
+      backface-visibility: visible;
+    }
+    .device-depth-left {
+      left: 0;
+      top: var(--r-inset);
+      bottom: var(--r-inset);
+      width: var(--depth);
+      transform-origin: left center;
+      transform: translateZ(calc(var(--half-depth) * -1)) rotateY(-90deg);
+      background: linear-gradient(to right,
+        #1a1a1e 0%, #28282c 12%, #353538 35%,
+        #404044 50%,
+        #353538 65%, #28282c 88%, #1a1a1e 100%);
+      box-shadow:
+        inset 0 0.5px 0 rgba(255,255,255,0.04),
+        inset 0 -0.5px 0 rgba(0,0,0,0.3);
+    }
+    .device-depth-right {
+      right: 0;
+      top: var(--r-inset);
+      bottom: var(--r-inset);
+      width: var(--depth);
+      transform-origin: right center;
+      transform: translateZ(calc(var(--half-depth) * -1)) rotateY(90deg);
+      background: linear-gradient(to right,
+        #1a1a1e 0%, #28282c 12%, #353538 35%,
+        #404044 50%,
+        #353538 65%, #28282c 88%, #1a1a1e 100%);
+      box-shadow:
+        inset 0 0.5px 0 rgba(255,255,255,0.04),
+        inset 0 -0.5px 0 rgba(0,0,0,0.3);
+    }
+    .device-depth-top {
+      top: 0;
+      left: var(--r-inset);
+      right: var(--r-inset);
+      height: var(--depth);
+      transform-origin: center top;
+      transform: translateZ(calc(var(--half-depth) * -1)) rotateX(90deg);
+      background: linear-gradient(to bottom,
+        #1e1e22 0%, #2a2a2e 12%, #383838 35%,
+        #444448 50%,
+        #383838 65%, #2a2a2e 88%, #1e1e22 100%);
+      box-shadow:
+        inset 0.5px 0 0 rgba(255,255,255,0.04),
+        inset -0.5px 0 0 rgba(255,255,255,0.04);
+    }
+    .device-depth-bottom {
+      bottom: 0;
+      left: var(--r-inset);
+      right: var(--r-inset);
+      height: var(--depth);
+      transform-origin: center bottom;
+      transform: translateZ(calc(var(--half-depth) * -1)) rotateX(-90deg);
+      background: linear-gradient(to bottom,
+        #161619 0%, #222226 12%, #303034 35%,
+        #3a3a3e 50%,
+        #303034 65%, #222226 88%, #161619 100%);
+      box-shadow:
+        inset 0.5px 0 0 rgba(255,255,255,0.03),
+        inset -0.5px 0 0 rgba(255,255,255,0.03);
+    }
+
+    /* ── Inner Chamfer (highlight ring around screen cutout) ── */
     .device-chamfer {
       position: absolute;
       top: calc(var(--bezel) - 1.5px);
       left: calc(var(--bezel) - 1.5px);
       right: calc(var(--bezel) - 1.5px);
       bottom: calc(var(--bezel) - 1.5px);
-      border-radius: calc(var(--radius-inner) + 1px);
+      border-radius: calc(var(--r-in) + 1px);
       border: 1px solid rgba(255,255,255,0.06);
-      box-shadow:
-        0 0 3px rgba(0,0,0,0.4),
-        inset 0 0.5px 0 rgba(255,255,255,0.06);
+      box-shadow: 0 0 3px rgba(0,0,0,0.4), inset 0 0.5px 0 rgba(255,255,255,0.06);
       pointer-events: none;
+      transform: translateZ(var(--half-depth));
       z-index: 4;
-    }
-
-    /* Frame edge definition */
-    .device-edge {
-      position: absolute;
-      inset: 0;
-      border-radius: var(--radius-outer);
-      border: 0.5px solid rgba(255,255,255,0.08);
-      pointer-events: none;
-      z-index: 8;
     }
 
     .device-side { display: none; }
 
-    /* Screen */
+    /* ── Screen ── */
     .device-screen {
       position: absolute;
       top: var(--bezel);
       left: var(--bezel);
       right: var(--bezel);
       bottom: var(--bezel);
-      border-radius: var(--radius-inner);
+      border-radius: var(--r-in);
       overflow: hidden;
       background: #000;
-      z-index: 3;
+      transform: translateZ(calc(var(--half-depth) + 1px));
       box-shadow:
         inset 0 0 0 0.5px #000,
         inset 0 0 8px 2px rgba(0,0,0,0.7),
@@ -1150,16 +1194,17 @@
     /* Screen glass reflection */
     .device-screen-glass {
       position: absolute;
-      inset: 0;
-      border-radius: var(--radius-inner);
+      top: var(--bezel);
+      left: var(--bezel);
+      right: var(--bezel);
+      bottom: var(--bezel);
+      border-radius: var(--r-in);
       background:
         linear-gradient(135deg,
-          rgba(255,255,255,0.04) 0%,
-          transparent 40%,
-          transparent 60%,
-          rgba(255,255,255,0.015) 100%);
+          rgba(255,255,255,0.04) 0%, transparent 40%,
+          transparent 60%, rgba(255,255,255,0.015) 100%);
       pointer-events: none;
-      z-index: 11;
+      transform: translateZ(calc(var(--half-depth) + 2px));
     }
 
     /* ── Camera (punch-hole) ── */
@@ -1167,35 +1212,27 @@
       position: absolute;
       top: 20px;
       left: 50%;
-      transform: translateX(-50%);
       width: 14px;
       height: 14px;
       border-radius: 50%;
       background: radial-gradient(circle at 42% 38%,
-        #2a2a3e 0%,
-        #151520 30%,
-        #0a0a12 55%,
-        #030306 80%,
-        #000 100%);
+        #2a2a3e 0%, #151520 30%, #0a0a12 55%, #030306 80%, #000 100%);
       box-shadow:
         0 0 0 2px #0c0c10,
         0 0 0 3px rgba(80,80,90,0.35),
         0 0 0 3.5px rgba(40,40,48,0.3),
         inset 0 1px 2px rgba(0,0,0,0.8);
+      transform: translateX(-50%) translateZ(calc(var(--half-depth) + 2px));
       z-index: 12;
     }
-    /* Lens reflection dot */
     .device-camera::before {
       content: '';
       position: absolute;
-      top: 3px;
-      left: 4px;
-      width: 3px;
-      height: 2px;
+      top: 3px; left: 4px;
+      width: 3px; height: 2px;
       border-radius: 50%;
       background: radial-gradient(circle, rgba(120,160,255,0.35) 0%, transparent 70%);
     }
-    /* Outer lens ring highlight */
     .device-camera::after {
       content: '';
       position: absolute;
@@ -1204,16 +1241,16 @@
       border: 0.5px solid rgba(255,255,255,0.06);
     }
 
-    /* Proximity / ambient light sensor */
+    /* Proximity sensor */
     .device-proximity {
       position: absolute;
       top: 22px;
       left: calc(50% + 14px);
-      width: 4px;
-      height: 4px;
+      width: 4px; height: 4px;
       border-radius: 50%;
       background: radial-gradient(circle, #0a0a12 0%, #000 100%);
       box-shadow: 0 0 0 0.5px rgba(255,255,255,0.04);
+      transform: translateZ(calc(var(--half-depth) + 2px));
       z-index: 12;
     }
 
@@ -1222,21 +1259,20 @@
       position: absolute;
       top: 6px;
       left: 50%;
-      transform: translateX(-50%);
       width: 44px;
       height: 2.5px;
       border-radius: 2px;
-      z-index: 12;
       overflow: hidden;
+      transform: translateX(-50%) translateZ(calc(var(--half-depth) + 1px));
+      z-index: 12;
     }
     .device-earpiece::before {
       content: '';
       position: absolute;
       inset: 0;
-      background:
-        repeating-linear-gradient(90deg,
-          #0a0a0e 0px, #0a0a0e 1.5px,
-          rgba(30,30,34,0.5) 1.5px, rgba(30,30,34,0.5) 2.5px);
+      background: repeating-linear-gradient(90deg,
+        #0a0a0e 0px, #0a0a0e 1.5px,
+        rgba(30,30,34,0.5) 1.5px, rgba(30,30,34,0.5) 2.5px);
       border-radius: 2px;
     }
     .device-earpiece::after {
@@ -1261,6 +1297,7 @@
         2px 0 3px rgba(0,0,0,0.25),
         inset 0 0.5px 0 rgba(255,255,255,0.10),
         inset 0 -0.5px 0 rgba(0,0,0,0.3);
+      transform: translateZ(var(--half-depth));
       z-index: 7;
     }
     .device-btn-vol {
@@ -1274,6 +1311,7 @@
         -2px 0 3px rgba(0,0,0,0.25),
         inset 0 0.5px 0 rgba(255,255,255,0.10),
         inset 0 -0.5px 0 rgba(0,0,0,0.3);
+      transform: translateZ(var(--half-depth));
       z-index: 7;
     }
     .device-btn-vol.up { top: 145px; height: 34px; }
@@ -1284,23 +1322,18 @@
       position: absolute;
       bottom: 4px;
       left: 50%;
-      transform: translateX(-50%);
       width: 20px;
       height: 4.5px;
       border-radius: 2.5px;
       background: linear-gradient(to bottom, #08080c 0%, #1a1a1e 40%, #0e0e12 100%);
-      box-shadow:
-        inset 0 1px 1px rgba(0,0,0,0.6),
-        0 0.5px 0 rgba(255,255,255,0.03);
+      box-shadow: inset 0 1px 1px rgba(0,0,0,0.6), 0 0.5px 0 rgba(255,255,255,0.03);
+      transform: translateX(-50%) translateZ(calc(var(--half-depth) + 1px));
       z-index: 12;
     }
     .device-usbc::before {
       content: '';
       position: absolute;
-      top: 1px;
-      left: 3px;
-      right: 3px;
-      height: 2px;
+      top: 1px; left: 3px; right: 3px; height: 2px;
       border-radius: 1px;
       background: linear-gradient(to right, transparent 0%, rgba(60,60,64,0.3) 30%, rgba(60,60,64,0.3) 70%, transparent 100%);
     }
@@ -1309,10 +1342,11 @@
     .device-speaker {
       position: absolute;
       bottom: 5px;
-      z-index: 12;
       display: flex;
       gap: 3.5px;
       align-items: center;
+      transform: translateZ(calc(var(--half-depth) + 1px));
+      z-index: 12;
     }
     .device-speaker.left { right: calc(50% + 20px); }
     .device-speaker.right { left: calc(50% + 20px); }
@@ -1324,15 +1358,15 @@
       box-shadow: inset 0 0.5px 0.5px rgba(0,0,0,0.6);
     }
 
-    /* ── Bottom Microphone ── */
+    /* ── Microphone holes ── */
     .device-mic {
       position: absolute;
-      z-index: 12;
-      width: 2px;
-      height: 2px;
+      width: 2px; height: 2px;
       border-radius: 50%;
       background: #0a0a0e;
       box-shadow: inset 0 0.5px 0.5px rgba(0,0,0,0.5);
+      transform: translateZ(calc(var(--half-depth) + 1px));
+      z-index: 12;
     }
     .device-mic.bottom { bottom: 5px; left: calc(50% - 56px); }
     .device-mic.top { top: 5px; right: calc(50% - 56px); }
@@ -1340,73 +1374,71 @@
     /* ── Antenna Lines ── */
     .device-antenna {
       position: absolute;
-      z-index: 7;
       pointer-events: none;
+      transform: translateZ(var(--half-depth));
+      z-index: 7;
     }
     .device-antenna.top-left {
-      top: 92px; left: 0;
-      width: 100%; height: 0.5px;
+      top: 92px; left: 0; width: 100%; height: 0.5px;
       background: linear-gradient(to right, rgba(90,90,95,0.25) 0%, transparent 15%);
     }
     .device-antenna.top-right {
-      top: 92px; right: 0;
-      width: 100%; height: 0.5px;
+      top: 92px; right: 0; width: 100%; height: 0.5px;
       background: linear-gradient(to left, rgba(90,90,95,0.25) 0%, transparent 15%);
     }
     .device-antenna.bottom-left {
-      bottom: 92px; left: 0;
-      width: 100%; height: 0.5px;
+      bottom: 92px; left: 0; width: 100%; height: 0.5px;
       background: linear-gradient(to right, rgba(90,90,95,0.25) 0%, transparent 15%);
     }
     .device-antenna.bottom-right {
-      bottom: 92px; right: 0;
-      width: 100%; height: 0.5px;
+      bottom: 92px; right: 0; width: 100%; height: 0.5px;
       background: linear-gradient(to left, rgba(90,90,95,0.25) 0%, transparent 15%);
     }
 
     /* ── SIM Tray ── */
     .device-sim {
       position: absolute;
-      left: -1px;
-      top: 280px;
-      width: 1.5px;
-      height: 24px;
+      left: -1px; top: 280px;
+      width: 1.5px; height: 24px;
       border-radius: 1px 0 0 1px;
       background: linear-gradient(to left, #2a2a2e, #3a3a3e 50%, #2a2a2e);
       box-shadow: -0.5px 0 1px rgba(0,0,0,0.2);
+      transform: translateZ(var(--half-depth));
       z-index: 7;
     }
     .device-sim::before {
       content: '';
       position: absolute;
-      top: 10px;
-      left: -0.5px;
-      width: 1px;
-      height: 3px;
+      top: 10px; left: -0.5px;
+      width: 1px; height: 3px;
       border-radius: 50%;
       background: rgba(0,0,0,0.3);
     }
 
     .device-notch { display: none; }
+    .device-edge { display: none; }
 
     @media (max-width: 768px) {
       .features-pinned { padding: 0 20px; }
       .features-layout { flex-direction: column; gap: 24px; }
       .features-bg-text h3 { font-size: clamp(3.5rem, 20vw, 7rem); }
       .device-3d {
+        --depth: 10px;
+        --half-depth: 5px;
         --bezel: 7px;
-        --radius-outer: 36px;
-        --radius-inner: 30px;
+        --r-out: 36px;
+        --r-in: 30px;
+        --r-inset: 38px;
         width: 240px;
         height: 500px;
       }
-      .device-3d::before, .device-3d::after { border-radius: 36px; }
+      .device-front, .device-back { border-radius: 36px; }
+      .device-depth-left, .device-depth-right { width: 10px; }
+      .device-depth-top, .device-depth-bottom { height: 10px; }
       .device-chamfer {
         top: 5.5px; left: 5.5px; right: 5.5px; bottom: 5.5px;
         border-radius: 31px;
       }
-      .device-edge { border-radius: 36px; }
-      .device-screen-glass { border-radius: 30px; }
       .device-camera { top: 15px; width: 10px; height: 10px; }
       .device-camera::after { inset: -2.5px; }
       .device-proximity { top: 17px; left: calc(50% + 11px); width: 3px; height: 3px; }
@@ -2647,6 +2679,16 @@
         <div class="features-phone-wrap">
           <div class="device-3d-wrap">
             <div class="device-3d" id="featuresDevice">
+              <!-- Front face -->
+              <div class="device-front"></div>
+              <!-- Back face -->
+              <div class="device-back"></div>
+              <!-- Depth panels (sides) -->
+              <div class="device-depth device-depth-left"></div>
+              <div class="device-depth device-depth-right"></div>
+              <div class="device-depth device-depth-top"></div>
+              <div class="device-depth device-depth-bottom"></div>
+              <!-- Screen -->
               <div class="device-screen" id="featuresScreen">
                 <img class="features-screen-img active" data-idx="0" src="img/ss1-hukamnama.png" alt="Daily Hukamnama">
                 <img class="features-screen-img" data-idx="1" src="img/ss5-nitnem.png" alt="Nitnem with Audio">
@@ -2656,9 +2698,9 @@
                 <img class="features-screen-img" data-idx="5" src="img/ss3-ai.png" alt="Chardi Kala AI">
                 <img class="features-screen-img" data-idx="6" src="img/ss7-sewa.png" alt="Sewa Pulse">
               </div>
-              <div class="device-chamfer"></div>
-              <div class="device-edge"></div>
               <div class="device-screen-glass"></div>
+              <div class="device-chamfer"></div>
+              <!-- Hardware details -->
               <div class="device-camera"></div>
               <div class="device-proximity"></div>
               <div class="device-earpiece"></div>
