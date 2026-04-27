@@ -3618,6 +3618,17 @@
             autoProgress = 0;
             rafId = requestAnimationFrame(tick);
           }
+        },
+        onLeave: function() {
+          card.style.opacity = '0';
+          card.style.transform = 'scale(0.8)';
+          if (translationEl) translationEl.style.opacity = '0';
+        },
+        onEnterBack: function() {
+          if (!rafId && isActive) {
+            lastTime = 0;
+            rafId = requestAnimationFrame(tick);
+          }
         }
       });
 
