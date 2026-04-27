@@ -1024,91 +1024,33 @@
       position: relative;
       transform-style: preserve-3d;
       will-change: transform;
+      border-radius: 36px;
+      background: linear-gradient(145deg, #2a2a2e 0%, #1a1a1e 50%, #111114 100%);
+      box-shadow:
+        inset 0 0 0 1.5px rgba(255,255,255,0.06),
+        0 2px 8px rgba(0,0,0,0.4),
+        0 25px 70px -15px rgba(0,0,0,0.65);
     }
     .device-3d::before {
       content: '';
       position: absolute;
       inset: 0;
-      border-radius: 30px;
-      background:
-        linear-gradient(165deg, rgba(255,255,255,0.07) 0%, transparent 35%),
-        linear-gradient(135deg, #2a2a2e 0%, #1e1e22 40%, #111114 100%);
-      transform: translateZ(7px);
-      box-shadow:
-        inset 0 0 0 1px rgba(255,255,255,0.06),
-        inset 0 1px 0 rgba(255,255,255,0.10),
-        inset 0 -1px 0 rgba(0,0,0,0.3),
-        0 2px 8px rgba(0,0,0,0.4),
-        0 25px 70px -15px rgba(0,0,0,0.65);
+      border-radius: 36px;
+      background: linear-gradient(165deg, rgba(255,255,255,0.06) 0%, transparent 40%);
+      pointer-events: none;
+      z-index: 3;
     }
-    .device-3d::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      border-radius: 30px;
-      background: linear-gradient(135deg, #18181c 0%, #0e0e12 50%, #060608 100%);
-      transform: translateZ(-7px);
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.03);
-    }
-    .device-side {
-      position: absolute;
-      backface-visibility: visible;
-    }
-    .device-side-left {
-      top: 30px; bottom: 30px; left: 0;
-      width: 14px;
-      transform-origin: left center;
-      transform: translateZ(-7px) rotateY(-90deg);
-      background: linear-gradient(to right,
-        #1a1a1e 0%, #2a2a2e 15%, #3a3a3e 40%,
-        #4a4a4e 50%,
-        #3a3a3e 60%, #2a2a2e 85%, #1a1a1e 100%);
-      box-shadow: inset 0 0 0 0.5px rgba(255,255,255,0.04);
-    }
-    .device-side-right {
-      top: 30px; bottom: 30px; right: 0;
-      width: 14px;
-      transform-origin: right center;
-      transform: translateZ(-7px) rotateY(90deg);
-      background: linear-gradient(to right,
-        #1a1a1e 0%, #2a2a2e 15%, #3a3a3e 40%,
-        #4a4a4e 50%,
-        #3a3a3e 60%, #2a2a2e 85%, #1a1a1e 100%);
-      box-shadow: inset 0 0 0 0.5px rgba(255,255,255,0.04);
-    }
-    .device-side-top {
-      top: 0; left: 30px; right: 30px;
-      height: 14px;
-      transform-origin: center top;
-      transform: translateZ(-7px) rotateX(90deg);
-      background: linear-gradient(to bottom,
-        #1e1e22 0%, #2e2e32 15%, #3a3a3e 40%,
-        #454549 50%,
-        #3a3a3e 60%, #2e2e32 85%, #1e1e22 100%);
-      box-shadow: inset 0 0 0 0.5px rgba(255,255,255,0.04);
-    }
-    .device-side-bottom {
-      bottom: 0; left: 30px; right: 30px;
-      height: 14px;
-      transform-origin: center bottom;
-      transform: translateZ(-7px) rotateX(-90deg);
-      background: linear-gradient(to bottom,
-        #141418 0%, #1e1e22 15%, #2a2a2e 40%,
-        #333337 50%,
-        #2a2a2e 60%, #1e1e22 85%, #141418 100%);
-      box-shadow: inset 0 0 0 0.5px rgba(255,255,255,0.03);
-    }
+    .device-side { display: none; }
     .device-screen {
       position: absolute;
       top: 5px;
       left: 5px;
       right: 5px;
       bottom: 5px;
-      border-radius: 25px;
+      border-radius: 31px;
       overflow: hidden;
       background: #000;
       z-index: 2;
-      transform: translateZ(8px);
       box-shadow:
         inset 0 0 0 0.5px rgba(0,0,0,0.9),
         inset 0 0 4px rgba(0,0,0,0.5);
@@ -1124,15 +1066,13 @@
       position: absolute;
       top: 14px;
       left: 50%;
-      transform: translateX(-50%) translateZ(8px);
+      transform: translateX(-50%);
       width: 10px;
       height: 10px;
       border-radius: 50%;
       background: radial-gradient(circle at 35% 30%, #1a1a2e 0%, #050508 55%, #000 100%);
       border: 0.5px solid rgba(255,255,255,0.05);
-      box-shadow:
-        0 0 2px rgba(0,0,0,0.6),
-        inset 0 0.5px 1px rgba(255,255,255,0.06);
+      box-shadow: 0 0 2px rgba(0,0,0,0.6);
       z-index: 4;
     }
 
@@ -1140,18 +1080,8 @@
       .features-pinned { padding: 0 20px; }
       .features-layout { flex-direction: column; gap: 24px; }
       .features-bg-text h3 { font-size: clamp(3.5rem, 20vw, 7rem); }
-      .device-3d { width: 220px; height: 460px; }
-      .device-screen { top: 3px; left: 3px; right: 3px; bottom: 3px; border-radius: 20px; }
-      .device-side-left, .device-side-right { width: 10px; }
-      .device-side-top, .device-side-bottom { height: 10px; }
-      .device-side-left { transform: translateZ(-5px) rotateY(-90deg); }
-      .device-side-right { transform: translateZ(-5px) rotateY(90deg); }
-      .device-side-top { transform: translateZ(-5px) rotateX(90deg); }
-      .device-side-bottom { transform: translateZ(-5px) rotateX(-90deg); }
-      .device-3d::before { transform: translateZ(5px); border-radius: 24px; }
-      .device-3d::after { transform: translateZ(-5px); border-radius: 24px; }
-      .device-screen { transform: translateZ(6px); }
-      .device-notch { transform: translateX(-50%) translateZ(6px); }
+      .device-3d { width: 220px; height: 460px; border-radius: 28px; }
+      .device-screen { top: 3px; left: 3px; right: 3px; bottom: 3px; border-radius: 25px; }
       .features-meta-stack { max-width: 100%; text-align: center; }
       .features-progress { right: 12px; gap: 8px; }
       .features-progress-dot { width: 6px; height: 6px; }
