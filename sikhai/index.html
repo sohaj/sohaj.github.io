@@ -3619,7 +3619,7 @@
           el.style.left = '50%';
           el.style.top = '50%';
           dotsContainer.appendChild(el);
-          dots.push({ el: el, angle: Math.random() * Math.PI * 2, spawnAt: Math.random() * 0.75, maxR: 50 + Math.random() * 200, size: sz });
+          dots.push({ el: el, angle: Math.random() * Math.PI * 2, spawnAt: Math.random() * 0.55, maxR: 50 + Math.random() * 200, size: sz });
         }
       }
 
@@ -3633,7 +3633,7 @@
       ScrollTrigger.create({
         trigger: section,
         start: 'top top',
-        end: '+=500%',
+        end: '+=350%',
         pin: pin,
         scrub: false,
         anticipatePin: 1,
@@ -3709,16 +3709,16 @@
       }
 
       function renderCard(p) {
-        var cp = Math.max(0, Math.min(1, (p - 0.65) / 0.2));
+        var cp = Math.max(0, Math.min(1, (p - 0.58) / 0.22));
         var ce = easeIO(cp);
         card.style.opacity = ce;
         card.style.transform = 'scale(' + (0.6 + ce * 0.4) + ')';
-        var gp = Math.max(0, Math.min(1, (p - 0.7) / 0.15));
+        var gp = Math.max(0, Math.min(1, (p - 0.63) / 0.18));
         var ge = easeIO(gp);
         gurmukhiEl.style.opacity = ge;
         gurmukhiEl.style.transform = 'translateY(' + (30 * (1 - ge)) + 'px)';
         if (translationEl) {
-          var trp = Math.max(0, Math.min(1, (p - 0.78) / 0.12));
+          var trp = Math.max(0, Math.min(1, (p - 0.72) / 0.15));
           var tre = easeIO(trp);
           translationEl.style.opacity = tre;
           translationEl.style.transform = 'translateY(' + (20 * (1 - tre)) + 'px)';
