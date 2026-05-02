@@ -818,16 +818,22 @@
       to { opacity: 1; transform: scale(1) translateY(0); }
     }
     .ai-fab-panel .ai-chat-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--color-border-light);
       cursor: default;
     }
     .ai-fab-close {
-      margin-left: auto;
       background: none;
       border: none;
       color: var(--color-text-muted);
       cursor: pointer;
-      font-size: 1.2rem;
-      padding: 4px;
+      font-size: 1.4rem;
+      padding: 4px 2px;
+      line-height: 1;
+      flex-shrink: 0;
       transition: color 0.3s ease;
     }
     .ai-fab-close:hover { color: var(--color-text); }
@@ -835,6 +841,7 @@
       display: flex;
       gap: 6px;
       margin-left: auto;
+      flex-shrink: 0;
     }
     .ai-fab-share-btns button {
       width: 28px; height: 28px;
