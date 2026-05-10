@@ -41,7 +41,7 @@
   <link rel="stylesheet" href="css/style.css" />
   
   <!-- Modern Elegant Theme -->
-  <link rel="stylesheet" href="css/modern.css" />
+  <link rel="stylesheet" href="css/modern.css?v=20260510g" />
   
   <!-- AI Chat Widget -->
   <link rel="stylesheet" href="css/chat.css" />
@@ -51,7 +51,7 @@
   
   <!-- Preload Critical Assets -->
   <link rel="preload" href="img/state1.jpg" as="image">
-  <link rel="preload" href="css/modern.css" as="style">
+  <link rel="preload" href="css/modern.css?v=20260510g" as="style">
   
   <!-- Google Fonts - DM Sans -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -60,11 +60,11 @@
   
   <!-- Icon Fonts -->
   <link href="font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
-  <script src="https://use.fontawesome.com/13de8d1bac.js"></script>
+  <script defer src="https://use.fontawesome.com/13de8d1bac.js"></script>
   <!--videomodal-->
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script defer src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script defer src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 <style type="text/css">
     .modal-content iframe{
         margin: 0 auto;
@@ -72,22 +72,19 @@
     }
 </style>
 <script type="text/javascript">
-$(document).ready(function(){
-    /* Get iframe src attribute value i.e. YouTube video url
-    and store it in a variable */
+document.addEventListener('DOMContentLoaded', function () {
+  if (typeof window.jQuery === 'undefined') return;
+  jQuery(function ($) {
     var url = $("#cartoonVideo").attr('src');
 
-    /* Assign empty url value to the iframe src attribute when
-    modal hide, which stop the video playing */
-    $("#myModal").on('hide.bs.modal', function(){
-        $("#cartoonVideo").attr('src', '');
+    $("#myModal").on('hide.bs.modal', function () {
+      $("#cartoonVideo").attr('src', '');
     });
 
-    /* Assign the initially stored url back to the iframe src
-    attribute when modal is displayed again */
-    $("#myModal").on('show.bs.modal', function(){
-        $("#cartoonVideo").attr('src', url);
+    $("#myModal").on('show.bs.modal', function () {
+      $("#cartoonVideo").attr('src', url);
     });
+  });
 });
 </script>
   <style>
@@ -113,40 +110,13 @@ $(document).ready(function(){
     </div>
   </div>
 
-  <script src="js/odometer.js"></script>
-  <!-- Load Facebook SDK for JavaScript -->
-      <div id="fb-root"></div>
-      <script>
-        window.fbAsyncInit = function() {
-          FB.init({
-            xfbml            : true,
-            version          : 'v6.0'
-          });
-        };
+  <script defer src="js/odometer.js"></script>
 
-        (function(d, s, id) {
-        var js, fjs = d.getElementsByTagName(s)[0];
-        if (d.getElementById(id)) return;
-        js = d.createElement(s); js.id = id;
-        js.src = 'https://connect.facebook.net/en_US/sdk/xfbml.customerchat.js';
-        fjs.parentNode.insertBefore(js, fjs);
-      }(document, 'script', 'facebook-jssdk'));</script>
-
-      <!-- Your customer chat code -->
-      <div class="fb-customerchat"
-        attribution=install_email
-        page_id="381471881913860"
-  theme_color="#A3705D"
-  logged_in_greeting="Hi! How can I help you?"
-  logged_out_greeting="Hi! How can I help you?">
-      </div>
-
-
-  <script src="js/index.js"></script>
-  <script src="js/typed.js"></script>
-  <script src="js/loader.js"></script>
-  <script src="js/image.js"></script>
-  <script src="js/typewriter.js"></script>
+  <script defer src="js/index.js"></script>
+  <script defer src="js/typed.js"></script>
+  <script defer src="js/loader.js"></script>
+  <script defer src="js/image.js"></script>
+  <script defer src="js/typewriter.js"></script>
   <!-- Removed duplicate jQuery - using CDN version from head -->
   <!-- Navigation -->
   <nav class="navbar navbar-default navbar-fixed-top">
@@ -295,11 +265,250 @@ $(document).ready(function(){
   </script>
   </div>
 
+  <!-- Ask Sohaj AI — second entry-point for the floating chat widget.
+       Submitting this form (or clicking a chip) opens the chat panel
+       created by js/chat.js and fires the query through the Cloudflare
+       Worker backend, exactly like the hero input does. -->
+  <section class="ai-ask" id="ask-sohaj-ai" aria-labelledby="ai-ask-title">
+    <div class="ai-ask-inner">
+      <span class="ai-ask-eyebrow reveal"><span class="ai-ask-spark" aria-hidden="true">✦</span> AI Assistant</span>
+      <h2 class="ai-ask-title reveal stagger-1" id="ai-ask-title">Ask anything about me</h2>
+      <p class="ai-ask-subtitle reveal stagger-2">A personal AI trained on my work, design philosophy, and career — get instant answers about anything you want to know.</p>
+
+      <form id="ai-ask-form" class="ai-ask-form reveal stagger-3" autocomplete="off">
+        <input type="text" id="ai-ask-input" class="ai-ask-input"
+          placeholder="Ask about my work, projects, or design process…"
+          aria-label="Ask Sohaj's AI assistant" />
+        <button type="submit" id="ai-ask-send" class="ai-ask-send" aria-label="Send">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M3.4 20.4l17.45-7.48c.81-.35.81-1.49 0-1.84L3.4 3.6c-.66-.29-1.39.2-1.39.91L2 9.12c0 .5.37.93.87.99L17 12 2.87 13.88c-.5.07-.87.5-.87 1l.01 4.61c0 .71.73 1.2 1.39.91z"/>
+          </svg>
+        </button>
+      </form>
+
+      <div class="ai-ask-chips reveal stagger-3">
+        <button type="button" class="ai-ask-chip" data-prompt="What's your design process?">What's your design process?</button>
+        <button type="button" class="ai-ask-chip" data-prompt="Tell me about your work at Meta.">Tell me about your Meta work</button>
+        <button type="button" class="ai-ask-chip" data-prompt="Why did you become a designer?">Why design?</button>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    // ─────────────────────────────────────────────────────────────────
+    //  "Ask anything about me" → centered AI modal
+    //
+    //  Sends the user's prompt straight to the same Cloudflare Worker
+    //  the floating chat widget uses, but renders the conversation in
+    //  a dedicated full-screen modal styled after the SikhAI chat-card,
+    //  rather than opening the corner FAB.
+    // ─────────────────────────────────────────────────────────────────
+    (function() {
+      var AI_ENDPOINT = 'https://curly-snow-5c1b.sohaj-1991.workers.dev';
+      var conversation = [];
+      var isSending = false;
+      var lastFocusedEl = null;
+
+      function $(id) { return document.getElementById(id); }
+
+      function escapeHtml(text) {
+        var d = document.createElement('div');
+        d.textContent = text;
+        return d.innerHTML.replace(/\n/g, '<br>');
+      }
+
+      // Lightweight markdown → HTML (bold, italic, code, links, breaks).
+      function renderMarkdown(text) {
+        var d = document.createElement('div');
+        d.textContent = text;
+        var html = d.innerHTML;
+        html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+        html = html.replace(/__(.+?)__/g, '<strong>$1</strong>');
+        html = html.replace(/(^|\W)\*(?!\s)(.+?)(?<!\s)\*(?!\w)/g, '$1<em>$2</em>');
+        html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+        html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g,
+          '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
+        html = html.replace(/(^|\s)(https?:\/\/[^\s<]+)/g,
+          '$1<a href="$2" target="_blank" rel="noopener noreferrer">$2</a>');
+        html = html.replace(/\n/g, '<br>');
+        return html;
+      }
+
+      function appendMessage(role, content) {
+        var msgs = $('sohaj-ai-modal-messages');
+        if (!msgs) return;
+        var row = document.createElement('div');
+        row.className = 'sohaj-ai-modal-msg sohaj-ai-modal-msg--' + role;
+        row.innerHTML = role === 'assistant' ? renderMarkdown(content) : escapeHtml(content);
+        msgs.appendChild(row);
+        msgs.scrollTop = msgs.scrollHeight;
+        return row;
+      }
+
+      function showTyping() {
+        var msgs = $('sohaj-ai-modal-messages');
+        if (!msgs) return null;
+        var row = document.createElement('div');
+        row.className = 'sohaj-ai-modal-msg sohaj-ai-modal-msg--assistant sohaj-ai-modal-typing';
+        row.innerHTML = '<span class="sohaj-ai-modal-dot"></span><span class="sohaj-ai-modal-dot"></span><span class="sohaj-ai-modal-dot"></span>';
+        msgs.appendChild(row);
+        msgs.scrollTop = msgs.scrollHeight;
+        return row;
+      }
+
+      function openModal() {
+        var modal = $('sohaj-ai-modal');
+        if (!modal) return;
+        lastFocusedEl = document.activeElement;
+        modal.hidden = false;
+        // Force reflow so the open transition runs even when toggling rapidly.
+        // eslint-disable-next-line no-unused-expressions
+        modal.offsetHeight;
+        modal.classList.add('is-open');
+        document.body.classList.add('sohaj-ai-modal-open');
+        setTimeout(function() {
+          var input = $('sohaj-ai-modal-input');
+          if (input) input.focus();
+        }, 220);
+      }
+
+      function closeModal() {
+        var modal = $('sohaj-ai-modal');
+        if (!modal) return;
+        modal.classList.remove('is-open');
+        document.body.classList.remove('sohaj-ai-modal-open');
+        setTimeout(function() {
+          modal.hidden = true;
+          if (lastFocusedEl && lastFocusedEl.focus) lastFocusedEl.focus();
+        }, 240);
+      }
+
+      function hideSuggestions() {
+        var sugg = $('sohaj-ai-modal-suggestions');
+        if (sugg) sugg.style.display = 'none';
+      }
+
+      async function sendToAI(text) {
+        if (!text || isSending) return;
+        isSending = true;
+        hideSuggestions();
+
+        appendMessage('user', text);
+        conversation.push({ role: 'user', content: text });
+
+        var typingRow = showTyping();
+        var sendBtn = $('sohaj-ai-modal-send');
+        if (sendBtn) sendBtn.disabled = true;
+
+        try {
+          var res = await fetch(AI_ENDPOINT, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ messages: conversation })
+          });
+          if (!res.ok) throw new Error('Network error');
+          var data = await res.json();
+          var reply = (data && data.reply) ? data.reply : '';
+          if (typingRow) typingRow.remove();
+          if (reply) {
+            appendMessage('assistant', reply);
+            conversation.push({ role: 'assistant', content: reply });
+          } else {
+            appendMessage('assistant', "Hmm, I didn't catch that. Could you try again?");
+          }
+        } catch (err) {
+          if (typingRow) typingRow.remove();
+          appendMessage('assistant',
+            "I'm having trouble connecting right now. You can reach Sohaj directly at sohaj.1991@gmail.com.");
+          console.error('Sohaj AI modal error:', err);
+        } finally {
+          isSending = false;
+          if (sendBtn) sendBtn.disabled = false;
+        }
+      }
+
+      function openModalWith(text) {
+        openModal();
+        // Let the open animation start before pushing in the first message
+        // so the message slide-in animation reads cleanly.
+        setTimeout(function() { sendToAI(text); }, 180);
+      }
+
+      function init() {
+        var askForm  = $('ai-ask-form');
+        var askInput = $('ai-ask-input');
+        var askSend  = $('ai-ask-send');
+        var askChips = document.querySelectorAll('.ai-ask-chip');
+
+        if (askForm && askInput) {
+          askInput.addEventListener('input', function() {
+            if (askSend) askSend.classList.toggle('active', askInput.value.trim().length > 0);
+          });
+
+          askForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            var text = askInput.value.trim();
+            if (!text) return;
+            askInput.value = '';
+            if (askSend) askSend.classList.remove('active');
+            openModalWith(text);
+          });
+
+          askChips.forEach(function(btn) {
+            btn.addEventListener('click', function() {
+              var prompt = btn.getAttribute('data-prompt') || btn.textContent.trim();
+              openModalWith(prompt);
+            });
+          });
+        }
+
+        // Modal-internal wiring
+        var modalForm  = $('sohaj-ai-modal-form');
+        var modalInput = $('sohaj-ai-modal-input');
+        var modalChips = document.querySelectorAll('.sohaj-ai-modal-chip');
+
+        if (modalForm && modalInput) {
+          modalForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            var text = modalInput.value.trim();
+            if (!text) return;
+            modalInput.value = '';
+            sendToAI(text);
+          });
+        }
+
+        modalChips.forEach(function(btn) {
+          btn.addEventListener('click', function() {
+            var prompt = btn.getAttribute('data-prompt') || btn.textContent.trim();
+            sendToAI(prompt);
+          });
+        });
+
+        // Close affordances: × button, backdrop click, Escape key.
+        document.querySelectorAll('[data-ai-modal-close]').forEach(function(el) {
+          el.addEventListener('click', closeModal);
+        });
+        document.addEventListener('keydown', function(e) {
+          var modal = $('sohaj-ai-modal');
+          if (e.key === 'Escape' && modal && modal.classList.contains('is-open')) {
+            closeModal();
+          }
+        });
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+      } else {
+        init();
+      }
+    })();
+  </script>
+
   <!-- Achievements Parallax Section -->
   <section id="achievements" class="achievements-section">
     <div class="achievements-container">
       
-      <!-- Achievement 1: $1B Revenue Impact -->
+      <!-- Achievement 1: $500M+ Revenue Impact -->
       <div class="achievement-block" data-achievement="revenue">
         <div class="achievement-content">
           <div class="achievement-number">$0M</div>
@@ -371,69 +580,176 @@ $(document).ready(function(){
           <span class="section-label reveal">Portfolio</span>
           <h2 class="reveal stagger-1">Featured Work</h2>
           <h10 class="reveal stagger-2">Turning challenges into achievements through thoughtful design</h10>
-          <br>
-          
-          <!-- Analogue-inspired Featured Work Grid -->
-          <div class="featured-grid reveal">
-            <!-- Large Card 1 - Meta Ads -->
-            <a href="https://medium.com/@sohajsinghbrar/ads-manager-growth-fc719414c182" target="_blank" class="featured-card featured-card-dark">
-              <div class="featured-card-content">
-                <h3 class="featured-card-title">Meta Ads Manager<br>Growth</h3>
-                <div class="featured-card-image">
-                  <img src="img/cover_metagrowth.gif" alt="Meta Ads Manager Growth" loading="lazy">
-                </div>
-                <p class="featured-card-desc">Creating value for millions of advertisers through incremental data-informed designs at scale.</p>
-              </div>
-            </a>
-            
-            <!-- Large Card 2 - Oracle -->
-            <a href="https://medium.com/@sohajsinghbrar/oracle-supply-chain-management-b04fc3859d21" target="_blank" class="featured-card featured-card-light">
-              <div class="featured-card-content">
-                <h3 class="featured-card-title">Oracle Supply Chain<br>Management</h3>
-                <div class="featured-card-image">
-                  <img src="img/cover_oracle_recall.png" alt="Oracle Supply Chain" loading="lazy">
-                </div>
-                <p class="featured-card-desc">An AI-powered automated solution for healthcare customers to easily manage product recalls.</p>
-              </div>
-            </a>
-            
-            <!-- Large Card 3 - Help-Full -->
-            <a href="https://medium.com/@sohajsinghbrar/help-full-a35665aa4b2d" target="_blank" class="featured-card featured-card-gradient">
-              <div class="featured-card-content">
-                <h3 class="featured-card-title">Help-Full℠<br>Community Platform</h3>
-                <div class="featured-card-image">
-                  <img src="img/cover_help-full.gif" alt="Help-Full" loading="lazy">
-                </div>
-                <p class="featured-card-desc">A community network where people of all ages offer and receive help with like-minded individuals.</p>
-              </div>
-            </a>
-            
-            <!-- Large Card 4 - Meta Business Suite -->
-            <a href="https://apps.apple.com/us/app/facebook-business-suite/id514643583" target="_blank" class="featured-card featured-card-dark">
-              <div class="featured-card-content">
-                <h3 class="featured-card-title">Meta Business<br>Suite App</h3>
-                <div class="featured-card-image">
-                  <img src="img/cover_fb.png" alt="Meta Business Suite" loading="lazy">
-                </div>
-                <p class="featured-card-desc">Repurposing Meta's Pages Manager App to serve broader small-business needs in one place.</p>
-              </div>
-            </a>
-          </div>
-          
+        </div>
+      </div>
     </div>
+
+    <!-- Horizontal Featured Work: a vertical scroll-jacked horizontal
+         gallery. As the user scrolls down, the cards pan left through
+         the viewport. Each card is a big rounded image/video with the
+         project name overlaid. Minimal, simple. -->
+    <div class="work-horizontal" id="work-horizontal">
+      <div class="work-horizontal-pin">
+        <div class="work-horizontal-track" id="work-horizontal-track">
+
+          <a class="work-card work-card--wa-lists" href="https://business.whatsapp.com/" target="_blank" rel="noopener">
+            <video class="work-card-media" data-work-video src="img/WA_Lists.mp4" muted loop playsinline preload="metadata" aria-hidden="true"></video>
+            <span class="work-card-eyebrow">Meta</span>
+            <h3 class="work-card-title">WhatsApp Lists</h3>
+            <div class="work-card-reveal">
+              <p class="work-card-description">A way for 200M+ small businesses to organize customer chats with custom lists — designed 0&nbsp;→&nbsp;1 across iOS and Android.</p>
+              <span class="work-card-cta">Learn more <span class="work-card-cta-arrow" aria-hidden="true">→</span></span>
+            </div>
+          </a>
+
+          <a class="work-card work-card--wa-ads" href="https://whatsappbusiness.com/products/ads-that-click-to-whatsapp/" target="_blank" rel="noopener">
+            <div class="phone-mock-wrap" aria-hidden="true">
+              <div class="phone-mock">
+                <div class="phone-mock-screen">
+                  <video class="work-card-media" data-work-video src="img/WA_ads.mp4?v=hq1" muted loop playsinline preload="metadata" aria-hidden="true"></video>
+                </div>
+                <div class="phone-mock-notch"></div>
+                <div class="phone-mock-btn-power"></div>
+                <div class="phone-mock-btn-vol up"></div>
+                <div class="phone-mock-btn-vol down"></div>
+              </div>
+            </div>
+            <span class="work-card-eyebrow">Meta</span>
+            <h3 class="work-card-title">WhatsApp Ads</h3>
+            <div class="work-card-reveal">
+              <p class="work-card-description">Crafted Click-to-WhatsApp ads creation from WhatsApp Business app—Meta's fastest growing monetization business—connecting advertisers directly with billions of customers across the globe.</p>
+              <span class="work-card-cta">Learn more <span class="work-card-cta-arrow" aria-hidden="true">→</span></span>
+            </div>
+          </a>
+
+          <a class="work-card" href="https://www.facebook.com/business/help/342728904797642" target="_blank" rel="noopener">
+            <video class="work-card-media" data-work-video
+              poster="img/partnershipads_poster.jpg?v=hq1"
+              muted loop playsinline preload="metadata" aria-hidden="true">
+              <source src="img/partnershipads.webm?v=hq1" type="video/webm">
+              <source src="img/partnershipads.mp4?v=hq1" type="video/mp4">
+            </video>
+            <span class="work-card-eyebrow">Meta</span>
+            <h3 class="work-card-title">Partnership Ads</h3>
+            <div class="work-card-reveal">
+              <p class="work-card-description">A new ad format that lets brands and creators co-publish ads from a single account — unlocking authentic creator-led campaigns at scale across Meta's family of apps.</p>
+              <span class="work-card-cta">Learn more <span class="work-card-cta-arrow" aria-hidden="true">→</span></span>
+            </div>
+          </a>
+
+          <a class="work-card" href="sikhai/" target="_blank" rel="noopener">
+            <video class="work-card-media" data-work-video
+              poster="img/sikhai_poster.jpg?v=hq1"
+              muted loop playsinline preload="metadata" aria-hidden="true">
+              <source src="img/sikhai.webm?v=hq2" type="video/webm">
+              <source src="img/sikhai.mp4?v=hq2" type="video/mp4">
+            </video>
+            <h3 class="work-card-title">Sikh AI</h3>
+            <div class="work-card-reveal">
+              <p class="work-card-description">A spiritual companion for 30,000+ Gursikhs worldwide — Daily Hukamnama from Sri Darbar Sahib, Nitnem audio, a real-time meditation globe, and Chardi&nbsp;Kala AI: the world's first AI mentor for the Sikh community.</p>
+              <span class="work-card-cta">Visit Sikh AI <span class="work-card-cta-arrow" aria-hidden="true">→</span></span>
+            </div>
+          </a>
+
+          <a class="work-card" href="https://medium.com/@sohajsinghbrar/ads-manager-growth-fc719414c182" target="_blank" rel="noopener">
+            <img class="work-card-media" src="img/cover_metagrowth.gif" alt="" aria-hidden="true">
+            <span class="work-card-eyebrow">Meta</span>
+            <h3 class="work-card-title">Ads Manager Growth</h3>
+            <div class="work-card-reveal">
+              <p class="work-card-description">Drove $300M+ in incremental revenue through data-informed growth experiments across the Ads Manager surface for 10M+ advertisers worldwide.</p>
+              <span class="work-card-cta">View case study <span class="work-card-cta-arrow" aria-hidden="true">→</span></span>
+            </div>
+          </a>
+
+          <a class="work-card" href="https://medium.com/@sohajsinghbrar/oracle-supply-chain-management-b04fc3859d21" target="_blank" rel="noopener">
+            <video class="work-card-media" data-work-video
+              poster="img/oracle_recall_poster.jpg?v=hq2"
+              muted loop playsinline preload="metadata" aria-hidden="true">
+              <!-- Order matters: browsers pick the first <source> they support.
+                   Chrome/Firefox/Edge pick webm (smaller); Safari falls back to mp4. -->
+              <source src="img/oracle_recall.webm?v=hq2" type="video/webm">
+              <source src="img/oracle_recall.mp4?v=hq2" type="video/mp4">
+            </video>
+            <div class="work-card-awards" aria-label="Featured at Oracle OpenWorld">
+              <img src="img/Oracle%20open%20world%20logo.png" alt="Oracle OpenWorld">
+            </div>
+            <h3 class="work-card-title">Oracle Supply Chain</h3>
+            <div class="work-card-reveal">
+              <p class="work-card-description">An AI-guided product recall workflow for healthcare enterprises — turned a complex, high-stakes process into a clear, guided experience.</p>
+              <span class="work-card-cta">View case study <span class="work-card-cta-arrow" aria-hidden="true">→</span></span>
+            </div>
+          </a>
+
+          <a class="work-card" href="https://medium.com/@sohajsinghbrar/help-full-a35665aa4b2d" target="_blank" rel="noopener">
+            <!-- YouTube embed cropped "cover"-style to fill the card.
+                 The poster image masks the iframe entirely until
+                 autoplay has had time to start and YouTube has
+                 hidden any of its initial UI (play overlay, title,
+                 center-controls flash). -->
+            <div class="work-card-yt-wrap" aria-hidden="true">
+              <iframe class="work-card-yt"
+                data-yt-id="vz2mF7Cq2JM"
+                src="about:blank"
+                title="Help-Full"
+                frameborder="0"
+                allow="autoplay; encrypted-media; picture-in-picture"
+                allowfullscreen
+                loading="lazy"
+                tabindex="-1"></iframe>
+              <img class="work-card-yt-poster"
+                src="img/help-full-poster.jpg"
+                alt="" aria-hidden="true">
+              <div class="work-card-yt-shield"></div>
+            </div>
+            <div class="work-card-awards" aria-label="Award winner">
+              <img src="img/logos/Red-dot1.png" alt="Red Dot Award">
+              <img src="img/logos/Indigo.png" alt="Indigo Design Award">
+              <img src="img/logos/SFdesignWeek.png" alt="SF Design Week Award">
+            </div>
+            <h3 class="work-card-title">Help-Full<sup class="work-card-title-sm">SM</sup></h3>
+            <div class="work-card-reveal">
+              <p class="work-card-description">A community network where people of all ages offer and receive help from like-minded neighbors. Designed end-to-end from brand to product.</p>
+              <span class="work-card-cta">View case study <span class="work-card-cta-arrow" aria-hidden="true">→</span></span>
+            </div>
+          </a>
+
+          <a class="work-card work-card--mbs" href="https://apps.apple.com/us/app/facebook-business-suite/id514643583" target="_blank" rel="noopener">
+            <div class="phone-mock-wrap" aria-hidden="true">
+              <div class="phone-mock">
+                <div class="phone-mock-screen">
+                  <img class="work-card-media" src="img/MBS.webp" alt="" aria-hidden="true" loading="lazy">
+                </div>
+                <div class="phone-mock-notch"></div>
+                <div class="phone-mock-btn-power"></div>
+                <div class="phone-mock-btn-vol up"></div>
+                <div class="phone-mock-btn-vol down"></div>
+              </div>
+            </div>
+            <span class="work-card-eyebrow">Meta</span>
+            <h3 class="work-card-title">Business Suite</h3>
+            <div class="work-card-reveal">
+              <p class="work-card-description">Designed mobile ad creation and management—from boosting a post to running multi-objective campaigns—for 200M+ small businesses on iOS and Android worldwide.</p>
+              <span class="work-card-cta">View on App Store <span class="work-card-cta-arrow" aria-hidden="true">→</span></span>
+            </div>
+          </a>
+
+        </div>
+      </div>
+    </div>
+    <!-- end .work-horizontal -->
+
+    <div class="container1">
+      <div class="row">
+        <div class="col-lg-12 text-center">
           <div class="container" style="font-size: 4.5vh; line-height: 1.5;">
             <script src="js/nda.js"></script>
             <FORM>The majority of my work is under NDA. Please reach out to access the most impactful projects</FORM>
             <br>
-            <div class="col-button-dwnld2 span_12"><button type="button" class="btn btn-lg btn-outline3" onClick="passWord()">View latest projects  <i class="fa fa-lock" aria-hidden="true"></i></button></a></div>
+            <div class="col-button-dwnld2 span_12"><button type="button" class="btn btn-lg btn-outline3" onClick="passWord()">View latest projects  <i class="fa fa-lock" aria-hidden="true"></i></button></div>
           </div>
         </div>
       </div>
-
     </div>
-    </div>
-  </div>
-
 
   </section>
     <!--</div> -->
@@ -728,23 +1044,56 @@ $(document).ready(function(){
   <!-- jQuery already loaded from CDN in head -->
   <!-- <script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script> -->
   <!-- Bootstrap Core JavaScript -->
-  <script src="js/bootstrap.min.js"></script>
+  <script defer src="js/bootstrap.min.js"></script>
   <!-- Plugin JavaScript -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js"></script>
-  <script src="js/classie.js"></script>
-  <script src="js/cbpAnimatedHeader.js"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js"></script>
+  <script defer src="js/classie.js"></script>
+  <script defer src="js/cbpAnimatedHeader.js"></script>
   <!-- Contact Form JavaScript -->
-  <script src="js/jqBootstrapValidation.js"></script>
-  <script src="js/contact_me.js"></script>
+  <script defer src="js/jqBootstrapValidation.js"></script>
+  <script defer src="js/contact_me.js"></script>
   <!-- Custom Theme JavaScript -->
 
-  <script src="js/freelancer.js"></script>
+  <script defer src="js/freelancer.js"></script>
   
   <!-- Modern Animations -->
-  <script src="js/animations.js" defer></script>
+  <script src="js/animations.js?v=20260510e" defer></script>
   
   <!-- AI Chat Widget -->
   <script src="js/chat.js" defer></script>
+
+  <!-- Facebook Customer Chat (loaded after page is idle so it never blocks first paint) -->
+  <div id="fb-root"></div>
+  <div class="fb-customerchat"
+       attribution="install_email"
+       page_id="381471881913860"
+       theme_color="#A3705D"
+       logged_in_greeting="Hi! How can I help you?"
+       logged_out_greeting="Hi! How can I help you?">
+  </div>
+  <script>
+    window.fbAsyncInit = function () {
+      if (window.FB) {
+        FB.init({ xfbml: true, version: 'v6.0' });
+      }
+    };
+    function loadFbCustomerChat() {
+      if (document.getElementById('facebook-jssdk')) return;
+      var js = document.createElement('script');
+      js.id = 'facebook-jssdk';
+      js.async = true;
+      js.defer = true;
+      js.src = 'https://connect.facebook.net/en_US/sdk/xfbml.customerchat.js';
+      document.body.appendChild(js);
+    }
+    if ('requestIdleCallback' in window) {
+      requestIdleCallback(loadFbCustomerChat, { timeout: 4000 });
+    } else {
+      window.addEventListener('load', function () {
+        setTimeout(loadFbCustomerChat, 1500);
+      });
+    }
+  </script>
   <!--
   <script>
     (function(i, s, o, g, r, a, m) {
@@ -763,6 +1112,50 @@ $(document).ready(function(){
     ga('send', 'pageview');
   </script>
 -->
+
+  <!-- ─────────────────────────────────────────
+       Sohaj's AI Modal (mirrors the SikhAI
+       chat-card aesthetic, opened from the
+       "Ask anything about me" section).
+       ───────────────────────────────────────── -->
+  <div class="sohaj-ai-modal" id="sohaj-ai-modal" role="dialog" aria-modal="true" aria-labelledby="sohaj-ai-modal-title" hidden>
+    <div class="sohaj-ai-modal-backdrop" data-ai-modal-close></div>
+    <div class="sohaj-ai-modal-card" role="document">
+      <header class="sohaj-ai-modal-header">
+        <img src="img/about9.jpg" alt="Sohaj" class="sohaj-ai-modal-avatar" loading="lazy">
+        <div class="sohaj-ai-modal-header-text">
+          <h4 id="sohaj-ai-modal-title">Sohaj's AI</h4>
+          <span><span class="sohaj-ai-modal-status-dot" aria-hidden="true"></span>Trained on his work, design philosophy, and career</span>
+        </div>
+        <button class="sohaj-ai-modal-close" type="button" aria-label="Close" data-ai-modal-close>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </header>
+
+      <div class="sohaj-ai-modal-messages" id="sohaj-ai-modal-messages" aria-live="polite"></div>
+
+      <div class="sohaj-ai-modal-suggestions" id="sohaj-ai-modal-suggestions">
+        <button type="button" class="sohaj-ai-modal-chip" data-prompt="What's your design process?">What's your design process?</button>
+        <button type="button" class="sohaj-ai-modal-chip" data-prompt="Tell me about your work at Meta.">Tell me about your Meta work</button>
+        <button type="button" class="sohaj-ai-modal-chip" data-prompt="Why did you become a designer?">Why design?</button>
+      </div>
+
+      <form class="sohaj-ai-modal-input-bar" id="sohaj-ai-modal-form" autocomplete="off">
+        <input class="sohaj-ai-modal-input" id="sohaj-ai-modal-input" type="text"
+               placeholder="Ask a follow-up…"
+               aria-label="Ask Sohaj's AI assistant" />
+        <button class="sohaj-ai-modal-send" type="submit" id="sohaj-ai-modal-send" aria-label="Send">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true">
+            <path fill="#fff" d="M3.4 20.4l17.45-7.48c.81-.35.81-1.49 0-1.84L3.4 3.6c-.66-.29-1.39.2-1.39.91L2 9.12c0 .5.37.93.87.99L17 12 2.87 13.88c-.5.07-.87.5-.87 1l.01 4.61c0 .71.73 1.2 1.39.91z"/>
+          </svg>
+        </button>
+      </form>
+    </div>
+  </div>
+
 </body>
 
 </html>
