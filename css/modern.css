@@ -4452,6 +4452,7 @@ body.sohaj-ai-modal-open { overflow: hidden; }
   font-family: var(--font-body, system-ui);
   font-size: 0.95rem;
   line-height: 1.55;
+  text-align: left;
   word-wrap: break-word;
   animation: sohajAiMsgIn 0.36s cubic-bezier(0.16, 1, 0.3, 1);
 }
