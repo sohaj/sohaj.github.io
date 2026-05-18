@@ -28,10 +28,19 @@
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content="Sikh AI — a meditative companion for daily Sikhi practice">
+  <!-- Type stack
+       Display: Fraunces (variable: ital, opsz, wght, SOFT) — used for
+         hero / storytelling phrases / section titles / display numbers.
+         The SOFT axis is the move: warms the letterforms for sacred
+         moments ("Waheguru") and tightens them for product moments.
+       Body: Inter (variable: opsz, wght) — paragraphs, nav, chat, UI.
+         Replaces DM Sans for a sharper, more current screen rendering.
+       Gurmukhi is intentionally left to the system fallback for now —
+         no font change there per requirements. -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="preload" href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" as="style">
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..700,0..100;1,9..144,300..700,0..100&family=Inter:opsz,wght@14..32,300..700&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..700,0..100;1,9..144,300..700,0..100&family=Inter:opsz,wght@14..32,300..700&display=swap">
 
   <style>
     :root {
@@ -52,8 +61,21 @@
       --shadow-sm: 0 1px 2px rgba(0,0,0,0.3);
       --shadow-md: 0 4px 12px rgba(0,0,0,0.4);
       --shadow-lg: 0 8px 30px rgba(0,0,0,0.5);
-      --font-display: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-      --font-body: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      /* Fraunces does the display work (hero, storytelling, section
+         titles, stats numbers); Inter is the body / UI grotesk.
+         System fallbacks intentionally include the platform UI sans
+         (-apple-system / Segoe UI / Roboto) so a slow font load reads
+         as native rather than as a generic serif/sans flash. */
+      --font-display: 'Fraunces', 'Times New Roman', Georgia, serif;
+      --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      /* Variable-axis presets — used via `font-variation-settings`
+         on specific surfaces to pull the right personality out of
+         Fraunces without swapping fonts. */
+      --fvs-display-soft: 'opsz' 144, 'SOFT' 100, 'wght' 400;
+      --fvs-display-tight: 'opsz' 96, 'SOFT' 20, 'wght' 500;
+      --fvs-display-numerals: 'opsz' 144, 'SOFT' 50, 'wght' 300;
+      --fvs-body: 'opsz' 16, 'wght' 400;
+      --fvs-body-bold: 'opsz' 20, 'wght' 600;
       --radius-sm: 8px;
       --radius-md: 12px;
       --radius-lg: 16px;
@@ -83,7 +105,17 @@
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; font-size: 16px; }
+    html {
+      scroll-behavior: smooth;
+      font-size: 16px;
+      /* Both Fraunces and Inter ship optical-sizing axes; letting the
+         browser auto-tune `opsz` from the rendered size gives display
+         text proper display cuts and body text proper text cuts
+         without us hand-setting it per surface. */
+      font-optical-sizing: auto;
+      text-rendering: optimizeLegibility;
+      -moz-osx-font-smoothing: grayscale;
+    }
 
     /* Lenis baseline — disables native smooth-scroll when Lenis is active
        so the two don't fight, and lets pinned ScrollTriggers stay in sync. */
@@ -97,6 +129,10 @@
       background: var(--color-bg);
       color: var(--color-text);
       font-family: var(--font-body);
+      /* Inter at opsz 16, weight 400 — its tuned-for-screen text cut.
+         Per-surface overrides (buttons, chips, etc.) bump weight or
+         opsz without re-declaring family. */
+      font-variation-settings: var(--fvs-body);
       line-height: 1.6;
       overflow-x: hidden;
       -webkit-font-smoothing: antialiased;
@@ -201,7 +237,7 @@
       border-radius: var(--radius-full);
       /* When this element is a <button>, browsers default to the system
          UI font — that's why the label looked off. Inheriting from the
-         body restores DM Sans across the rest of the site. */
+         body restores Inter across the rest of the site. */
       font-family: inherit;
       font-weight: 600;
       font-size: 0.9rem;
@@ -306,9 +342,10 @@
     .hero h1 {
       font-family: var(--font-display);
       font-size: clamp(2.4rem, 4vw, 3.8rem);
-      font-weight: 700;
-      line-height: 1.1;
-      letter-spacing: -0.02em;
+      font-weight: 600;
+      font-variation-settings: 'opsz' 144, 'SOFT' 40, 'wght' 600;
+      line-height: 1.05;
+      letter-spacing: -0.03em;
       margin-bottom: 20px;
     }
 
@@ -1008,7 +1045,13 @@
       background: var(--color-primary); animation: pulse 2s infinite;
     }
     .ai-hukam-gurmukhi {
-      font-family: var(--font-display);
+      /* Gurmukhi is intentionally left to the platform's native
+         Gurmukhi face — Fraunces (Latin-only) would otherwise
+         cascade through to a generic serif and subtly change how
+         the shabad rendered. Explicit chain keeps Apple LiGurmukhi /
+         Nirmala UI / Noto Sans Gurmukhi on the right platform. */
+      font-family: -apple-system, BlinkMacSystemFont, 'Gurmukhi MT',
+        'Nirmala UI', 'Noto Sans Gurmukhi', 'Segoe UI', sans-serif;
       font-size: 1.05rem; line-height: 1.9;
       color: var(--color-primary); font-weight: 500;
       margin-bottom: 10px;
@@ -1214,10 +1257,15 @@
 
     .stat-item h3 {
       font-family: var(--font-display);
-      font-size: 2.5rem;
-      font-weight: 700;
+      /* Editorial-magazine stats: low weight, large opsz, max SOFT.
+         Lets a serif do what serifs do best — set numerals that
+         feel hand-set rather than UI-stamped. */
+      font-size: clamp(2.8rem, 5vw, 3.6rem);
+      font-weight: 300;
+      font-variation-settings: var(--fvs-display-numerals);
       color: var(--color-primary);
       line-height: 1;
+      letter-spacing: -0.02em;
       margin-bottom: 8px;
     }
 
@@ -1258,7 +1306,12 @@
     .features-bg-text h3 {
       font-family: var(--font-display);
       font-size: clamp(6rem, 14vw, 16rem);
-      font-weight: 900;
+      /* Italic, low-weight Fraunces at gigantic size is the classic
+         editorial-serif move — ambient label that reads as ghost
+         signage rather than a heavy display headline. */
+      font-style: italic;
+      font-weight: 400;
+      font-variation-settings: 'opsz' 144, 'SOFT' 100, 'wght' 400;
       line-height: 0.95;
       letter-spacing: -0.04em;
       text-align: center;
@@ -1331,8 +1384,10 @@
     .features-meta-slide .feature-title {
       font-family: var(--font-display);
       font-size: clamp(1.5rem, 2.8vw, 2.2rem);
-      font-weight: 700;
-      line-height: 1.15;
+      font-weight: 600;
+      font-variation-settings: 'opsz' 96, 'SOFT' 30, 'wght' 600;
+      line-height: 1.1;
+      letter-spacing: -0.025em;
       color: var(--color-text);
       margin-bottom: 14px;
     }
@@ -1855,9 +1910,13 @@
     .section-title {
       font-family: var(--font-display);
       font-size: clamp(1.8rem, 4vw, 2.8rem);
-      font-weight: 700;
-      line-height: 1.15;
-      letter-spacing: -0.02em;
+      /* Fraunces 600 + SOFT 30 gives a confident editorial heading
+         without the wedding-invitation softness of higher SOFT
+         values; tight tracking + -0.02em keeps it product-grade. */
+      font-weight: 600;
+      font-variation-settings: 'opsz' 96, 'SOFT' 30, 'wght' 600;
+      line-height: 1.1;
+      letter-spacing: -0.025em;
       margin-bottom: 16px;
     }
 
@@ -1963,10 +2022,11 @@
 
     .cta h2 {
       font-family: var(--font-display);
-      font-size: clamp(1.8rem, 4vw, 2.5rem);
-      font-weight: 700;
-      line-height: 1.15;
-      letter-spacing: -0.02em;
+      font-size: clamp(2rem, 4.5vw, 3rem);
+      font-weight: 500;
+      font-variation-settings: 'opsz' 144, 'SOFT' 80, 'wght' 500;
+      line-height: 1.05;
+      letter-spacing: -0.025em;
       margin-bottom: 16px;
     }
 
@@ -2516,42 +2576,52 @@
          warp dots — narrative is "the voice", stars are "the
          space you're moving through". */
       color: #FFFFFF;
-      font-family: var(--font-body);
+      /* Storytelling moves to Fraunces so the phrases carry the
+         narrative weight of a display serif while staying legible
+         through the blur-to-focus transition. Optical-sizing axis
+         (opsz 144) gives display-cut letterforms with open counters
+         that hold up at clamp() sizes; SOFT axis warms the terminals
+         to match the meditative tone. Body copy stays in Inter. */
+      font-family: var(--font-display);
+      font-variation-settings: var(--fvs-display-soft);
       opacity: 0;
       filter: blur(24px);
-      letter-spacing: -0.01em;
-      line-height: 1.05;
+      letter-spacing: -0.015em;
+      line-height: 1.0;
       will-change: opacity, filter, transform;
     }
-    /* All five phrases use DM Sans (the site's typeface) for full
-       visual consistency with nav, body copy, hero, etc. Per-phrase
-       variants only change weight + size — never family or style —
-       so the storytelling stays on-brand and upright like the rest
-       of the site (no italics anywhere). */
+    /* Per-phrase weight + size variants — the variation settings on
+       each modifier lean into Fraunces's axes so we get real range
+       (whisper → invocation) from a single variable font file. */
     .story-text--sans {
-      font-weight: 300;
       font-size: clamp(2.2rem, 4.8vw, 4.2rem);
+      font-variation-settings: 'opsz' 96, 'SOFT' 70, 'wght' 300;
     }
     .story-text--serif {
-      font-weight: 400;
       font-size: clamp(2.8rem, 6vw, 5.2rem);
+      font-variation-settings: 'opsz' 144, 'SOFT' 80, 'wght' 350;
     }
-    .story-text--lg  { font-size: clamp(3.2rem, 7vw, 6.0rem); }
+    .story-text--lg  {
+      font-size: clamp(3.2rem, 7vw, 6.0rem);
+      font-variation-settings: 'opsz' 144, 'SOFT' 90, 'wght' 380;
+    }
     .story-text--xl  {
       font-size: clamp(5rem, 11vw, 8.5rem);
-      letter-spacing: 0.01em;
-      font-weight: 500;
+      letter-spacing: -0.005em;
+      font-variation-settings: 'opsz' 144, 'SOFT' 100, 'wght' 420;
     }
-    /* The final invocation. Largest weight + size in DM Sans for
-       a hierarchy peak; staying white keeps the focus tight against
-       the saffron warp behind it. */
+    /* The final invocation ("Waheguru"). Italic + SOFT=100 + low
+       weight gives a hushed, reverent peak rather than a loud one —
+       it's the difference between a shout and a whispered prayer.
+       Wider tracking lets the letterforms breathe at display size. */
     .story-text--xxl {
       font-size: clamp(6rem, 13vw, 10.5rem);
-      font-weight: 600;
-      letter-spacing: -0.005em;
+      letter-spacing: 0.005em;
+      font-style: italic;
+      font-variation-settings: 'opsz' 144, 'SOFT' 100, 'wght' 360;
     }
     .story-text--sacred {
-      font-weight: 600;
+      font-variation-settings: 'opsz' 144, 'SOFT' 100, 'wght' 360;
     }
     @media (max-width: 768px) {
       .story-text--xl  { font-size: clamp(3.5rem, 13vw, 6rem); }
