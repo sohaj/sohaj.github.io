@@ -2506,7 +2506,7 @@
     }
     .sangat-card-body {
       position: absolute;
-      width: 240px;
+      width: 220px;
       padding: 12px 14px;
       background: rgba(14, 14, 14, 0.88);
       backdrop-filter: blur(14px);
@@ -4890,6 +4890,19 @@
           if (cam) {
             var camLen = Math.sqrt(cam.x * cam.x + cam.y * cam.y + cam.z * cam.z) || 1;
             var camN = { x: cam.x / camLen, y: cam.y / camLen, z: cam.z / camLen };
+            // Cache viewport dimensions per frame; used for the
+            // smart-quadrant inward-direction calculation.
+            var vw = window.innerWidth;
+            var vh = window.innerHeight;
+            // Width / height of the card body in CSS px. Used to
+            // bias the quadrant flip threshold so cards don't get
+            // clipped at viewport edges — if the pin is close
+            // enough to a side that an outward-extending card
+            // would clip, force it to extend inward EVEN if the
+            // pin hasn't crossed viewport centre yet.
+            var cardW = 220;
+            var cardH = 120;
+            var pad   = 32;
             var cards = document.querySelectorAll('.sangat-card');
             for (var i = 0; i < cards.length; i++) {
               var c = cards[i];
@@ -4907,6 +4920,44 @@
               if (t < 0) t = 0; else if (t > 1) t = 1;
               c.style.opacity = t.toFixed(3);
               c.style.pointerEvents = t > 0.5 ? 'auto' : 'none';
+
+              // Smart quadrant: while the card is visible enough
+              // to matter, point the body toward whichever side
+              // of the viewport has more room. globe.gl sets the
+              // card to position:absolute with translate so its
+              // bounding rect's (left, top) IS the pin's screen
+              // position (the card root is width:0/height:0).
+              //
+              // Edge-clipping guard: if the pin is within (cardW +
+              // pad) of the right edge, force the body to extend
+              // WEST regardless of centre-line — otherwise the
+              // card would be cropped at the viewport's right.
+              // Same for the left/top/bottom edges.
+              if (t > 0.05) {
+                var rect = c.getBoundingClientRect();
+                var px = rect.left;
+                var py = rect.top;
+                var horiz;
+                if (px > vw - (cardW + pad)) {
+                  horiz = 'w';
+                } else if (px < (cardW + pad)) {
+                  horiz = 'e';
+                } else {
+                  horiz = px < vw / 2 ? 'e' : 'w';
+                }
+                var vert;
+                if (py > vh - (cardH + pad)) {
+                  vert = 'n';
+                } else if (py < (cardH + pad)) {
+                  vert = 's';
+                } else {
+                  vert = py < vh / 2 ? 's' : 'n';
+                }
+                var q = vert + horiz;
+                if (c.getAttribute('data-quadrant') !== q) {
+                  c.setAttribute('data-quadrant', q);
+                }
+              }
             }
           }
           rafId = requestAnimationFrame(tickOcclusion);
