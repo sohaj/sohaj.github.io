@@ -3,20 +3,31 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>[NEXT] Sikh AI — Awwwards Redesign</title>
-  <meta name="description" content="Work-in-progress redesign of Sikh AI for Awwwards submission. Not the canonical page — see /sikhai/ for the live version.">
-  <meta name="keywords" content="Sikh AI, Gurbani, Hukamnama, Nitnem, Simran, Kirtan, Sikh Calendar, Chardi Kala AI, Sikh App, Waheguru">
+  <title>Sikh AI — A Daily Companion for Sikhi</title>
+  <meta name="description" content="Meditate with Sikhs across the world. Sikh AI brings the daily Hukamnama, Gurbani, Nitnem, Simran, live Kirtan, and a Sikhi-grounded AI guide into one quiet, breath-led experience.">
+  <meta name="keywords" content="Sikh AI, Gurbani, Hukamnama, Nitnem, Simran, Kirtan, Sikh Calendar, Chardi Kala AI, Sikh meditation, Waheguru">
   <meta name="author" content="Sohaj Singh Brar">
-  <!-- WIP fork of /sikhai/ — keep out of search until ready to launch. -->
-  <meta name="robots" content="noindex,nofollow">
+  <meta name="theme-color" content="#010101">
+  <meta name="color-scheme" content="dark">
+  <link rel="canonical" href="https://www.sohajbrar.com/sikhai-next/">
 
-  <meta property="og:title" content="Sikh AI — Your Daily Companion for Sikhi">
-  <meta property="og:description" content="Daily Hukamnama, Gurbani Quotes, Nitnem with Audio, Simran, Live Kirtan, Sikh Calendar, and AI — all in one free app.">
+  <meta property="og:title" content="Sikh AI — A Daily Companion for Sikhi">
+  <meta property="og:description" content="Meditate with Sikhs across the world. Daily Hukamnama, Gurbani, Nitnem, Simran, live Kirtan, and a Sikhi-grounded AI guide — woven into one quiet, breath-led experience.">
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://www.sohajbrar.com/sikhai-next">
+  <meta property="og:url" content="https://www.sohajbrar.com/sikhai-next/">
+  <meta property="og:site_name" content="Sikh AI">
+  <meta property="og:locale" content="en_US">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Sikh AI — A Daily Companion for Sikhi">
+  <meta name="twitter:description" content="Meditate with Sikhs across the world. A quiet, breath-led companion for daily Sikhi practice.">
+  <meta name="twitter:image" content="https://www.sohajbrar.com/sikhai-next/img/og-image.png">
 
   <link rel="shortcut icon" href="../img/favicon2.png">
   <meta property="og:image" content="https://www.sohajbrar.com/sikhai-next/img/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Sikh AI — a meditative companion for daily Sikhi practice">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preload" href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" as="style">
@@ -5776,13 +5787,27 @@
       // The chardiKalaAI section has no inline message panel, so
       // 'section' routes through the same overlay as the FAB +
       // prompt input. The FAB has its own embedded message list.
+      // We go through openAiChat() (not a bare classList.add) so the
+      // Lenis pause, body.modal-open, focus + overflow lock all fire
+      // together — otherwise the page behind keeps wheel-scrolling.
       if (target === 'section') {
-        var overlay = document.getElementById('aiOverlay');
-        if (overlay) {
-          overlay.classList.add('open');
-          document.body.style.overflow = 'hidden';
+        try { openAiChat(); } catch (e) {
+          var overlay = document.getElementById('aiOverlay');
+          if (overlay) {
+            overlay.classList.add('open');
+            document.body.classList.add('modal-open');
+            document.body.style.overflow = 'hidden';
+            if (window.__lenis && typeof window.__lenis.stop === 'function') {
+              try { window.__lenis.stop(); } catch (_) {}
+            }
+          }
         }
-        renderHukamnamaConversation('overlay');
+        // Defer the render one frame so the overlay's open transition
+        // and any focus/scroll thrash from openAiChat() settle before
+        // we mutate the message list and scroll it to the bottom.
+        requestAnimationFrame(function() {
+          renderHukamnamaConversation('overlay');
+        });
       } else {
         renderHukamnamaConversation('fab');
       }
