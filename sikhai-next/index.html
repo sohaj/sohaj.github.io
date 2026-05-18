@@ -431,7 +431,11 @@
                   visibility 0s linear 0s;
     }
     body.globe-sangat .hero-globe .globe-container {
-      transform: translateX(clamp(140px, 24vw, 320px));
+      /* Globe sits dead-centre while the cards orbit it. The card
+         layout depends on having room on all four sides of the
+         planet for callouts, so no translateX here. Scaled slightly
+         down to leave breathing room around the equator. */
+      transform: translateX(0) scale(0.92);
     }
     /* In the sangat stage the planet is the actor, not the
        meditation-orb backdrop — suppress the meditation ripples,
@@ -2431,173 +2435,209 @@
     .review-name { font-size: 0.88rem; font-weight: 600; }
     .review-device { font-size: 0.75rem; color: var(--color-text-muted); }
 
-    /* ── SANGAT (voices on the globe) ──
-       Pinned section: as the user scrolls, the globe (.hero-globe,
-       reactivated via body.globe-sangat) rotates between reviewer
-       cities. The .sangat-quote-panel occupies the left half of the
-       viewport over the spinning planet; only one .sangat-quote is
-       .is-active at a time. The right-edge .sangat-rail mirrors a
-       table of contents — vertical dots, one per reviewer. */
+    /* ── SANGAT (voices anchored to globe pins) ──
+       Cards are rendered via globe.gl htmlElementsData() and the API
+       positions them at the lat/lng's projected screen coords. We
+       give the root element width/height of 0 so the pulse + body
+       are positioned relative to the exact point. The card body is
+       offset diagonally (NE / NW / SE / SW cycled per card) so a
+       single rotation can show multiple labels without overlap, and
+       an L-bracket connector links the body back to the pin. */
     .sangat {
       position: relative;
       background: var(--color-bg);
-    }
-    .sangat-pin {
-      /* The JS sets section min-height to (reviewCount * pinStep)vh
-         dynamically so we keep this rule minimal. The pin itself is
-         a sticky child that holds the active quote in viewport. */
-      min-height: 100vh;
+      /* Tall enough for the globe to stay in view through a normal
+         scroll-through, but not so tall the user feels stuck. The
+         globe is body-fixed (.hero-globe is position:fixed) so the
+         section's own height is mostly about pacing. */
+      min-height: 130vh;
     }
     .sangat-intro {
       padding: 96px 24px 32px;
-      max-width: 1400px;
+      max-width: 1100px;
       margin: 0 auto;
+      text-align: center;
+      position: relative;
+      z-index: 6;
     }
     .sangat-subtitle {
-      max-width: 560px;
-      margin-top: 16px;
-      color: var(--color-text-secondary);
-      font-size: 1.05rem;
-      line-height: 1.65;
-    }
-    .sangat-stage {
-      position: sticky;
-      top: 0;
-      height: 100vh;
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) auto;
-      align-items: center;
-      padding: 0 clamp(24px, 6vw, 96px);
-      /* sits ABOVE the fixed globe (z:3) so the editorial copy reads
-         on top of the planet. pointer-events none on the wrapper so
-         the planet behind still receives drag/orbit; the rail re-enables
-         them. */
-      z-index: 6;
-      pointer-events: none;
-    }
-    .sangat-quote-panel {
-      position: relative;
       max-width: 540px;
-      min-height: 320px;
+      margin: 16px auto 0;
+      color: var(--color-text-secondary);
+      font-size: 1.0rem;
+      line-height: 1.6;
     }
-    .sangat-quote {
+
+    /* Each .sangat-card is the root globe-gl htmlElement. globe.gl
+       sets position:absolute on it and translates it to the
+       projected lat/lng. Width/height of 0 means the (0,0) inside
+       the element corresponds exactly to the pin. The pulse + body
+       are absolutely positioned relative to that origin. */
+    .sangat-card {
       position: absolute;
-      inset: 0;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      gap: 18px;
-      opacity: 0;
-      filter: blur(10px);
-      transform: translateY(20px);
-      transition: opacity 0.7s ease,
-                  filter 0.9s ease,
-                  transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+      width: 0;
+      height: 0;
+      pointer-events: auto;
+      transition: opacity 0.45s ease;
+      will-change: opacity, transform;
+    }
+    .sangat-card-anchor {
+      position: absolute;
+      left: -5px;
+      top: -5px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--color-primary);
+      box-shadow: 0 0 14px rgba(232, 196, 74, 0.85);
+    }
+    .sangat-card-pulse {
+      position: absolute;
+      inset: -3px;
+      border: 1.5px solid var(--color-primary);
+      border-radius: 50%;
+      animation: sangatCardPulse 2.4s ease-out infinite;
       pointer-events: none;
     }
-    .sangat-quote.is-active {
-      opacity: 1;
-      filter: blur(0);
-      transform: translateY(0);
+    @keyframes sangatCardPulse {
+      0%   { transform: scale(1);   opacity: 0.9; }
+      80%  { transform: scale(3.6); opacity: 0;   }
+      100% { transform: scale(3.6); opacity: 0;   }
     }
-    .sangat-stars {
-      color: var(--color-primary);
-      font-size: 0.85rem;
-      letter-spacing: 0.35em;
-    }
-    .sangat-text {
-      /* Editorial pull-quote: Fraunces italic at clamp() display size,
-         matching the storytelling text in the tunnel and the closer
-         beats. SOFT 80 warms the terminals. */
-      font-family: var(--font-display);
-      font-style: italic;
-      font-variation-settings: 'opsz' 144, 'SOFT' 80, 'wght' 380;
-      font-size: clamp(1.6rem, 2.6vw, 2.4rem);
-      line-height: 1.25;
-      letter-spacing: -0.015em;
+    .sangat-card-body {
+      position: absolute;
+      width: 240px;
+      padding: 12px 14px;
+      background: rgba(14, 14, 14, 0.88);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(232, 196, 74, 0.22);
+      border-radius: 12px;
+      box-shadow: 0 12px 32px -8px rgba(0, 0, 0, 0.55);
       color: var(--color-text);
-      margin: 0;
-      /* Subtle left rail in saffron — visual echo of the .ai-msg--hukam
-         bubble in the AI chat, so the page reads as one design system. */
-      padding-left: 18px;
-      border-left: 2px solid var(--color-primary);
-    }
-    .sangat-meta {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-      padding-left: 20px;
-    }
-    .sangat-name {
       font-family: var(--font-body);
-      font-size: 0.95rem;
-      font-weight: 500;
-      color: var(--color-text);
-      letter-spacing: -0.01em;
+      font-size: 0.78rem;
+      line-height: 1.45;
     }
-    .sangat-place {
+    /* Quadrant placement.
+       NE (default): card extends up-right; connector L-brackets
+       down-left from the card's lower-left corner to the pin. */
+    .sangat-card[data-quadrant="ne"] .sangat-card-body {
+      left: 18px;
+      bottom: 14px;
+    }
+    .sangat-card[data-quadrant="ne"] .sangat-card-body::before {
+      content: '';
+      position: absolute;
+      left: -18px;
+      bottom: -14px;
+      width: 18px;
+      height: 14px;
+      border-left: 1px solid rgba(232, 196, 74, 0.45);
+      border-bottom: 1px solid rgba(232, 196, 74, 0.45);
+      border-bottom-left-radius: 6px;
+    }
+    .sangat-card[data-quadrant="nw"] .sangat-card-body {
+      right: 18px;
+      bottom: 14px;
+    }
+    .sangat-card[data-quadrant="nw"] .sangat-card-body::before {
+      content: '';
+      position: absolute;
+      right: -18px;
+      bottom: -14px;
+      width: 18px;
+      height: 14px;
+      border-right: 1px solid rgba(232, 196, 74, 0.45);
+      border-bottom: 1px solid rgba(232, 196, 74, 0.45);
+      border-bottom-right-radius: 6px;
+    }
+    .sangat-card[data-quadrant="se"] .sangat-card-body {
+      left: 18px;
+      top: 14px;
+    }
+    .sangat-card[data-quadrant="se"] .sangat-card-body::before {
+      content: '';
+      position: absolute;
+      left: -18px;
+      top: -14px;
+      width: 18px;
+      height: 14px;
+      border-left: 1px solid rgba(232, 196, 74, 0.45);
+      border-top: 1px solid rgba(232, 196, 74, 0.45);
+      border-top-left-radius: 6px;
+    }
+    .sangat-card[data-quadrant="sw"] .sangat-card-body {
+      right: 18px;
+      top: 14px;
+    }
+    .sangat-card[data-quadrant="sw"] .sangat-card-body::before {
+      content: '';
+      position: absolute;
+      right: -18px;
+      top: -14px;
+      width: 18px;
+      height: 14px;
+      border-right: 1px solid rgba(232, 196, 74, 0.45);
+      border-top: 1px solid rgba(232, 196, 74, 0.45);
+      border-top-right-radius: 6px;
+    }
+    .sangat-card-stars {
+      color: var(--color-primary);
+      font-size: 0.62rem;
+      letter-spacing: 0.32em;
+      margin-bottom: 6px;
+    }
+    .sangat-card-text {
+      margin: 0 0 8px;
       font-family: var(--font-display);
       font-style: italic;
-      font-variation-settings: 'opsz' 32, 'SOFT' 60, 'wght' 400;
-      font-size: 0.9rem;
+      font-variation-settings: 'opsz' 32, 'SOFT' 80, 'wght' 380;
+      font-size: 0.88rem;
+      line-height: 1.4;
+      color: var(--color-text);
+      /* Three-line clamp keeps every card the same vertical density
+         even when reviews vary in length. */
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .sangat-card-meta {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 8px;
+      font-size: 0.7rem;
       color: var(--color-text-secondary);
     }
-    .sangat-rail {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-      pointer-events: auto;
+    .sangat-card-name {
+      color: var(--color-text);
+      font-weight: 500;
+      letter-spacing: -0.005em;
     }
-    .sangat-rail-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: var(--color-border);
-      cursor: pointer;
-      transition: background 0.4s ease,
-                  transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
-                  width 0.4s ease;
+    .sangat-card-place {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-variation-settings: 'opsz' 24, 'SOFT' 60, 'wght' 400;
+      color: var(--color-text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 110px;
     }
-    .sangat-rail-dot:hover {
-      background: var(--color-text-secondary);
-    }
-    .sangat-rail-dot.is-active {
-      background: var(--color-primary);
-      transform: scale(1.4);
-    }
-    @media (max-width: 900px) {
-      /* Mobile / narrow screens: globe drops to the background, quote
-         takes full width centered. Rail moves to a horizontal row at
-         the bottom of the viewport so the cards aren't fighting it. */
-      .sangat-stage {
-        grid-template-columns: 1fr;
-        padding: 0 24px;
-        gap: 32px;
-        align-items: end;
-        padding-bottom: 80px;
-      }
-      .sangat-quote-panel { min-height: 260px; max-width: none; }
-      .sangat-text { font-size: clamp(1.3rem, 5vw, 1.8rem); }
-      .sangat-rail {
-        flex-direction: row;
-        justify-self: center;
-      }
+    @media (max-width: 720px) {
+      /* Mobile: cards are smaller, denser. The globe stays centered
+         but slightly dimmed to keep the text legible. */
+      .sangat-card-body { width: 180px; padding: 10px 12px; font-size: 0.72rem; }
+      .sangat-card-text { font-size: 0.78rem; -webkit-line-clamp: 2; }
       body.globe-sangat .hero-globe .globe-container {
-        /* Center the globe behind the text on mobile (reading dominates,
-           planet recedes). */
         transform: translateX(0) scale(0.85);
-        opacity: 0.55;
       }
     }
     @media (prefers-reduced-motion: reduce) {
-      .sangat-quote {
-        transition: opacity 0.3s linear;
-        transform: none;
-        filter: none;
-      }
+      .sangat-card-pulse { animation: none; opacity: 0.4; }
+      .sangat-card { transition: none; }
     }
 
     /* ── SOCIAL PROOF ── */
@@ -3558,108 +3598,21 @@
   </section>
 
   <!-- Voices from the Sangat
-       Reviews were previously a horizontal carousel of cards that read
-       as App-Store testimonials. They're now rendered as voices coming
-       from real cities across the Sikh diaspora: as you scroll, the
-       globe rotates to each reviewer's home and their words appear
-       beside it. Same source content, completely different register —
-       "voices from a global congregation" instead of "5-star reviews".
-       Quote text is plain prose so the JS state machine can read it
-       directly; the per-card chrome (stars, avatar, device) lives in
-       data attributes so we keep layout responsibility in CSS / JS. -->
+       Reviews are anchored directly to random pins on the globe via
+       globe.gl's htmlElementsData API — same callout-card pattern as
+       a Microsoft / Apple-Vision floor-plan view, with each card
+       extending from a pulsing saffron pin on a real meditator dot.
+       All reviewer cards live on the planet at once; back-hemisphere
+       cards are occluded by a rAF dot-product check (globe.gl's
+       bundled build doesn't expose htmlElementVisibilityModifier).
+       Markup is intentionally minimal — just the title + scroll hint;
+       reviews + coordinates live in JS so they can be randomized
+       against the live meditator cloud on each load. -->
   <section class="sangat" id="sangat">
-    <div class="sangat-pin">
-      <div class="container sangat-intro">
-        <div class="section-label fade-up" data-i18n="reviewsLabel">&#9670; Voices</div>
-        <h2 class="section-title fade-up" data-i18n="reviewsTitle">Voices from the Sangat</h2>
-        <p class="sangat-subtitle fade-up" data-i18n="reviewsSubtitle">A growing congregation, scattered across the world, gathered around the same shabad.</p>
-      </div>
-      <div class="sangat-stage">
-        <div class="sangat-quote-panel" id="sangatQuotePanel">
-          <!-- Each .sangat-quote is positioned absolutely on top of the
-               others; the active one fades + un-blurs, the rest fade out.
-               data-lat / data-lng feed the JS state machine that rotates
-               the globe to the reviewer's city. -->
-          <article class="sangat-quote is-active" data-idx="0" data-lat="19.07" data-lng="72.87">
-            <div class="sangat-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-            <blockquote class="sangat-text">Very nice app for all updates about daily Gurudwara Hukamnamas. The Chardi Kala AI lets me ask anything about Gurbani.</blockquote>
-            <div class="sangat-meta">
-              <div class="sangat-name">Garry Johar</div>
-              <div class="sangat-place">Mumbai, India</div>
-            </div>
-          </article>
-          <article class="sangat-quote" data-idx="1" data-lat="28.61" data-lng="77.21">
-            <div class="sangat-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-            <blockquote class="sangat-text">I don&rsquo;t see this kind of app on any Play Store. I love this app &mdash; it connects me to Waheguru.</blockquote>
-            <div class="sangat-meta">
-              <div class="sangat-name">Arti Keswani</div>
-              <div class="sangat-place">Delhi, India</div>
-            </div>
-          </article>
-          <article class="sangat-quote" data-idx="2" data-lat="31.63" data-lng="74.87">
-            <div class="sangat-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-            <blockquote class="sangat-text">Best app. Waheguru Ji. Everything you need for your Sikhi journey, in one place.</blockquote>
-            <div class="sangat-meta">
-              <div class="sangat-name">Jaspinder Singh Bedi</div>
-              <div class="sangat-place">Amritsar, India</div>
-            </div>
-          </article>
-          <article class="sangat-quote" data-idx="3" data-lat="30.73" data-lng="76.78">
-            <div class="sangat-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-            <blockquote class="sangat-text">Great app for Sikhi. Beautiful design and useful daily features. Highly recommended.</blockquote>
-            <div class="sangat-meta">
-              <div class="sangat-name">Jyoti Sachdev</div>
-              <div class="sangat-place">Chandigarh, India</div>
-            </div>
-          </article>
-          <article class="sangat-quote" data-idx="4" data-lat="43.65" data-lng="-79.38">
-            <div class="sangat-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-            <blockquote class="sangat-text">Very nice app. All the features a Sikh needs in daily life.</blockquote>
-            <div class="sangat-meta">
-              <div class="sangat-name">Harwinder Singh</div>
-              <div class="sangat-place">Toronto, Canada</div>
-            </div>
-          </article>
-          <article class="sangat-quote" data-idx="5" data-lat="37.77" data-lng="-122.42">
-            <div class="sangat-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-            <blockquote class="sangat-text">An amazing app and concept. Everything in one place for people who want to connect, and want their children to connect. Brilliant.</blockquote>
-            <div class="sangat-meta">
-              <div class="sangat-name">A Sevadar</div>
-              <div class="sangat-place">San Francisco, USA</div>
-            </div>
-          </article>
-          <article class="sangat-quote" data-idx="6" data-lat="49.28" data-lng="-123.12">
-            <div class="sangat-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-            <blockquote class="sangat-text">Being able to lock the phone while Nitnem and live Kirtan play in the background would be great. Otherwise, amazing app.</blockquote>
-            <div class="sangat-meta">
-              <div class="sangat-name">Inderpal Singh</div>
-              <div class="sangat-place">Vancouver, Canada</div>
-            </div>
-          </article>
-          <article class="sangat-quote" data-idx="7" data-lat="52.49" data-lng="-1.90">
-            <div class="sangat-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-            <blockquote class="sangat-text">ਬਹੁਤ ਬਹੁਤ ਵਧੀਆ ਐਪ। ਵਾਹਿਗੁਰੂ ਜੀ ਸਰਬੱਤ ਦਾ ਭਲਾ ਕਰਨ 🙏</blockquote>
-            <div class="sangat-meta">
-              <div class="sangat-name">Waheguru Sevak</div>
-              <div class="sangat-place">Birmingham, UK</div>
-            </div>
-          </article>
-        </div>
-        <!-- Right-edge progress rail: one dot per reviewer.
-             Active dot grows + becomes saffron; clicking jumps to that
-             reviewer (handled in JS). Vertical orientation echoes the
-             "scroll to advance" affordance without spelling it out. -->
-        <ol class="sangat-rail" id="sangatRail" aria-label="Sangat reviewers">
-          <li class="sangat-rail-dot is-active" data-idx="0"></li>
-          <li class="sangat-rail-dot" data-idx="1"></li>
-          <li class="sangat-rail-dot" data-idx="2"></li>
-          <li class="sangat-rail-dot" data-idx="3"></li>
-          <li class="sangat-rail-dot" data-idx="4"></li>
-          <li class="sangat-rail-dot" data-idx="5"></li>
-          <li class="sangat-rail-dot" data-idx="6"></li>
-          <li class="sangat-rail-dot" data-idx="7"></li>
-        </ol>
-      </div>
+    <div class="container sangat-intro">
+      <div class="section-label fade-up" data-i18n="reviewsLabel">&#9670; Voices</div>
+      <h2 class="section-title fade-up" data-i18n="reviewsTitle">Voices from the Sangat</h2>
+      <p class="sangat-subtitle fade-up" data-i18n="reviewsSubtitle">Each card is a sevadar somewhere in the world. Drag to spin the planet, or wait — it turns on its own.</p>
     </div>
   </section>
 
@@ -4756,170 +4709,261 @@
          so its pin is registered first; see the comment there for why
          pin creation order matters. */
 
-      /* ═══ SCENE 6 — Sangat: voices on the globe ═══
-         Replaces the old horizontal review carousel. Reviews are now
-         pinned voices that appear from real cities; the same globe.gl
-         instance used for the cover (.hero-globe) is brought back via
-         body.globe-sangat and rotated to each reviewer's lat/lng.
+      /* ═══ SCENE 6 — Sangat: cards anchored to globe pins ═══
+         The eight reviews are rendered as callout cards anchored to
+         random meditator dots on the globe (or curated diaspora
+         coords if the live meditator cloud hasn't loaded yet).
 
-         State machine
-         ─────────────
-         The section is pinned for (N * pinStep)vh, where N = quote
-         count and pinStep = 70vh per quote. Inside the pin, progress
-         maps linearly to an active index. When the index changes:
-           1. .is-active class moves on .sangat-quote (CSS fades + un-blurs)
-           2. .is-active class moves on the right-rail dot
-           3. window._globe.pointOfView({lat, lng}, 1400) flies the camera
-           4. A short-lived ring at the same lat/lng pulses on the globe
+         globe.gl positions each card at the projected lat/lng; we
+         build the card body, pulse, and quadrant connector via DOM
+         inside the htmlElement() callback. Because the bundled
+         globe.gl doesn't expose htmlElementVisibilityModifier, we
+         run a lightweight rAF loop that hides cards whose lat/lng
+         is on the back hemisphere (dot product of the surface
+         normal against the camera-from-origin vector).
 
-         Why globe.ringsData() and not htmlElementsData()
-         ────────────────────────────────────────────────
-         Ring layers are already wired (the meditator dots use them) and
-         they render purely on the WebGL surface, so they survive globe
-         rotation without DOM thrash. Using htmlElementsData would mean
-         positioning a card relative to the planet — too crowded against
-         the editorial quote already shown beside the globe. */
+         Lifecycle is class-based, not scrubbed: when the section
+         enters viewport we add body.globe-sangat (which un-recedes
+         the planet) and populate htmlElementsData; on leave we
+         clear it. No pin, no scroll-driven state machine — the
+         globe auto-rotates and the user can also drag it directly. */
       (function initSangatScene() {
         var sangatSection = document.getElementById('sangat');
         if (!sangatSection) return;
-        var quotes = Array.prototype.slice.call(
-          sangatSection.querySelectorAll('.sangat-quote'));
-        var railDots = Array.prototype.slice.call(
-          sangatSection.querySelectorAll('.sangat-rail-dot'));
-        if (!quotes.length) return;
 
-        // Pre-build the waypoint list so the inner loop is fast and
-        // doesn't re-parse data-* on every scroll tick.
-        var waypoints = quotes.map(function(q, i) {
-          return {
-            idx: i,
-            lat: parseFloat(q.getAttribute('data-lat')),
-            lng: parseFloat(q.getAttribute('data-lng'))
-          };
-        });
+        // Source-of-truth review content. Falls back to these
+        // diaspora coordinates if the live meditator cloud isn't
+        // available at render time; otherwise we sample real dots.
+        var SANGAT_REVIEWS = [
+          { stars: 5, text: 'Very nice app for all updates about daily Gurudwara Hukamnamas. The ChardiKala AI lets me ask anything about Gurbani.',
+            name: 'Garry Johar', place: 'Mumbai', fallbackLat: 19.07, fallbackLng: 72.87 },
+          { stars: 5, text: 'I don\u2019t see this kind of app on any Play Store. I love this app \u2014 it connects me to Waheguru.',
+            name: 'Arti Keswani', place: 'Delhi', fallbackLat: 28.61, fallbackLng: 77.21 },
+          { stars: 5, text: 'Best app. Waheguru Ji. Everything you need for your Sikhi journey, in one place.',
+            name: 'Jaspinder Singh Bedi', place: 'Amritsar', fallbackLat: 31.63, fallbackLng: 74.87 },
+          { stars: 5, text: 'Great app for Sikhi. Beautiful design and useful daily features. Highly recommended.',
+            name: 'Jyoti Sachdev', place: 'Chandigarh', fallbackLat: 30.73, fallbackLng: 76.78 },
+          { stars: 5, text: 'Very nice app. All the features a Sikh needs in daily life.',
+            name: 'Harwinder Singh', place: 'Toronto', fallbackLat: 43.65, fallbackLng: -79.38 },
+          { stars: 5, text: 'An amazing app and concept. Everything in one place for people who want to connect, and want their children to connect. Brilliant.',
+            name: 'A Sevadar', place: 'San Francisco', fallbackLat: 37.77, fallbackLng: -122.42 },
+          { stars: 5, text: 'Being able to lock the phone while Nitnem and live Kirtan play in the background would be great. Otherwise, amazing app.',
+            name: 'Inderpal Singh', place: 'Vancouver', fallbackLat: 49.28, fallbackLng: -123.12 },
+          { stars: 5, text: '\u0A2C\u0A39\u0A41\u0A24 \u0A2C\u0A39\u0A41\u0A24 \u0A35\u0A27\u0A40\u0A06 \u0A10\u0A2A\u0964 \u0A35\u0A3E\u0A39\u0A3F\u0A17\u0A41\u0A30\u0A42 \u0A1C\u0A40 \u0A38\u0A30\u0A2C\u0A71\u0A24 \u0A26\u0A3E \u0A2D\u0A32\u0A3E \u0A15\u0A30\u0A28 \uD83D\uDE4F',
+            name: 'Waheguru Sevak', place: 'Birmingham', fallbackLat: 52.49, fallbackLng: -1.90 }
+        ];
+        var QUADRANTS = ['ne', 'nw', 'se', 'sw'];
 
-        var activeIdx = -1;
-        function setActiveSangatIdx(next) {
-          if (next === activeIdx) return;
-          if (next < 0 || next >= quotes.length) return;
-          activeIdx = next;
-          quotes.forEach(function(q, i) {
-            q.classList.toggle('is-active', i === next);
-          });
-          railDots.forEach(function(d, i) {
-            d.classList.toggle('is-active', i === next);
-          });
-
-          var wp = waypoints[next];
-          var globe = window._globe;
-          if (!globe || isNaN(wp.lat) || isNaN(wp.lng)) return;
-
-          // Fly the camera to the reviewer's city. 1400ms is slow
-          // enough to feel ceremonial, fast enough that a normal
-          // scroll-through doesn't pile up.
-          try {
-            globe.pointOfView(
-              { lat: wp.lat, lng: wp.lng, altitude: 1.8 }, 1400);
-          } catch (e) {}
-
-          // Drop a short-lived pulse ring at the active city so the
-          // user can see WHERE on the globe the voice is from.
-          // We keep the meditator point cloud intact (.filter !_isSangat)
-          // and append a single sangat marker ring on top.
-          var rings = (globe.ringsData() || [])
-            .filter(function(r) { return !r._isSangat; });
-          rings.push({
-            lat: wp.lat,
-            lng: wp.lng,
-            _isSangat: true
-          });
-          try { globe.ringsData(rings); } catch (e) {}
+        // Fisher-Yates: pick N distinct items from `arr`.
+        function sample(arr, n) {
+          var pool = arr.slice();
+          for (var i = pool.length - 1; i > 0; i--) {
+            var j = Math.floor(Math.random() * (i + 1));
+            var t = pool[i]; pool[i] = pool[j]; pool[j] = t;
+          }
+          return pool.slice(0, n);
         }
 
-        // Click-to-jump on the right rail. Calculates the scroll
-        // offset that lines up with this index inside the pin and
-        // hands it to Lenis so the smooth-scroll engine drives the
-        // ScrollTrigger correctly.
-        railDots.forEach(function(d) {
-          d.addEventListener('click', function() {
-            var i = parseInt(d.getAttribute('data-idx'), 10);
-            if (isNaN(i)) return;
-            var rect = sangatSection.getBoundingClientRect();
-            var sectionTop = window.scrollY + rect.top;
-            var pinStepPx = window.innerHeight * 0.7;
-            var target = sectionTop + i * pinStepPx;
-            if (window._lenis && window._lenis.scrollTo) {
-              window._lenis.scrollTo(target, { duration: 1.0 });
-            } else {
-              window.scrollTo({ top: target, behavior: 'smooth' });
-            }
+        // Pull SANGAT_REVIEWS.length lat/lng pairs. Prefer real
+        // meditator dots (globeUsers from Firebase) so the cards
+        // sit on visible activity. If too few real dots exist, fill
+        // the remainder with the curated fallback coords.
+        function pickCoords() {
+          var fallback = SANGAT_REVIEWS.map(function(r) {
+            return { lat: r.fallbackLat, lng: r.fallbackLng };
           });
-        });
+          var live = (typeof globeUsers !== 'undefined' && globeUsers)
+            ? globeUsers.filter(function(u) {
+                return typeof u.lat === 'number' && typeof u.lng === 'number';
+              })
+            : [];
+          if (live.length >= SANGAT_REVIEWS.length) {
+            return sample(live, SANGAT_REVIEWS.length)
+              .map(function(u) { return { lat: u.lat, lng: u.lng }; });
+          }
+          // Not enough real users — start with what's there and pad.
+          var sampled = sample(live, live.length)
+            .map(function(u) { return { lat: u.lat, lng: u.lng }; });
+          return sampled.concat(fallback.slice(sampled.length));
+        }
 
-        // Pin length: 70vh of scroll per quote. Total pin distance
-        // is (N-1) * 70vh so the last quote lands exactly when the
-        // section ends.
-        var pinStepVh = 70;
-        var totalEnd = '+=' + ((quotes.length - 1) * pinStepVh) + 'vh';
+        // Builds a single review card element. globe.gl will set
+        // position:absolute and translate(-50%,-50%) on it so (0,0)
+        // inside is exactly at the lat/lng. All visual chrome
+        // (pulse + body + connector) is positioned relative to that.
+        function buildCard(d) {
+          var card = document.createElement('div');
+          card.className = 'sangat-card';
+          card.setAttribute('data-quadrant', d.quadrant);
+          // Store coords on the element so the visibility rAF loop
+          // can read them without a closure over the data array.
+          card.dataset.lat = d.lat;
+          card.dataset.lng = d.lng;
 
-        gsap.to({}, {
-          ease: 'none',
-          scrollTrigger: {
-            trigger: sangatSection,
-            start: 'top top',
-            end: totalEnd,
-            scrub: 0.4,
-            pin: '.sangat-stage',
-            pinSpacing: true,
-            anticipatePin: 1,
-            invalidateOnRefresh: true,
-            onEnter: function() {
-              document.body.classList.add('globe-sangat');
-              document.body.classList.remove('globe-receded');
-              setActiveSangatIdx(0);
-              // Slow the auto-rotate so the camera flyovers read.
-              try {
-                var ctrl = window._globe && window._globe.controls();
-                if (ctrl) ctrl.autoRotateSpeed = 0.1;
-              } catch (e) {}
-            },
-            onEnterBack: function() {
-              document.body.classList.add('globe-sangat');
-              document.body.classList.remove('globe-receded');
-              try {
-                var ctrl = window._globe && window._globe.controls();
-                if (ctrl) ctrl.autoRotateSpeed = 0.1;
-              } catch (e) {}
-            },
-            onLeave: function() {
-              document.body.classList.remove('globe-sangat');
-              document.body.classList.add('globe-receded');
-              try {
-                var ctrl = window._globe && window._globe.controls();
-                if (ctrl) ctrl.autoRotateSpeed = 0.5;
-                // Clean up the sangat ring so it doesn't linger.
-                var rings = (window._globe.ringsData() || [])
-                  .filter(function(r) { return !r._isSangat; });
-                window._globe.ringsData(rings);
-              } catch (e) {}
-            },
-            onLeaveBack: function() {
-              document.body.classList.remove('globe-sangat');
-              try {
-                var ctrl = window._globe && window._globe.controls();
-                if (ctrl) ctrl.autoRotateSpeed = 0.5;
-                var rings = (window._globe.ringsData() || [])
-                  .filter(function(r) { return !r._isSangat; });
-                window._globe.ringsData(rings);
-              } catch (e) {}
-            },
-            onUpdate: function(self) {
-              // Map 0..1 progress to 0..N-1 index. Floor + clamp.
-              var idx = Math.floor(self.progress * quotes.length);
-              if (idx >= quotes.length) idx = quotes.length - 1;
-              if (idx < 0) idx = 0;
-              setActiveSangatIdx(idx);
+          var anchor = document.createElement('div');
+          anchor.className = 'sangat-card-anchor';
+          var pulse = document.createElement('span');
+          pulse.className = 'sangat-card-pulse';
+          anchor.appendChild(pulse);
+
+          var body = document.createElement('div');
+          body.className = 'sangat-card-body';
+          var stars = document.createElement('div');
+          stars.className = 'sangat-card-stars';
+          stars.textContent = Array(d.review.stars + 1).join('\u2605');
+          var text = document.createElement('blockquote');
+          text.className = 'sangat-card-text';
+          text.textContent = d.review.text;
+          var meta = document.createElement('div');
+          meta.className = 'sangat-card-meta';
+          var name = document.createElement('span');
+          name.className = 'sangat-card-name';
+          name.textContent = d.review.name;
+          var place = document.createElement('span');
+          place.className = 'sangat-card-place';
+          place.textContent = d.review.place;
+          meta.appendChild(name);
+          meta.appendChild(place);
+          body.appendChild(stars);
+          body.appendChild(text);
+          body.appendChild(meta);
+
+          card.appendChild(anchor);
+          card.appendChild(body);
+          return card;
+        }
+
+        var populated = false;
+        function populateSangatCards() {
+          var globe = window._globe;
+          if (!globe || populated) return;
+          var coords = pickCoords();
+          var data = SANGAT_REVIEWS.map(function(r, i) {
+            return {
+              review: r,
+              lat: coords[i].lat,
+              lng: coords[i].lng,
+              quadrant: QUADRANTS[i % QUADRANTS.length]
+            };
+          });
+          try {
+            globe
+              .htmlElementsData(data)
+              .htmlElement(function(d) { return buildCard(d); })
+              .htmlAltitude(0.01);
+            populated = true;
+          } catch (e) {
+            console.warn('Sangat: htmlElementsData unavailable', e);
+          }
+        }
+
+        function clearSangatCards() {
+          var globe = window._globe;
+          if (!globe) return;
+          try { globe.htmlElementsData([]); } catch (e) {}
+          populated = false;
+        }
+
+        // Back-hemisphere occlusion. Each frame, project the pin's
+        // lat/lng to a unit-sphere position and compare against the
+        // camera position vector — positive dot product means the
+        // pin faces the camera, negative means it's on the far side
+        // of the globe (where we'd otherwise see cards floating
+        // "through" the planet). Opacity smoothly tracks dot so the
+        // fade reads as the card rounding the limb, not flickering.
+        var rafId = null;
+        function latLngToUnitVec(lat, lng) {
+          var phi = (90 - lat) * Math.PI / 180;
+          var theta = lng * Math.PI / 180;
+          return {
+            x: -Math.sin(phi) * Math.cos(theta),
+            y:  Math.cos(phi),
+            z:  Math.sin(phi) * Math.sin(theta)
+          };
+        }
+        function tickOcclusion() {
+          rafId = null;
+          var globe = window._globe;
+          if (!globe || !document.body.classList.contains('globe-sangat')) return;
+          var cam;
+          try { cam = globe.camera().position; } catch (e) { cam = null; }
+          if (cam) {
+            var camLen = Math.sqrt(cam.x * cam.x + cam.y * cam.y + cam.z * cam.z) || 1;
+            var camN = { x: cam.x / camLen, y: cam.y / camLen, z: cam.z / camLen };
+            var cards = document.querySelectorAll('.sangat-card');
+            for (var i = 0; i < cards.length; i++) {
+              var c = cards[i];
+              var lat = parseFloat(c.dataset.lat);
+              var lng = parseFloat(c.dataset.lng);
+              if (isNaN(lat) || isNaN(lng)) continue;
+              var v = latLngToUnitVec(lat, lng);
+              var dot = v.x * camN.x + v.y * camN.y + v.z * camN.z;
+              // Map dot from [-0.25, 0.35] → opacity [0, 1]. The
+              // -0.25 lower bound starts the fade slightly BEFORE
+              // the pin reaches the silhouette, so cards finish
+              // fading by the time they're on the rim instead of
+              // popping off.
+              var t = (dot + 0.25) / 0.6;
+              if (t < 0) t = 0; else if (t > 1) t = 1;
+              c.style.opacity = t.toFixed(3);
+              c.style.pointerEvents = t > 0.5 ? 'auto' : 'none';
             }
+          }
+          rafId = requestAnimationFrame(tickOcclusion);
+        }
+        function startOcclusion() {
+          if (rafId) return;
+          rafId = requestAnimationFrame(tickOcclusion);
+        }
+        function stopOcclusion() {
+          if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+        }
+
+        // Class-based stage trigger. No pin, no scrub — the section
+        // just brings the globe back and populates cards while in
+        // viewport; on leave it cleans up and re-recedes the planet.
+        ScrollTrigger.create({
+          trigger: sangatSection,
+          start: 'top 70%',
+          end: 'bottom 30%',
+          onEnter: function() {
+            document.body.classList.add('globe-sangat');
+            document.body.classList.remove('globe-receded');
+            try {
+              var ctrl = window._globe && window._globe.controls();
+              if (ctrl) ctrl.autoRotateSpeed = 0.25;
+            } catch (e) {}
+            populateSangatCards();
+            startOcclusion();
+          },
+          onEnterBack: function() {
+            document.body.classList.add('globe-sangat');
+            document.body.classList.remove('globe-receded');
+            try {
+              var ctrl = window._globe && window._globe.controls();
+              if (ctrl) ctrl.autoRotateSpeed = 0.25;
+            } catch (e) {}
+            populateSangatCards();
+            startOcclusion();
+          },
+          onLeave: function() {
+            document.body.classList.remove('globe-sangat');
+            document.body.classList.add('globe-receded');
+            try {
+              var ctrl = window._globe && window._globe.controls();
+              if (ctrl) ctrl.autoRotateSpeed = 0.5;
+            } catch (e) {}
+            stopOcclusion();
+            clearSangatCards();
+          },
+          onLeaveBack: function() {
+            document.body.classList.remove('globe-sangat');
+            try {
+              var ctrl = window._globe && window._globe.controls();
+              if (ctrl) ctrl.autoRotateSpeed = 0.5;
+            } catch (e) {}
+            stopOcclusion();
+            clearSangatCards();
           }
         });
       })();
