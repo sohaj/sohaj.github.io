@@ -74,6 +74,14 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; font-size: 16px; }
 
+    /* Lenis baseline — disables native smooth-scroll when Lenis is active
+       so the two don't fight, and lets pinned ScrollTriggers stay in sync. */
+    html.lenis, html.lenis:focus-within { height: auto; }
+    .lenis.lenis-smooth { scroll-behavior: auto !important; }
+    .lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
+    .lenis.lenis-stopped { overflow: clip; }
+    .lenis.lenis-smooth iframe { pointer-events: none; }
+
     body {
       background: var(--color-bg);
       color: var(--color-text);
@@ -91,7 +99,13 @@
       padding: 0 24px;
     }
 
-    /* ── NAV ── */
+    /* ── NAV ──
+       Full-bleed nav: brand sits flush near the left edge and the
+       action cluster flush near the right edge, no centered container
+       constraint. Matches the layout pattern most Awwwards winners use
+       so the nav feels architectural rather than dropped into a column.
+       Border-bottom removed — the backdrop blur already separates it
+       from the hero. */
     .nav {
       position: fixed;
       top: 0;
@@ -102,7 +116,6 @@
       background: rgba(1,1,1,0.8);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
-      border-bottom: 1px solid var(--color-border-light);
       transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     }
     .nav.nav-hidden {
@@ -110,10 +123,19 @@
     }
     [data-theme="light"] .nav { background: rgba(250,250,250,0.85); }
 
+    /* Override the global .container constraint (max-width: 1400px,
+       centered) just inside the nav so it spans the full viewport. */
     .nav .container {
+      max-width: none;
+      width: 100%;
+      margin: 0;
+      padding: 0 28px;
       display: flex;
       align-items: center;
       justify-content: space-between;
+    }
+    @media (max-width: 600px) {
+      .nav .container { padding: 0 18px; }
     }
 
     .nav-brand {
@@ -164,31 +186,70 @@
       background: var(--color-primary);
       color: var(--color-primary-text);
       text-decoration: none;
+      border: none;
       border-radius: var(--radius-full);
+      /* When this element is a <button>, browsers default to the system
+         UI font — that's why the label looked off. Inheriting from the
+         body restores DM Sans across the rest of the site. */
+      font-family: inherit;
       font-weight: 600;
       font-size: 0.9rem;
-      transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), background 0.4s ease, box-shadow 0.5s ease;
+      letter-spacing: -0.005em;
+      cursor: pointer;
+      transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), background 0.4s ease;
     }
-    .nav-cta:hover { background: var(--color-primary-hover); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(232,196,74,0.15); }
+    .nav-cta:hover { background: var(--color-primary-hover); transform: translateY(-1px); }
 
-    /* ── HERO ── */
+    /* ── HERO (full-bleed globe + copy overlay) ── */
+    /* Post-tunnel "pause stage". The gurbani tunnel pin used to hand
+       off to a full-height hero with its own H1, badge and copy — but
+       that content is now redundant (the storytelling phrases inside
+       the tunnel already say "Meditate with Sikhs across the world")
+       and it created a long empty scroll where the globe just floated
+       between the tunnel and the about-intro. We collapse the section
+       to a short, transparent stage that gives the globe one beat of
+       "centered + pulsating" before the next section slides it
+       sideways. All inner copy is hidden — only the section's height
+       matters as scroll real estate. */
     .hero {
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      padding: 100px 0 40px;
+      min-height: 45vh;
+      position: relative;
+      display: block;
+      padding: 0;
       overflow: hidden;
     }
+    .hero .hero-inner,
+    .hero .hero-badge,
+    .hero h1,
+    .hero p { display: none !important; }
+
+    /* All top-level scroll sections sit above the fixed globe so their
+       backgrounds and content paint over it as they enter the viewport.
+       The hero is intentionally transparent in the middle so the globe
+       shows through; only its bottom strip is dimmed to keep copy legible. */
+    body > section,
+    body > footer {
+      position: relative;
+      z-index: 2;
+    }
+
+    /* (vignette removed — no hero copy lives here anymore, the
+       section is just empty scroll real estate that keeps the globe
+       at center for one beat before about-intro slides it right.) */
 
     .hero > .container {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 48px;
-      align-items: center;
+      position: relative;
+      z-index: 5;
+      width: 100%;
+      display: flex;
+      justify-content: center;
     }
 
     .hero-inner {
-      text-align: left;
+      position: relative;
+      z-index: 10;
+      text-align: center;
+      max-width: 680px;
       min-height: var(--hero-inner-h, auto);
     }
     .hero-inner [data-i18n="heroDesc"] {
@@ -250,8 +311,8 @@
     .hero p {
       font-size: 1.1rem;
       color: var(--color-text-secondary);
-      max-width: 480px;
-      margin: 0 0 36px;
+      max-width: 560px;
+      margin: 0 auto 36px;
       line-height: 1.7;
     }
 
@@ -262,17 +323,157 @@
       flex-wrap: wrap;
     }
 
+    /* Globe is FIXED to the viewport, centered (no longer anchored to
+       the right). It's hidden by default and only fades in once the
+       gurbani-tunnel zoom completes — the visual "landing" at the end
+       of the wormhole. Wrapper is pointer-events: none so it never
+       blocks content underneath; .globe-container re-enables them so
+       the user can still drag-spin the globe. z-index sits just above
+       the page background but well below the nav (z: 100) and loader
+       (z: 9999). */
     .hero-globe {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 3;
       display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
+      pointer-events: none;
+      /* Default closed state. While the user is inside the gurbani
+         tunnel ScrollTrigger, JS overrides opacity/transform inline
+         every frame to scale the globe up out of the rings (no CSS
+         transition would keep up with that). After the zoom completes
+         the .globe-revealed class clamps it to the visible rest state. */
+      opacity: 0;
+      visibility: hidden;
+      transform: scale(0.001);
+      will-change: opacity, transform;
     }
+    body.globe-revealed .hero-globe {
+      opacity: 1;
+      visibility: visible;
+      transform: scale(1);
+    }
+    /* Once the user scrolls past the hero (the globe's "stage"), the
+       globe is no longer part of the active narrative — fade it back
+       out so downstream sections (about-intro, stats, etc.) read on a
+       clean canvas without the centered globe bleeding through. */
+    body.globe-receded .hero-globe {
+      opacity: 0;
+      visibility: hidden;
+      transform: scale(0.92);
+      transition: opacity 0.7s ease,
+                  transform 0.9s ease,
+                  visibility 0s linear 0.7s;
+    }
+    /* Globe needs to live above the gurbani tunnel content (rings,
+       dots, vignette) while it's emerging, so the climax of the zoom
+       actually reads as "globe lands at the center". Other sections
+       are z-index: 2 (via body > section) and the nav is z-index: 100,
+       so we sit between content sections and the nav. */
 
     .hero-globe .globe-container {
+      pointer-events: auto;
+      width: min(78vh, 78vw);
+      height: min(78vh, 78vw);
       max-width: none;
-      width: 100%;
-      max-height: 80vh;
+      max-height: none;
+      margin: 0;
+      transform: none;
+      /* Smoothly slide between the hero (centered) and about-intro
+         (right-anchored) resting positions. Inline transform from the
+         gurbani-tunnel scale animation never touches this element —
+         the tunnel scales the .hero-globe wrapper — so this transition
+         is free to own the globe-container's transform. */
+      transition: transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    /* About-intro stage: the globe slides from center to the right
+       half of the viewport so the editorial copy on the left has
+       room to breathe. translateX is sized off viewport width so it
+       gracefully degrades on small screens. */
+    body.globe-side-right .hero-globe .globe-container {
+      transform: translateX(clamp(140px, 24vw, 320px));
+    }
+
+    /* Live "150+ Souls Meditated Today" pill anchored below the
+       centered globe. Position-fixed (independent of any section
+       layout) so it stays anchored to the viewport while the globe
+       is the visual focus. Sits at z-index 4 — one above the
+       fixed globe (z:3) and below the nav (z:100), so it never gets
+       occluded by the planet but also never covers the menu. The
+       primary-coloured dot reads as a live status indicator. */
+    .globe-badge {
+      position: fixed;
+      left: 50%;
+      bottom: clamp(40px, 8vh, 90px);
+      transform: translateX(-50%) translateY(8px);
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 20px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.10);
+      border-radius: var(--radius-full);
+      font-size: 0.9rem;
+      color: var(--color-text);
+      letter-spacing: 0.005em;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      z-index: 4;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      /* Default (closed) transition: fade out fast, slide a touch
+         downward, then visibility flips off after the fade. */
+      transition:
+        opacity 0.5s ease,
+        transform 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+        visibility 0s linear 0.5s;
+    }
+    [data-theme="light"] .globe-badge {
+      background: rgba(0, 0, 0, 0.04);
+      border-color: rgba(0, 0, 0, 0.10);
+    }
+    .globe-badge .globe-badge-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--color-primary);
+      box-shadow: 0 0 8px rgba(232, 196, 74, 0.6);
+    }
+    /* Visible only while the globe is the centered focus
+       (post-tunnel, pre-about-intro). Slides up + fades in slightly
+       AFTER the globe itself lands so the eye reads the globe first,
+       then the supporting count below it. */
+    body.globe-revealed .globe-badge {
+      opacity: 1;
+      visibility: visible;
+      transform: translateX(-50%) translateY(0);
+      transition:
+        opacity 0.8s ease 0.35s,
+        transform 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.35s,
+        visibility 0s linear 0s;
+    }
+    /* As soon as the next stage begins — globe slides right for the
+       about-intro copy, or recedes entirely past about-intro — the
+       badge hides immediately. The globe-side-right rule overrides
+       the globe-revealed visible rule because it appears later in
+       the cascade (same specificity, later wins). */
+    body.globe-side-right .globe-badge,
+    body.globe-receded .globe-badge {
+      opacity: 0;
+      visibility: hidden;
+      transform: translateX(-50%) translateY(8px);
+      transition:
+        opacity 0.5s ease,
+        transform 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+        visibility 0s linear 0.5s;
+    }
+    @media (max-width: 768px) {
+      .globe-badge { font-size: 0.8rem; padding: 8px 16px; bottom: 32px; }
     }
 
     button.btn-secondary {
@@ -364,12 +565,35 @@
       position: relative;
       overflow: hidden;
     }
+    /* About-intro copy is anchored flush-left to the same x-axis as
+       the nav brand (`.nav .container` uses padding: 0 28px). We
+       override the global .container's 24px padding to 28px here so
+       the first character of the paragraph sits directly beneath the
+       Sikh AI logo. The grid column is then clamped by a viewport-
+       aware min() so the right edge of the text can never collide
+       with the globe lane (~50vw on desktop) — the 80px reserve is
+       the buffer between the copy and the globe. */
     .about-intro .container {
-      max-width: 1400px;
+      width: 100%;
+      max-width: none;
+      margin: 0;
+      padding: 0 28px;
       position: relative;
       z-index: 2;
+      display: grid;
+      grid-template-columns: minmax(0, min(560px, calc(50vw - 80px)));
+      align-items: center;
     }
-    .about-ik-bg {
+    .about-text {
+      text-align: left;
+    }
+    /* Decorative Ik Onkar in the "Explore Sikhi" section. Two layers:
+       a faint static stroke outline (.learn-ik-bg) and a brighter
+       gradient stroke that continuously sweeps across the path
+       (.learn-ik-shine) — together they read as a hand-scribed,
+       breathing background. Anchored to the right of the section so
+       the editorial blog grid can sit comfortably to its left. */
+    .learn-ik-bg {
       position: absolute;
       right: -10%;
       top: 50%;
@@ -380,19 +604,19 @@
       z-index: 1;
       pointer-events: none;
     }
-    .about-ik-bg svg {
+    .learn-ik-bg svg {
       width: 100%;
       height: auto;
       display: block;
     }
-    .about-ik-bg svg path {
+    .learn-ik-bg svg path {
       fill: none;
       stroke: var(--color-text);
       stroke-width: 6;
       stroke-linecap: round;
       stroke-linejoin: round;
     }
-    .about-ik-shine {
+    .learn-ik-shine {
       position: absolute;
       right: -10%;
       top: 50%;
@@ -403,45 +627,61 @@
       z-index: 1;
       pointer-events: none;
     }
-    .about-ik-shine svg {
+    .learn-ik-shine svg {
       width: 100%;
       height: auto;
       display: block;
     }
-    .about-ik-shine svg path {
+    .learn-ik-shine svg path {
       fill: none;
       stroke-width: 6;
       stroke-linecap: round;
       stroke-linejoin: round;
-      stroke: url(#aboutShineGrad);
+      stroke: url(#learnShineGrad);
       stroke-dasharray: 200 3000;
-      animation: aboutShineStroke 6s linear infinite;
+      animation: learnShineStroke 6s linear infinite;
     }
-    @keyframes aboutShineStroke {
+    @keyframes learnShineStroke {
       0% { stroke-dashoffset: 3200; }
       100% { stroke-dashoffset: 0; }
     }
     @media (max-width: 768px) {
-      .about-ik-bg, .about-ik-shine { width: 100%; right: -20%; opacity: 0.04; }
+      .learn-ik-bg, .learn-ik-shine { width: 100%; right: -20%; opacity: 0.04; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .learn-ik-shine svg path { animation: none; }
     }
     .about-text {
-      font-size: clamp(1.5rem, 3vw, 2.2rem);
-      line-height: 1.55;
+      font-size: clamp(1.15rem, 1.6vw, 1.55rem);
+      line-height: 1.6;
       font-weight: 400;
-      letter-spacing: -0.01em;
+      letter-spacing: -0.005em;
       margin: 0;
     }
+    /* Per-word scroll focus. Each .about-word starts at the muted
+       text colour (#666 on dark) and the scroll listener writes an
+       inline `color` value that eases toward the full text colour as
+       the word approaches the focal line of the viewport. We animate
+       `color` directly (not opacity) so the dim state reads as flat
+       grey on the dark canvas — matching the reference look — rather
+       than washed-out white. No CSS transition here: the scroll
+       listener writes a fresh color every frame, and a 0.3s
+       transition would lag behind smooth scroll. */
     .about-text .about-word {
       display: inline;
       color: var(--color-text-muted);
-      transition: color 0.3s ease;
     }
-    .about-text .about-word.active {
-      color: var(--color-text);
+    @media (max-width: 1024px) {
+      /* At this breakpoint the globe lane widens to 55vw, so we tighten
+         the text column to 45vw minus a 60px buffer. */
+      .about-intro .container { grid-template-columns: minmax(0, min(440px, calc(45vw - 60px))); }
     }
     @media (max-width: 768px) {
       .about-intro { padding: 80px 0; min-height: auto; }
-      .about-text { font-size: clamp(1.2rem, 4vw, 1.6rem); }
+      /* On mobile the globe is a full-width backdrop, so the about-text
+         returns to the natural single-column / full-width treatment. */
+      .about-intro .container { grid-template-columns: 1fr; }
+      .about-text { font-size: clamp(1.05rem, 4vw, 1.4rem); }
     }
 
     /* ── CHARDI KALA AI CHAT ── */
@@ -518,6 +758,30 @@
       opacity: 0;
       visibility: hidden;
       transition: opacity 0.4s ease, visibility 0.4s ease;
+      /* Treat the overlay as its own scroll boundary on devices that
+         honour it. Any wheel/touch scroll that bubbles up from inside
+         the chat (.ai-messages) stops here instead of continuing into
+         the page behind, so the world underneath stays frozen even
+         while the user reaches the top/bottom of the chat. */
+      overscroll-behavior: contain;
+    }
+    /* Lock the underlying page while the AI chat modal is open. The
+       JS path also stops Lenis (the real source of scroll when smooth
+       scroll is active), but this rule covers the native fallback
+       — reduced-motion and coarse-pointer devices where Lenis is
+       intentionally disabled. We do NOT set `touch-action: none` on
+       the body because that would also kill native touch scrolling
+       INSIDE the modal on mobile. Instead we re-enable
+       touch-action on the overlay itself below. */
+    body.modal-open {
+      overflow: hidden !important;
+    }
+    /* Inside the modal, restore full native touch + wheel scrolling
+       so the chat's .ai-messages container can scroll freely on
+       every device — desktop wheel, mobile drag, trackpad pan. */
+    .ai-overlay,
+    .ai-overlay * {
+      touch-action: auto;
     }
     .ai-overlay.open {
       opacity: 1;
@@ -694,6 +958,62 @@
       border-color: var(--color-primary);
       color: var(--color-primary);
       background: rgba(232,196,74,0.06);
+    }
+    /* Accent variant — used for the "Today's Hukamnama" chip so it stands
+       out as a richer, content-loading action rather than a plain prompt. */
+    .ai-chip--accent {
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+      background: rgba(232,196,74,0.08);
+      display: inline-flex; align-items: center; gap: 6px;
+    }
+    .ai-chip--accent::before {
+      content: ''; display: inline-block;
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--color-primary);
+      animation: pulse 2s infinite;
+    }
+    .ai-chip--accent:hover {
+      background: rgba(232,196,74,0.16);
+    }
+    /* Rich Hukamnama bubble — shabad rendered inside an assistant message,
+       differentiated with gold accent rail and Gurmukhi/English typography. */
+    .ai-msg--hukam {
+      border-left: 2px solid var(--color-primary);
+      padding: 14px 18px;
+    }
+    .ai-hukam-meta {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 12px; margin-bottom: 10px; font-size: 0.72rem;
+      color: var(--color-text-muted); flex-wrap: wrap;
+    }
+    .ai-hukam-live {
+      display: inline-flex; align-items: center; gap: 6px;
+      color: var(--color-primary); font-weight: 600;
+      letter-spacing: 0.06em; text-transform: uppercase;
+    }
+    .ai-hukam-live .livedot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--color-primary); animation: pulse 2s infinite;
+    }
+    .ai-hukam-gurmukhi {
+      font-family: var(--font-display);
+      font-size: 1.05rem; line-height: 1.9;
+      color: var(--color-primary); font-weight: 500;
+      margin-bottom: 10px;
+    }
+    .ai-hukam-english {
+      font-size: 0.9rem; line-height: 1.7; font-style: italic;
+      color: var(--color-text-secondary); margin-bottom: 10px;
+    }
+    .ai-hukam-writer {
+      font-size: 0.78rem; color: var(--color-text-muted);
+      padding-top: 8px; border-top: 1px solid var(--color-border-light);
+    }
+    .ai-followup-chips {
+      display: flex; flex-wrap: wrap; gap: 8px;
+      padding: 8px 16px 4px; align-self: flex-start;
+      animation: msgIn 0.4s cubic-bezier(0.25,0.46,0.45,0.94);
     }
     .ai-typing {
       display: flex;
@@ -1227,6 +1547,16 @@
       object-fit: cover;
       display: block;
     }
+    /* Videos crop from the TOP edge when they're taller than the
+       phone screen. The bottom of every clip carries the live UI
+       chrome (playback controls, tab bar, current track strip) —
+       that's the part the user actually needs to see, so we anchor
+       it flush to the bottom of the device frame. The top of each
+       clip (usually the iOS status bar / nav bar) gets cropped
+       silently if there's overflow. */
+    .device-screen video {
+      object-position: center bottom;
+    }
     /* Mirror screen on the back face so the phone always shows content
        as it rotates 180° between features (Elva-style flip). */
     .device-screen-back {
@@ -1675,17 +2005,59 @@
 
     /* ── RESPONSIVE ── */
     @media (max-width: 1024px) {
-      .hero > .container { grid-template-columns: 1fr 1fr; gap: 24px; }
+      .hero { padding: 0; }
+      /* Globe is centered + full-viewport on every breakpoint now — no
+         right-anchor override needed at this width. Slightly smaller
+         globe disk so the hero copy below it has room to breathe. */
+      .hero-globe .globe-container {
+        width: min(72vh, 72vw);
+        height: min(72vh, 72vw);
+      }
     }
     @media (max-width: 768px) {
-      .hero { padding: 100px 0 20px; min-height: auto; }
-      .hero > .container { grid-template-columns: 1fr; gap: 16px; max-width: 100%; padding: 0 20px; }
-      .hero-inner { text-align: center; padding-left: 0; }
+      /* Mobile: hero is now a pure pause stage (no copy lives here),
+         so don't reserve a full viewport — that's what creates the
+         dead-scroll gap between the tunnel and about-intro. Keep just
+         enough height for the globe-revealed → globe-side-right
+         transition to read as a deliberate beat. */
+      .hero { padding: 0; min-height: 35vh; }
+      .hero > .container {
+        grid-template-columns: 1fr;
+        gap: 16px;
+        max-width: 100%;
+        padding: 0 24px;
+        justify-items: center;
+        align-content: end;
+        min-height: calc(100vh - 140px);
+      }
+      .hero-inner { text-align: center; padding-left: 0; max-width: 100%; position: relative; z-index: 3; }
       .hero-icon { margin: 0 auto 20px; }
-      .hero h1 { font-size: clamp(1.8rem, 7vw, 2.6rem); margin-bottom: 14px; }
+      .hero h1 { font-size: clamp(2rem, 8vw, 2.8rem); margin-bottom: 14px; }
       .hero p { margin: 0 auto 28px; font-size: 0.95rem; max-width: 100%; }
       .hero-actions { justify-content: center; }
-      .hero-globe .globe-container { max-width: 340px; margin: 0 auto; }
+      /* Globe remains centered + fixed on mobile; just dial its size
+         down a touch so it doesn't dominate the small viewport. */
+      .hero-globe .globe-container {
+        width: 92vw;
+        height: 92vw;
+        max-width: none;
+      }
+      .hero::before {
+        background:
+          radial-gradient(ellipse 130% 70% at 50% 80%,
+            var(--color-bg) 8%,
+            rgba(1,1,1,0.85) 38%,
+            rgba(1,1,1,0.35) 65%,
+            transparent 92%);
+      }
+      [data-theme="light"] .hero::before {
+        background:
+          radial-gradient(ellipse 130% 70% at 50% 80%,
+            var(--color-bg) 8%,
+            rgba(250,250,250,0.85) 38%,
+            rgba(250,250,250,0.4) 65%,
+            transparent 92%);
+      }
       .stats-grid { grid-template-columns: repeat(3, 1fr); gap: 16px; }
       .stat-item h3 { font-size: 1.8rem; }
       .features-header { padding: 40px 24px 0; }
@@ -1705,6 +2077,47 @@
     }
     .lang-toggle:hover { border-color: var(--color-primary); }
 
+    /* ── MEDITATION CTA (in nav) ──
+       The primary nav button is also the meditation toggle. The two
+       speaker SVGs are sibling layers inside a fixed-size span; we
+       crossfade them via opacity ONLY (no scale, no size change) so
+       the icon stays at its full 18px in both states — the swap is
+       a pure crossfade, never a "shrink/grow". */
+    .nav-meditation .nav-meditation-icon {
+      position: relative;
+      display: inline-flex;
+      width: 18px; height: 18px;
+      flex-shrink: 0;
+    }
+    .nav-meditation .med-icon {
+      position: absolute;
+      inset: 0;
+      width: 100%; height: 100%;
+      transition: opacity 0.25s var(--ease-out);
+    }
+    .nav-meditation .med-icon-on  { opacity: 0; }
+    .nav-meditation .med-icon-off { opacity: 1; }
+    .nav-meditation.is-active .med-icon-on  { opacity: 1; }
+    .nav-meditation.is-active .med-icon-off { opacity: 0; }
+    /* No box-shadow / pulse on the active button — keep it visually
+       quiet so it doesn't read as a stray outline around the pill. */
+    .nav-meditation,
+    .nav-meditation:hover,
+    .nav-meditation.is-active {
+      box-shadow: none;
+    }
+    /* Subtle, contained focus indicator that lives INSIDE the pill
+       (inset shadow) instead of the global ring's 3px offset that
+       paints an outer outline. Still keyboard-accessible. */
+    .nav-cta:focus { outline: none; }
+    .nav-cta:focus-visible {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--color-primary-text);
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .nav-meditation .med-icon { transition: none; }
+    }
+
 
     /* ── GLOBE SIMRAN ── */
     .globe-container {
@@ -1718,10 +2131,45 @@
       border-radius: 50%; pointer-events: none;
       background: radial-gradient(circle, rgba(184,146,44,0.25) 0%, rgba(184,146,44,0.08) 40%, transparent 70%);
       opacity: 0; transition: opacity 0.8s;
+      /* The gold aura was designed for the previous right-anchored,
+         smaller globe where it read as a meditation halo. At the new
+         centered Earth scale the warm gold rim clashes with the
+         planet's natural blue, so we keep the element in DOM (the
+         meditation JS still toggles its .active class) but suppress
+         the visual entirely. The cyan .globe-atmosphere halo now
+         carries the "Earth approached" / "meditation alive" cue. */
+      display: none;
     }
     .globe-aura.active {
       opacity: 1;
       animation: aura-breathe 7s ease-in-out infinite;
+    }
+    /* Earth-style atmosphere halo. Sits as a sibling of #globeViz
+       and renders a thin cyan/blue rim around the globe disk — the
+       same light-scattering halo you see on photos of Earth from
+       orbit. The colour mix is intentionally cool (rgba(120,175,255))
+       to contrast against the warm gold tunnel streaks, so when the
+       user finishes the journey the destination reads as a separate
+       physical place, not just more of the same particle field.
+       Pulses subtly so the globe feels alive. z-index sits behind
+       the globe disk (which is #globeViz, default z) so the halo
+       only shows around the rim, not over the surface. */
+    .globe-atmosphere {
+      /* Cyan rim halo that the previous "space-travel" pass added.
+         The user prefers the original uniform Earth render with no
+         edge tint, so the element stays in DOM (in case we want to
+         re-enable a subtler version later) but renders nothing now.
+         The natural three.js sphere lighting + the warm bg ambient
+         (from breath particles) already provide the depth cue the
+         atmosphere was trying to add. */
+      display: none;
+    }
+    @keyframes globe-atmosphere-breathe {
+      0%, 100% { transform: translate(-50%, -50%) scale(1);    opacity: 0.85; }
+      50%      { transform: translate(-50%, -50%) scale(1.025); opacity: 1; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .globe-atmosphere { animation: none !important; }
     }
     @keyframes aura-breathe {
       0% { transform: translate(-50%,-50%) scale(1.08); opacity: 1; }
@@ -1740,6 +2188,20 @@
       width: 100%; height: 100%;
       transform: translate(-50%,-50%);
       pointer-events: none;
+      /* Hidden by default. body.globe-revealed flips this to block
+         the moment the warp lands, so the meditation ripples appear
+         as the natural continuation of the warp tunnel rings —
+         same concentric gold visual language, now self-animating
+         instead of scroll-driven. */
+      display: none;
+    }
+    /* When the warp lands, reveal the ripple stack as part of the
+       handoff from "approach" to "meditation". This is the same
+       transition the user sees the warp dots flushing through —
+       lines zoom out, ripples zoom in, all under one continuous
+       outward-radiating language. */
+    body.globe-revealed .globe-ripples {
+      display: block;
     }
     .globe-ripple {
       position: absolute; top: 50%; left: 50%;
@@ -1750,16 +2212,18 @@
       transform: translate(-50%,-50%) scale(1);
       will-change: transform, opacity;
     }
-    /* General sibling combinator: when the .globe-aura inside the same
-       .globe-container picks up .active (toggleSimran), every ripple
-       ring inside the sibling .globe-ripples wrapper starts animating. */
-    .globe-aura.active ~ .globe-ripples .globe-ripple {
+    /* Ripples animate whenever the globe is in its landed/meditation
+       rest state. We key off body.globe-revealed (set by the gurbani
+       tunnel ScrollTrigger at its SETTLE_AT) rather than the older
+       .globe-aura.active gate, because the gold aura itself is now
+       suppressed but the ripples are part of the meditation visual. */
+    body.globe-revealed .globe-ripples .globe-ripple {
       animation: globe-ripple-out 8s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite;
     }
-    .globe-aura.active ~ .globe-ripples .globe-ripple:nth-child(2) { animation-delay: 1.6s; }
-    .globe-aura.active ~ .globe-ripples .globe-ripple:nth-child(3) { animation-delay: 3.2s; }
-    .globe-aura.active ~ .globe-ripples .globe-ripple:nth-child(4) { animation-delay: 4.8s; }
-    .globe-aura.active ~ .globe-ripples .globe-ripple:nth-child(5) { animation-delay: 6.4s; }
+    body.globe-revealed .globe-ripples .globe-ripple:nth-child(2) { animation-delay: 1.6s; }
+    body.globe-revealed .globe-ripples .globe-ripple:nth-child(3) { animation-delay: 3.2s; }
+    body.globe-revealed .globe-ripples .globe-ripple:nth-child(4) { animation-delay: 4.8s; }
+    body.globe-revealed .globe-ripples .globe-ripple:nth-child(5) { animation-delay: 6.4s; }
     @keyframes globe-ripple-out {
       0% {
         transform: translate(-50%,-50%) scale(1);
@@ -1774,7 +2238,7 @@
       }
     }
     @media (prefers-reduced-motion: reduce) {
-      .globe-aura.active ~ .globe-ripples .globe-ripple { animation: none; }
+      body.globe-revealed .globe-ripples .globe-ripple { animation: none; }
     }
     .floating-text {
       position: absolute; pointer-events: none; white-space: nowrap;
@@ -1785,21 +2249,52 @@
          surface-normal vector instead of a single shared keyframe. */
     }
 
+    /* Body-level container for the meditation breath particles. Sits
+       at z-index: 0, BEHIND the fixed globe (z:1) and behind any
+       scrolled section (z:2), so particles read as ambient atmosphere
+       around / behind the globe rather than as floating dots on top
+       of everything. inset: 0 + pointer-events: none means it never
+       intercepts hit-testing. */
+    .breath-particles-layer {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+      /* Eased fade-out timing matches body.globe-receded on .hero-globe
+         so the particles disappear in lockstep with the globe itself
+         instead of one trailing the other. */
+      transition: opacity 0.7s ease,
+                  visibility 0s linear 0.7s;
+    }
+    /* Meditation particles are visual companions to the globe — they
+       belong to the cover / about-intro narrative only. The moment
+       the user scrolls past about-intro (body.globe-receded), the
+       globe fades away and the particles must fade with it so the
+       downstream sections (Chardi Kala AI, features, stats, reviews,
+       …) read on a clean canvas. Without this, the saffron dots
+       continued floating across the AI chat panel and the editorial
+       sections, undermining the "moment of stillness ended, now
+       you're in the product" hand-off. */
+    body.globe-receded .breath-particles-layer {
+      opacity: 0;
+      visibility: hidden;
+    }
     .breath-particle {
       position: absolute; pointer-events: none;
       width: 4px; height: 4px; border-radius: 50%;
       background: radial-gradient(circle, rgba(232,196,74,0.95) 0%, rgba(232,196,74,0) 70%);
       box-shadow: 0 0 6px rgba(232,196,74,0.4);
       will-change: transform, opacity;
-      z-index: 1;
     }
     [data-theme="light"] .breath-particle {
       background: radial-gradient(circle, rgba(160,120,30,0.85) 0%, rgba(160,120,30,0) 70%);
       box-shadow: 0 0 6px rgba(160,120,30,0.3);
     }
-    .hero-globe {
-      position: relative; z-index: 10;
-    }
+    /* .hero-globe is intentionally NOT re-positioned here; the canonical
+       rule is the position:fixed/right:0 declaration earlier in the file.
+       Repeating position:relative here would cancel that and pull the
+       globe back into the document flow. */
     .hero-inner {
       position: relative; z-index: 10;
     }
@@ -1859,7 +2354,13 @@
     .proof-sub { font-size: 0.9rem; color: var(--color-text-muted); margin-top: 4px; }
 
     /* ── BLOG ARTICLES ── */
-    .blog { padding: 80px 0; }
+    .blog {
+      padding: 80px 0;
+      position: relative;
+      overflow: hidden;
+    }
+    /* Cards sit above the Ik Onkar decoration. */
+    .blog .container { position: relative; z-index: 2; }
     .blog-grid {
       display: flex; gap: 20px; overflow-x: auto; padding: 10px 0 20px;
       scroll-snap-type: x mandatory; scrollbar-width: none;
@@ -1973,6 +2474,89 @@
       perspective: 1200px;
       overflow: visible;
       background: var(--color-bg);
+      transition: background 0.9s ease;
+    }
+    /* ── Story text stack ─────────────────────────────────────────
+       Sits above the dots (.highlight-dots z:1) and below the
+       central card / globe (z:5+). Phrases are absolutely centered
+       so they all stack on the same focal point — the eye reads
+       each one in place, then it blurs out as the next fades in.
+       The whole stack is pointer-event-free so it never intercepts
+       wheel/touch. */
+    .highlight-story {
+      position: absolute;
+      inset: 0;
+      z-index: 4;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+    }
+    .story-text {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%) scale(0.7);
+      max-width: min(90vw, 900px);
+      text-align: center;
+      white-space: nowrap;
+      /* Pure white reads cleanly against the dark cosmic backdrop
+         and stays visually distinct from the saffron starfield /
+         warp dots — narrative is "the voice", stars are "the
+         space you're moving through". */
+      color: #FFFFFF;
+      font-family: var(--font-body);
+      opacity: 0;
+      filter: blur(24px);
+      letter-spacing: -0.01em;
+      line-height: 1.05;
+      will-change: opacity, filter, transform;
+    }
+    /* All five phrases use DM Sans (the site's typeface) for full
+       visual consistency with nav, body copy, hero, etc. Per-phrase
+       variants only change weight + size — never family or style —
+       so the storytelling stays on-brand and upright like the rest
+       of the site (no italics anywhere). */
+    .story-text--sans {
+      font-weight: 300;
+      font-size: clamp(2.2rem, 4.8vw, 4.2rem);
+    }
+    .story-text--serif {
+      font-weight: 400;
+      font-size: clamp(2.8rem, 6vw, 5.2rem);
+    }
+    .story-text--lg  { font-size: clamp(3.2rem, 7vw, 6.0rem); }
+    .story-text--xl  {
+      font-size: clamp(5rem, 11vw, 8.5rem);
+      letter-spacing: 0.01em;
+      font-weight: 500;
+    }
+    /* The final invocation. Largest weight + size in DM Sans for
+       a hierarchy peak; staying white keeps the focus tight against
+       the saffron warp behind it. */
+    .story-text--xxl {
+      font-size: clamp(6rem, 13vw, 10.5rem);
+      font-weight: 600;
+      letter-spacing: -0.005em;
+    }
+    .story-text--sacred {
+      font-weight: 600;
+    }
+    @media (max-width: 768px) {
+      .story-text--xl  { font-size: clamp(3.5rem, 13vw, 6rem); }
+      .story-text--xxl { font-size: clamp(4rem, 15vw, 7rem); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .story-text { transition: none; filter: none; }
+    }
+    /* Once the warp lands and the outro flushes the starfield, drop
+       the section's solid bg so the body-level breath particles
+       (z-index: 0) become visible behind / around the globe. That
+       handoff is what makes the meditation dots appear from the
+       same place the warp dots just streaked out from — one
+       continuous ambient field instead of two separate states. */
+    body.globe-revealed .highlight-pin {
+      background: transparent;
     }
     .highlight-tunnel {
       position: absolute;
@@ -1981,6 +2565,21 @@
       align-items: center;
       justify-content: center;
       transform-style: preserve-3d;
+      /* Slow organic camera sway. The tunnel breathes between a tiny
+         clockwise and counter-clockwise tilt over 28s, which subtly
+         breaks the "locked tripod" feel and reads as the camera
+         drifting through space. Because every star + ring is
+         positioned relative to this container, the whole field
+         rotates together — there's no parallax shear, just a gentle
+         organic wobble. Frame-budget cost is one composited rotation. */
+      animation: tunnel-camera-sway 28s ease-in-out infinite;
+    }
+    @keyframes tunnel-camera-sway {
+      0%, 100% { transform: rotate(-0.6deg); }
+      50%      { transform: rotate( 0.6deg); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .highlight-tunnel { animation: none; }
     }
     .highlight-ring {
       position: absolute;
@@ -2006,14 +2605,11 @@
       z-index: 2;
     }
     .highlight-card {
-      background: transparent;
-      border: none;
-      max-width: 800px;
-      padding: 64px 32px;
-      position: relative;
-      z-index: 5;
-      opacity: 0;
-      transform: scale(0.8);
+      /* Card text used to be the climax of the gurbani tunnel ("100+
+         Gurbani Quotes"). The globe is the climax now — the card is
+         kept in DOM only so the existing JS render path can still
+         resolve its refs, but it never paints. */
+      display: none;
     }
     .highlight-card::before { display: none; }
     .highlight-card .gurmukhi {
@@ -2034,7 +2630,11 @@
     .highlight-dot {
       position: absolute;
       border-radius: 50%;
-      background: var(--color-primary);
+      /* Saffron matches the loader dissolve particles
+         (rgba(212,168,83)) so the swarm flying out of the Ik Onkar
+         and the tunnel's starfield read as one continuous field —
+         no color "seam" at the loader→cover handoff. */
+      background: rgb(212, 168, 83);
       opacity: 0;
       will-change: transform, opacity;
     }
@@ -2077,6 +2677,13 @@
     .loader-overlay.phase-out {
       transition: opacity 0.8s cubic-bezier(0.4,0,0.2,1), visibility 0.8s;
       opacity: 0; visibility: hidden; pointer-events: none;
+    }
+    /* While the loader is up, the user cannot enter the experience yet —
+       lock body scroll so accidental wheel/touch events don't advance
+       the gurbani-tunnel zoom underneath. revealSite() adds the
+       .site-revealed class on body and this lock releases. */
+    body:not(.site-revealed) {
+      overflow: hidden;
     }
     .loader-svg-wrap {
       position: relative; width: 320px; height: 305px;
@@ -2154,13 +2761,38 @@
       width: calc(100% + 200px); height: calc(100% + 200px);
       pointer-events: none;
     }
-    .loader-tagline {
-      font-size: 0.8rem; letter-spacing: 0.15em; text-transform: uppercase;
-      color: rgba(212,168,83,0.5);
+    /* Loader CTA — the same pill chrome as the hero's old "Begin Meditation"
+       button (.btn-secondary + .shine-border with a rotating gold ring).
+       The base look comes from .btn-secondary / .shine-border at the top of
+       the stylesheet; this rule only handles entry sequencing (fade + lift
+       in once the Ik Onkar finishes filling) and keeps the loader CTA
+       interactive only after it's actually visible. The CTA is what
+       initiates the experience — until the user clicks it, the page
+       behind stays loaded but hidden. */
+    .loader-cta {
+      margin-top: 16px;
+      font-family: var(--font-body);
       opacity: 0;
-      transition: opacity 0.6s ease;
+      transform: translateY(6px);
+      transition: opacity 0.6s ease 0.1s,
+                  transform 0.6s ease 0.1s,
+                  border-color 0.4s ease,
+                  background 0.4s ease,
+                  color 0.25s ease;
+      pointer-events: none;
+      color: var(--color-text);
     }
-    .loader-tagline.visible { opacity: 1; }
+    .loader-cta.visible {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+    .loader-cta:hover { color: var(--color-primary); }
+    .loader-cta:focus { outline: none; }
+    .loader-cta:focus-visible {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--color-primary);
+    }
 
     /* ── CUSTOM CURSOR ── */
     .cursor-dot {
@@ -2235,7 +2867,15 @@
       <canvas class="loader-canvas" id="loaderCanvas"></canvas>
       <div class="loader-pen" id="loaderPen"></div>
     </div>
-    <div class="loader-tagline" id="loaderTagline">Sikh AI</div>
+    <!-- Sole entry point into the experience. The site does NOT load
+         on its own — the Ik Onkar finishes drawing + filling and then
+         waits here. Clicking this button is what dissolves the glyph
+         into the gurbani-tunnel dot field, unmutes the soundstage,
+         starts Simran, and reveals the page. Styled to match the old
+         hero "Begin Meditation" pill with a rotating gold shine border. -->
+    <button class="btn-secondary shine-border loader-cta" id="loaderStartBtn" type="button" aria-label="Begin Meditation">
+      <span>Begin Meditation</span>
+    </button>
   </div>
 
   <!-- Custom Cursor -->
@@ -2262,120 +2902,42 @@
         <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
           <span id="themeIcon">&#9789;</span>
         </button>
-        <a href="https://play.google.com/store/apps/details?id=com.anhadapp" class="nav-cta" target="_blank" rel="noopener">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M3.609 1.814L13.792 12 3.61 22.186a.996.996 0 01-.61-.92V2.734a1 1 0 01.609-.92zm10.89 10.893l2.302 2.302-10.937 6.333 8.635-8.635zm3.199-3.199l2.807 1.626a1 1 0 010 1.732l-2.807 1.626L15.206 12l2.492-2.492zM5.864 2.658L16.8 8.99l-2.302 2.302-8.634-8.634z"/></svg>
-          <span>Download</span>
-        </a>
+        <!-- Primary CTA — now drives the meditation experience and
+             doubles as a sound-state indicator via its speaker icon
+             (muted when idle, active when meditating). All audio is
+             enabled/disabled in lockstep with toggleSimran(). -->
+        <button class="nav-cta nav-meditation" id="meditationToggleBtn" type="button" onclick="toggleSimran()" aria-label="Begin meditation" aria-pressed="false">
+          <span class="nav-meditation-icon" aria-hidden="true">
+            <!-- Speaker (active — shown while meditating) -->
+            <svg class="med-icon med-icon-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 9v6h4l5 4V5L8 9H4z"/>
+              <path d="M15.5 8.5a4 4 0 0 1 0 7"/>
+              <path d="M18 6a7 7 0 0 1 0 12"/>
+            </svg>
+            <!-- Speaker (muted — shown while idle) -->
+            <svg class="med-icon med-icon-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 9v6h4l5 4V5L8 9H4z"/>
+              <line x1="16" y1="9" x2="22" y2="15"/>
+              <line x1="22" y1="9" x2="16" y2="15"/>
+            </svg>
+          </span>
+          <span class="nav-meditation-label" id="meditationBtnLabel" data-i18n="simranStart">Begin Meditation</span>
+        </button>
       </div>
     </div>
   </nav>
 
-  <!-- Hero -->
-  <section class="hero" id="main-content">
-    <div class="container">
-      <div class="hero-inner">
-        <div class="hero-badge fade-up">
-          <span class="dot"></span>
-          <span id="heroBadgeText" data-i18n="heroBadge">Souls meditating today</span>
-        </div>
-        <h1 class="fade-up"><span data-i18n="heroTitle">Meditate with Sikhs<br></span><span class="gradient" data-i18n="heroSikhi">across the world</span></h1>
-        <p class="fade-up" data-i18n="heroDesc">Each glowing dot is a Sikh meditating right now. Press Begin Meditation, close your eyes, and repeat "Waheguru" with each breath — you'll appear on the globe too.</p>
-        <div class="hero-actions fade-up">
-          <button class="btn-secondary shine-border" id="simranBtn" onclick="toggleSimran()" data-i18n="simranStart">
-            <svg id="simranIcon" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-            Begin Meditation
-          </button>
-        </div>
-      </div>
-      <div class="hero-globe fade-up">
-        <div class="globe-container">
-          <div class="globe-aura" id="globeAura"></div>
-          <!-- Concentric ripple rings that radiate outward from the globe
-               whenever meditation is active. Mirrors the .highlight-ring
-               look from the 100 Gurbani Quotes section, but self-animating
-               in a continuous sonar-like cycle instead of being driven by
-               scroll. Sits behind #globeViz in source order so the rings
-               render behind the globe disk and only the portion outside
-               the globe is visible. -->
-          <div class="globe-ripples" aria-hidden="true">
-            <div class="globe-ripple"></div>
-            <div class="globe-ripple"></div>
-            <div class="globe-ripple"></div>
-            <div class="globe-ripple"></div>
-            <div class="globe-ripple"></div>
-          </div>
-          <div id="globeViz"></div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- About / Intro -->
-  <section class="about-intro" id="aboutIntro">
-    <div class="about-ik-bg" id="aboutIkBg"></div>
-    <div class="about-ik-shine" id="aboutIkShine">
-      <svg viewBox="0 0 804 758" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <linearGradient id="aboutShineGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stop-color="transparent"/>
-            <stop offset="40%" stop-color="rgba(212,168,83,0.6)"/>
-            <stop offset="50%" stop-color="rgba(232,196,74,0.9)"/>
-            <stop offset="60%" stop-color="rgba(212,168,83,0.6)"/>
-            <stop offset="100%" stop-color="transparent"/>
-          </linearGradient>
-        </defs>
-      </svg>
-    </div>
-    <div class="container">
-      <p class="about-text" id="aboutText" data-i18n="aboutText">Discover the ultimate spiritual companion for the modern Gursikh. Sikh AI bridges the gap between the timeless wisdom of Gurbani and cutting-edge technology to keep you connected, informed, and grounded. Whether it is receiving the Daily Hukamnama from Sri Darbar Sahib or completing your Nitnem with high-quality audio, Sikh AI ensures your daily practice is seamless. With Chardikala AI, the world's first dedicated AI mentor for the Sikh community, designed to answer your questions and deepen your understanding of the Panth. Join a global Sangat on our real-time meditation globe, where you can see and meditate alongside thousands of Sikhs across the world. With Sikh AI, your spiritual journey is no longer solitary; it is a shared, high-tech experience built with deep reverence for the Khalsa.</p>
-    </div>
-  </section>
-
-  <!-- Stats -->
-  <section class="stats">
-    <div class="container">
-      <div class="stats-grid">
-        <div class="stat-item fade-up">
-          <h3><span data-count="25000" data-suffix="K+" data-divide="1000">0</span></h3>
-          <p data-i18n="statDownloads">Downloads</p>
-        </div>
-        <div class="stat-item fade-up">
-          <h3>&#9733; <span data-count="50" data-suffix="" data-divide="10" data-decimals="1">0</span></h3>
-          <p data-i18n="statRating">Play Store Rating</p>
-        </div>
-        <div class="stat-item fade-up">
-          <h3 data-i18n="statFree">Free</h3>
-          <p data-i18n="statNoAds">No Ads, No Fees</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Chardi Kala AI -->
-  <section class="ai-chat-section" id="chardiKalaAI">
-    <div class="container">
-      <div class="section-label fade-up" data-i18n="aiLabel">&#10024; Spiritual AI Guide</div>
-      <h2 class="section-title fade-up" data-i18n="aiTitle">Ask anything about Sikhi</h2>
-      <p class="section-subtitle fade-up" data-i18n="aiSubtitle">Chardi Kala AI is your personal spiritual companion &mdash; powered by Gurbani wisdom, Sikh history, and the teachings of the Ten Gurus.</p>
-      <div class="ai-prompt-wrap fade-up">
-        <div class="ai-prompt-bar shine-border">
-          <input class="ai-prompt-input" id="aiPromptInput" type="text" data-i18n-placeholder="aiPlaceholder" placeholder="Ask about Gurbani, Sikh history, or life guidance..." onkeydown="if(event.key==='Enter')openAiChat()">
-          <button class="ai-prompt-send" onclick="openAiChat()" aria-label="Send message">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
-          </button>
-        </div>
-        <div class="ai-prompt-chips">
-          <button class="ai-chip" onclick="openAiChat(this.textContent)" data-i18n="aiChip1">What is Chardi Kala?</button>
-          <button class="ai-chip" onclick="openAiChat(this.textContent)" data-i18n="aiChip2">Tell me about Guru Nanak Dev Ji</button>
-          <button class="ai-chip" onclick="openAiChat(this.textContent)" data-i18n="aiChip3">Share a Shabad for peace</button>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Gurbani Highlight -->
+  <!-- Gurbani Highlight — now the cover section. When the loader's Ik
+       Onkar dissolves, its dot swarm spills directly into this tunnel:
+       the same gold particles continue radiating outward through the
+       concentric rings while the user scrolls. The ScrollTrigger pins
+       the section for ~350% scroll, ramping the zoom + flying quotes +
+       eventual "100+ Gurbani Quotes" card. At the tail of the zoom
+       (progress ≈ 1) the globe is revealed at center-screen (see
+       initGurbaniParticles below), making this section act as a
+       wormhole that lands the user on the planet of meditators. -->
   <section class="highlight" id="gurbaniHighlight">
-    <div class="highlight-pin">
+    <div class="highlight-pin" id="main-content">
       <div class="highlight-tunnel" id="highlightTunnel">
         <div class="highlight-ring" style="width:60px;height:60px;"></div>
         <div class="highlight-ring" style="width:140px;height:140px;"></div>
@@ -2422,6 +2984,37 @@
       <div class="highlight-fly-quote" data-fly="31" data-angle="55" data-depth="0.55">ਸਿਮਰਨ</div>
       <div class="highlight-fly-quote" data-fly="32" data-angle="280" data-depth="0.62">ਸੰਗਤ</div>
       <div class="highlight-dots" id="highlightDots"></div>
+      <!-- Story text — five phrases that blur into focus and back
+           out across the warp journey, narrating what the user is
+           travelling toward before Earth materialises. Each phrase
+           reads at center, each fades into the next, and together
+           they form one continuous sentence:
+             "meditate with Sikhs, across the world. breathe, and
+              recite — Waheguru"
+           Per-phrase data-depth-start / data-depth-end / data-peak
+           drive blur + opacity + scale in renderStoryText(). -->
+      <div class="highlight-story" id="highlightStory" aria-hidden="true">
+        <div class="story-text story-text--sans"
+             data-depth-start="0.04" data-depth-end="0.22" data-peak="0.13">
+          meditate with Sikhs,
+        </div>
+        <div class="story-text story-text--serif story-text--lg"
+             data-depth-start="0.18" data-depth-end="0.36" data-peak="0.27">
+          across the world.
+        </div>
+        <div class="story-text story-text--serif story-text--xl"
+             data-depth-start="0.34" data-depth-end="0.50" data-peak="0.42">
+          breathe,
+        </div>
+        <div class="story-text story-text--sans"
+             data-depth-start="0.48" data-depth-end="0.64" data-peak="0.56">
+          and recite —
+        </div>
+        <div class="story-text story-text--serif story-text--xxl story-text--sacred"
+             data-depth-start="0.60" data-depth-end="0.82" data-peak="0.72">
+          Waheguru
+        </div>
+      </div>
       <div class="highlight-vignette"></div>
       <div class="container" style="position:relative;z-index:5;">
         <div class="highlight-card" id="highlightCard">
@@ -2431,6 +3024,100 @@
       </div>
     </div>
   </section>
+
+  <!-- Hero — now lives BELOW the gurbani cover. When the user finishes
+       scrolling through the tunnel, the globe materialises at center
+       and this hero copy reads as commentary on it. -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-inner">
+        <div class="hero-badge fade-up">
+          <span class="dot"></span>
+          <span id="heroBadgeText" data-i18n="heroBadge">Souls meditating today</span>
+        </div>
+        <h1 class="fade-up"><span data-i18n="heroTitle">Meditate with Sikhs<br></span><span class="gradient" data-i18n="heroSikhi">across the world</span></h1>
+        <p class="fade-up" data-i18n="heroDesc">Each glowing dot is a Sikh meditating right now. Close your eyes, breathe, and repeat &ldquo;Waheguru&rdquo; with each breath &mdash; you&rsquo;ll appear on the globe too.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Globe — fixed and CENTERED in the viewport. Lives at the body
+       level so its position:fixed has no chance of being captured by
+       an ancestor stacking context (transform/filter/perspective
+       would otherwise reparent it). Hidden by default; the gurbani-
+       tunnel ScrollTrigger flips body.globe-revealed as the zoom
+       lands, fading the globe in at center. Downstream sections with
+       solid backgrounds paint over it as they enter the viewport. -->
+  <div class="hero-globe">
+    <div class="globe-container">
+      <!-- Earth-style atmosphere halo. Renders a thin cyan rim around
+           the globe disk; only fades in after the gurbani tunnel
+           lands the user on Earth (body.globe-revealed / -side-right). -->
+      <div class="globe-atmosphere" aria-hidden="true"></div>
+      <div class="globe-aura" id="globeAura"></div>
+      <!-- Concentric ripple rings that radiate outward from the globe
+           whenever meditation is active. Mirrors the .highlight-ring
+           look from the 100 Gurbani Quotes section, but self-animating
+           in a continuous sonar-like cycle instead of being driven by
+           scroll. Sits behind #globeViz in source order so the rings
+           render behind the globe disk and only the portion outside
+           the globe is visible. -->
+      <div class="globe-ripples" aria-hidden="true">
+        <div class="globe-ripple"></div>
+        <div class="globe-ripple"></div>
+        <div class="globe-ripple"></div>
+        <div class="globe-ripple"></div>
+        <div class="globe-ripple"></div>
+      </div>
+      <div id="globeViz"></div>
+    </div>
+  </div>
+
+  <!-- Globe badge — live count of Sikhs meditating today. Anchored
+       below the centered globe at the moment the gurbani tunnel
+       lands (body.globe-revealed) and fades out the instant the
+       narrative moves on (body.globe-side-right / .globe-receded).
+       Outside .hero-globe in the DOM so its opacity is independent
+       of the globe wrapper's transform pipeline. The dot is colour-
+       primary to read as "live indicator". -->
+  <div class="globe-badge" id="globeBadge" aria-hidden="true">
+    <span class="globe-badge-dot"></span>
+    <span id="globeBadgeText" data-i18n="heroBadge">Souls Meditated Today</span>
+  </div>
+
+  <!-- About / Intro -->
+  <section class="about-intro" id="aboutIntro">
+    <div class="container">
+      <p class="about-text" id="aboutText" data-i18n="aboutText">Rooted in Sikhi&mdash;one of the world&rsquo;s most deeply peaceful spiritual traditions&mdash;this space is built for anyone curious about the art of slowing down. Every glowing dot on the interactive globe represents a real person, somewhere in the world, sitting in silence right now. Close your eyes, take a breath, and you&rsquo;ll appear on it, too&mdash;instantly part of a quiet, global moment of stillness. Whenever you need guidance, an intuitive AI companion is a single tap away to answer questions in plain English: What does this teaching mean? How do I quiet a racing mind? Where do I even start? Drawing on centuries of timeless wisdom, it never preaches; it just offers thoughtful, conversational answers, like texting a calm, well-read friend. Pair that with gently narrated daily readings, soft morning and evening practices, and live music streamed directly from a centuries-old golden temple in northern India, and just five minutes a day becomes a noticeably calmer, more beautifully grounded life.</p>
+    </div>
+  </section>
+
+  <!-- Stats -->
+  <!-- Chardi Kala AI -->
+  <section class="ai-chat-section" id="chardiKalaAI">
+    <div class="container">
+      <div class="section-label fade-up" data-i18n="aiLabel">&#10024; Spiritual AI Guide</div>
+      <h2 class="section-title fade-up" data-i18n="aiTitle">Ask anything about Sikhi</h2>
+      <p class="section-subtitle fade-up" data-i18n="aiSubtitle">Chardi Kala AI is your personal spiritual companion &mdash; powered by Gurbani wisdom, Sikh history, and the teachings of the Ten Gurus.</p>
+      <div class="ai-prompt-wrap fade-up">
+        <div class="ai-prompt-bar shine-border">
+          <input class="ai-prompt-input" id="aiPromptInput" type="text" data-i18n-placeholder="aiPlaceholder" placeholder="Ask about Gurbani, Sikh history, or life guidance..." onkeydown="if(event.key==='Enter')openAiChat()">
+          <button class="ai-prompt-send" onclick="openAiChat()" aria-label="Send message">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+          </button>
+        </div>
+        <div class="ai-prompt-chips">
+          <button class="ai-chip ai-chip--accent" onclick="askHukamnama('section')" data-i18n="aiChipHukam">Today&#8217;s Hukamnama</button>
+          <button class="ai-chip" onclick="openAiChat(this.textContent)" data-i18n="aiChip1">What is Chardi Kala?</button>
+          <button class="ai-chip" onclick="openAiChat(this.textContent)" data-i18n="aiChip2">Tell me about Guru Nanak Dev Ji</button>
+          <button class="ai-chip" onclick="openAiChat(this.textContent)" data-i18n="aiChip3">Share a Shabad for peace</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Gurbani Highlight moved up to be the cover section (rendered
+       directly after the nav, before .hero). -->
 
   <!-- Features -->
   <section class="features" id="features">
@@ -2445,9 +3132,9 @@
       <div class="features-layout">
         <div class="features-meta-stack" id="featuresMetaStack">
           <div class="features-meta-slide active" data-idx="0">
-            <div class="feature-tag" data-i18n="f1tag">Gurbani</div>
-            <div class="feature-title" data-i18n="f1title">Daily Hukamnama</div>
-            <div class="feature-slide-desc" data-i18n="f1desc">Receive the daily divine order from Sri Darbar Sahib, Amritsar &mdash; with Gurmukhi text, English translation, and meaning delivered every morning.</div>
+            <div class="feature-tag" data-i18n="f1tag">Live &middot; Daily</div>
+            <div class="feature-title" data-i18n="f1title">Hukamnama from Sri Darbar Sahib</div>
+            <div class="feature-slide-desc" data-i18n="f1desc">Every morning, the Granthi Singh at Sri Darbar Sahib in Amritsar opens Sri Guru Granth Sahib Ji and reads the day&rsquo;s Hukamnama. We bring it to you live &mdash; original Gurmukhi, English translation, and meaning &mdash; the moment it&rsquo;s recited.</div>
           </div>
           <div class="features-meta-slide" data-idx="1">
             <div class="feature-tag" data-i18n="f3tag">Daily Practice</div>
@@ -2495,22 +3182,33 @@
               <!-- Front-face screen -->
               <div class="device-screen" id="featuresScreen">
                 <img class="features-screen-img active" data-idx="0" src="img/ss1-hukamnama.png" alt="Daily Hukamnama">
-                <img class="features-screen-img" data-idx="1" src="img/ss5-nitnem.png" alt="Nitnem with Audio">
-                <img class="features-screen-img" data-idx="2" src="img/ss4-simran.png" alt="Simran Counter">
+                <!-- Live app captures for the five feature slots where
+                     we have video footage (Nitnem/Path, Simran,
+                     Saakhi, Chardi Kala AI, Sewa). The JS slide
+                     cycler toggles `.active` on these <video> tags
+                     exactly the same way it does for the <img> tags
+                     beside them; the setActive handler also calls
+                     .play() on the newly-active clip and .pause() on
+                     the rest so only the visible feature is decoding
+                     frames at any moment. Hukamnama (0) and Kirtan
+                     (3) remain stills because we don't have clips
+                     for those screens yet. -->
+                <video class="features-screen-img" data-idx="1" src="../img/SikhAI/path.mp4" muted playsinline loop preload="metadata"></video>
+                <video class="features-screen-img" data-idx="2" src="../img/SikhAI/Simran.mp4" muted playsinline loop preload="metadata"></video>
                 <img class="features-screen-img" data-idx="3" src="img/ss2-kirtan.png" alt="Golden Temple Kirtan">
-                <img class="features-screen-img" data-idx="4" src="img/ss8-saakhi.png" alt="Nanakshahi Calendar">
-                <img class="features-screen-img" data-idx="5" src="img/ss3-ai.png" alt="Chardi Kala AI">
-                <img class="features-screen-img" data-idx="6" src="img/ss7-sewa.png" alt="Sewa Pulse">
+                <video class="features-screen-img" data-idx="4" src="../img/SikhAI/saakhi.mp4" muted playsinline loop preload="metadata"></video>
+                <video class="features-screen-img" data-idx="5" src="../img/SikhAI/AI.mp4" muted playsinline loop preload="metadata"></video>
+                <video class="features-screen-img" data-idx="6" src="../img/SikhAI/sewa.mp4" muted playsinline loop preload="metadata"></video>
               </div>
               <!-- Back-face screen (mirror, so the phone always shows content as it flips) -->
               <div class="device-screen device-screen-back" id="featuresScreenBack" aria-hidden="true">
                 <img class="features-screen-img-b active" data-idx="0" src="img/ss1-hukamnama.png" alt="">
-                <img class="features-screen-img-b" data-idx="1" src="img/ss5-nitnem.png" alt="">
-                <img class="features-screen-img-b" data-idx="2" src="img/ss4-simran.png" alt="">
+                <video class="features-screen-img-b" data-idx="1" src="../img/SikhAI/path.mp4" muted playsinline loop preload="metadata"></video>
+                <video class="features-screen-img-b" data-idx="2" src="../img/SikhAI/Simran.mp4" muted playsinline loop preload="metadata"></video>
                 <img class="features-screen-img-b" data-idx="3" src="img/ss2-kirtan.png" alt="">
-                <img class="features-screen-img-b" data-idx="4" src="img/ss8-saakhi.png" alt="">
-                <img class="features-screen-img-b" data-idx="5" src="img/ss3-ai.png" alt="">
-                <img class="features-screen-img-b" data-idx="6" src="img/ss7-sewa.png" alt="">
+                <video class="features-screen-img-b" data-idx="4" src="../img/SikhAI/saakhi.mp4" muted playsinline loop preload="metadata"></video>
+                <video class="features-screen-img-b" data-idx="5" src="../img/SikhAI/AI.mp4" muted playsinline loop preload="metadata"></video>
+                <video class="features-screen-img-b" data-idx="6" src="../img/SikhAI/sewa.mp4" muted playsinline loop preload="metadata"></video>
               </div>
               <div class="device-screen-glass"></div>
               <div class="device-chamfer"></div>
@@ -2551,6 +3249,30 @@
         <div class="features-progress-dot"></div>
         <div class="features-progress-dot"></div>
         <div class="features-progress-dot"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Headline stats. Moved here (just above reviews) so the page
+       lands the social-proof beat — "25K+ downloads · 5.0 rating ·
+       Free" — immediately before the testimonial wall, instead of
+       earlier in the flow where it interrupted the meditation
+       narrative right after about-intro. -->
+  <section class="stats">
+    <div class="container">
+      <div class="stats-grid">
+        <div class="stat-item fade-up">
+          <h3><span data-count="25000" data-suffix="K+" data-divide="1000">0</span></h3>
+          <p data-i18n="statDownloads">Downloads</p>
+        </div>
+        <div class="stat-item fade-up">
+          <h3>&#9733; <span data-count="50" data-suffix="" data-divide="10" data-decimals="1">0</span></h3>
+          <p data-i18n="statRating">Play Store Rating</p>
+        </div>
+        <div class="stat-item fade-up">
+          <h3 data-i18n="statFree">Free</h3>
+          <p data-i18n="statNoAds">No Ads, No Fees</p>
+        </div>
       </div>
     </div>
   </section>
@@ -2623,6 +3345,24 @@
 
   <!-- SEO Blog Articles -->
   <section class="blog" id="learn">
+    <!-- Decorative Ik Onkar — paths are cloned from the loader SVG at
+         runtime. The static stroke layer + the animated shine layer
+         compose into a single hand-scribed glyph that breathes in the
+         background of the Explore Sikhi section. -->
+    <div class="learn-ik-bg" id="learnIkBg" aria-hidden="true"></div>
+    <div class="learn-ik-shine" id="learnIkShine" aria-hidden="true">
+      <svg viewBox="0 0 804 758" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="learnShineGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="transparent"/>
+            <stop offset="40%" stop-color="rgba(212,168,83,0.6)"/>
+            <stop offset="50%" stop-color="rgba(232,196,74,0.9)"/>
+            <stop offset="60%" stop-color="rgba(212,168,83,0.6)"/>
+            <stop offset="100%" stop-color="transparent"/>
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
     <div class="container">
       <div class="section-label fade-up" data-i18n="blogLabel">&#9670; Learn</div>
       <h2 class="section-title fade-up" data-i18n="blogTitle">Explore Sikhi</h2>
@@ -2726,13 +3466,14 @@
         </div>
       </div>
       <div class="ai-suggestions" id="aiChipsFab">
+        <button class="ai-chip ai-chip--accent" onclick="askHukamnama('fab')" data-i18n="aiChipHukam">Today&#8217;s Hukamnama</button>
         <button class="ai-chip" onclick="aiAsk(this.textContent,'fab')" data-i18n="aiChip1">What is Chardi Kala?</button>
         <button class="ai-chip" onclick="aiAsk(this.textContent,'fab')" data-i18n="aiChip2">Tell me about Guru Nanak Dev Ji</button>
         <button class="ai-chip" onclick="aiAsk(this.textContent,'fab')" data-i18n="aiChip3">Share a Shabad for peace</button>
       </div>
       <div class="ai-input-bar" id="aiInputFab">
         <input class="ai-input" id="aiInputFieldFab" type="text" data-i18n-placeholder="aiPlaceholderShort" placeholder="Ask anything about Sikhi..." onkeydown="if(event.key==='Enter')aiSendFab()">
-        <button class="ai-send" id="aiSendBtnFab" onclick="aiSendFab()" aria-label="Send message">
+        <button class="ai-send" id="aiSendBtnFab" onclick="aiSendFab()" aria-label="Send message" disabled>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
         </button>
       </div>
@@ -2741,7 +3482,14 @@
   </div>
 
   <!-- AI Chat Overlay -->
-  <div class="ai-overlay" id="aiOverlay">
+  <!-- data-lenis-prevent tells the Lenis smooth-scroll engine to
+       ignore wheel/touch events that originate anywhere inside this
+       overlay. Without it, Lenis captures the wheel BEFORE the
+       browser dispatches it to .ai-messages, scrolling the page
+       behind the modal instead of the chat itself. Stopping Lenis
+       on open isn't sufficient because Lenis still preventDefaults
+       wheel events while paused. -->
+  <div class="ai-overlay" id="aiOverlay" data-lenis-prevent>
     <div class="ai-overlay-backdrop" onclick="closeAiChat()"></div>
     <div class="ai-overlay-panel">
       <div class="ai-overlay-header">
@@ -2760,7 +3508,7 @@
       </div>
       <div class="ai-overlay-input-bar">
         <input class="ai-input" id="aiInputFieldOverlay" type="text" placeholder="Ask anything about Sikhi..." onkeydown="if(event.key==='Enter')aiSendOverlay()">
-        <button class="ai-send" id="aiSendBtnOverlay" onclick="aiSendOverlay()" aria-label="Send message">
+        <button class="ai-send" id="aiSendBtnOverlay" onclick="aiSendOverlay()" aria-label="Send message" disabled>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
         </button>
       </div>
@@ -2788,10 +3536,293 @@
   <!-- GSAP -->
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/gsap.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/ScrollTrigger.min.js"></script>
+  <!-- Lenis smooth scroll -->
+  <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.18/dist/lenis.min.js"></script>
 
   <script>
+    /* ── ALWAYS START AT THE TOP ──
+       The journey is a guided sequence (loader → Ik Onkar → warp →
+       Earth). Restoring a mid-page scroll position on reload drops
+       the user into the middle of the narrative with stale pin
+       state, broken ScrollTrigger progress, and a missing loader.
+       We disable browser scroll restoration up front, then force
+       scroll to 0 at every phase a browser might try to restore:
+         • script parse (immediate)
+         • beforeunload (clears the position the browser would cache)
+         • load (after layout, after Lenis init)
+         • pageshow (covers Safari/iOS bfcache restores)
+       Each window.scrollTo is paired with a lenis.scrollTo(0,...) if
+       Lenis is already wired, so neither the native nor the smooth
+       scroll layer drift back to an old offset. */
     if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
     window.scrollTo(0, 0);
+    window.addEventListener('beforeunload', function() {
+      window.scrollTo(0, 0);
+    });
+    window.addEventListener('load', function() {
+      window.scrollTo(0, 0);
+      if (window.__lenis) window.__lenis.scrollTo(0, { immediate: true });
+    });
+    window.addEventListener('pageshow', function(e) {
+      // e.persisted === true means the page came out of bfcache (back/forward)
+      // — in that case the browser will absolutely restore scroll unless we
+      // explicitly stomp it back to 0.
+      window.scrollTo(0, 0);
+      if (window.__lenis) window.__lenis.scrollTo(0, { immediate: true });
+    });
+
+    /* ── AUDIO ENGINE ──
+       Self-contained Web Audio layer. Three responsibilities:
+         1. Drive a master gain that fades the whole soundstage in/out
+            when the user toggles sound on or off.
+         2. Synthesize UI tones (tap / tick / chime) on demand so we
+            don't ship extra audio files for every interaction.
+         3. Build a layered tanpura-style drone (root + fifth + octave,
+            slightly detuned, with a slow LFO on the gain of each voice)
+            that fades in only during the Simran meditation flow.
+       Defaults to OFF — browsers block autoplay anyway, and Awwwards
+       reviewers expect to opt in to sound. The AudioContext is lazily
+       created on the first user gesture so it starts in 'running' state. */
+    const AudioEngine = (function() {
+      const STORAGE_KEY = 'sikhai-sound';
+      let ctx = null, masterGain = null;
+      let enabled = (localStorage.getItem(STORAGE_KEY) || 'off') === 'on';
+      let droneVoices = [], droneGain = null, droneFilter = null;
+      const reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      function ensureCtx() {
+        if (!ctx) {
+          const AC = window.AudioContext || window.webkitAudioContext;
+          if (!AC) return false;
+          try {
+            ctx = new AC();
+            masterGain = ctx.createGain();
+            // Start at the level matching current preference so toggling
+            // mid-session ramps from the right baseline.
+            masterGain.gain.value = enabled ? 1 : 0;
+            masterGain.connect(ctx.destination);
+          } catch (e) { ctx = null; return false; }
+        }
+        if (ctx.state === 'suspended') { try { ctx.resume(); } catch(e) {} }
+        return true;
+      }
+
+      function setEnabled(on) {
+        enabled = !!on;
+        try { localStorage.setItem(STORAGE_KEY, enabled ? 'on' : 'off'); } catch(e) {}
+        document.documentElement.setAttribute('data-sound', enabled ? 'on' : 'off');
+        // Gate the existing chant audio without tearing it down — keeps
+        // current playback position if the user toggles mid-Simran.
+        if (window._simranAudio) {
+          window._simranAudio.muted = !enabled;
+          if (enabled && window._simranActive && window._simranAudio.paused) {
+            window._simranAudio.play().catch(() => {});
+          }
+        }
+        if (!ensureCtx()) return;
+        const t = ctx.currentTime;
+        masterGain.gain.cancelScheduledValues(t);
+        masterGain.gain.linearRampToValueAtTime(enabled ? 1 : 0, t + 0.25);
+      }
+
+      function isEnabled() { return enabled; }
+
+      // Generic shaped tone — short attack, exponential decay so it
+      // feels percussive rather than synthy.
+      function _voice({ freq, type='sine', dur=0.18, gain=0.05, attack=0.005, decay=0.18 }) {
+        if (!enabled || !ensureCtx()) return;
+        const osc = ctx.createOscillator();
+        const g = ctx.createGain();
+        osc.type = type;
+        osc.frequency.value = freq;
+        osc.connect(g).connect(masterGain);
+        const t = ctx.currentTime;
+        g.gain.setValueAtTime(0.0001, t);
+        g.gain.linearRampToValueAtTime(gain, t + attack);
+        g.gain.exponentialRampToValueAtTime(0.0001, t + attack + decay + dur);
+        osc.start(t);
+        osc.stop(t + attack + decay + dur + 0.02);
+      }
+
+      // Soft bell — fundamental + a quieter octave + fifth
+      function tick() {
+        _voice({ freq: 1320, dur: 0.22, gain: 0.05, decay: 0.28 });
+        _voice({ freq: 1980, dur: 0.18, gain: 0.018, decay: 0.22 });
+      }
+      // UI tap — very short, low-mid triangle
+      function tap() {
+        _voice({ freq: 520, dur: 0.04, gain: 0.04, type: 'triangle', decay: 0.07 });
+      }
+      // Section/state-change chime — two harmonics, long decay
+      function chime() {
+        _voice({ freq: 880,  dur: 0.55, gain: 0.05,  decay: 0.7 });
+        _voice({ freq: 1318, dur: 0.55, gain: 0.025, decay: 0.7 });
+        _voice({ freq: 1760, dur: 0.45, gain: 0.012, decay: 0.55 });
+      }
+
+      // Layered tanpura-style drone — Sa (A2 / 110Hz) + Pa (E3 / 164.81Hz)
+      // + Sa octave (A3 / 220Hz). Each voice has a slow LFO modulating
+      // its gain so the texture breathes instead of sitting flat. Routed
+      // through a lowpass to take the harsh edge off the sines.
+      function _buildDrone() {
+        if (droneVoices.length) return;
+        droneFilter = ctx.createBiquadFilter();
+        droneFilter.type = 'lowpass';
+        droneFilter.frequency.value = 1100;
+        droneFilter.Q.value = 0.4;
+        droneGain = ctx.createGain();
+        droneGain.gain.value = 0;
+        droneGain.connect(droneFilter).connect(masterGain);
+
+        const recipe = [
+          { f: 110,     type: 'sine',     lvl: 0.55, lfo: 0.07 },
+          { f: 110.55,  type: 'sine',     lvl: 0.35, lfo: 0.09 },
+          { f: 164.81,  type: 'sine',     lvl: 0.32, lfo: 0.083 },
+          { f: 220,     type: 'sine',     lvl: 0.22, lfo: 0.11 },
+          { f: 219.6,   type: 'triangle', lvl: 0.10, lfo: 0.13 }
+        ];
+        recipe.forEach(r => {
+          const o = ctx.createOscillator();
+          o.type = r.type;
+          o.frequency.value = r.f;
+          const g = ctx.createGain();
+          g.gain.value = r.lvl;
+          // LFO modulates this voice's gain ±0.04 around its level
+          const lfo = ctx.createOscillator();
+          lfo.frequency.value = r.lfo;
+          const lfoAmp = ctx.createGain();
+          lfoAmp.gain.value = 0.04;
+          lfo.connect(lfoAmp).connect(g.gain);
+          o.connect(g).connect(droneGain);
+          o.start();
+          lfo.start();
+          droneVoices.push({ o, lfo });
+        });
+      }
+
+      function startAmbient(targetGain) {
+        if (!enabled || !ensureCtx() || reducedMotion) return;
+        _buildDrone();
+        const t = ctx.currentTime;
+        droneGain.gain.cancelScheduledValues(t);
+        droneGain.gain.linearRampToValueAtTime(targetGain != null ? targetGain : 0.08, t + 1.6);
+      }
+      function stopAmbient() {
+        if (!droneGain || !ctx) return;
+        const t = ctx.currentTime;
+        droneGain.gain.cancelScheduledValues(t);
+        droneGain.gain.linearRampToValueAtTime(0, t + 1.8);
+        // Tear down voices after the fade so we don't leak oscillators
+        const voices = droneVoices.slice();
+        const dg = droneGain, df = droneFilter;
+        droneVoices = []; droneGain = null; droneFilter = null;
+        setTimeout(() => {
+          voices.forEach(v => { try { v.o.stop(); v.lfo.stop(); } catch(e){} });
+          try { dg && dg.disconnect(); } catch(e){}
+          try { df && df.disconnect(); } catch(e){}
+        }, 2000);
+      }
+
+      // Suspend the context when the tab is hidden so we don't drain
+      // CPU/battery in the background. Resume only if the user still
+      // has sound enabled.
+      document.addEventListener('visibilitychange', () => {
+        if (!ctx) return;
+        if (document.hidden) {
+          try { ctx.suspend(); } catch(e) {}
+        } else if (enabled) {
+          try { ctx.resume(); } catch(e) {}
+        }
+      });
+
+      // Reflect saved preference on <html> before paint so the icon
+      // doesn't flash the wrong state on first load.
+      document.documentElement.setAttribute('data-sound', enabled ? 'on' : 'off');
+
+      // ── Tab-visibility audio gate ───────────────────────────────
+      // Browsers happily keep audio playing when the user switches
+      // tabs, but for a meditation experience that's intrusive —
+      // the user expects silence the moment they navigate away.
+      // We hold a separate `visible` flag (NOT modifying the user's
+      // enabled preference) and AND it with `enabled` when driving
+      // both the chant <audio> and the WebAudio masterGain. When
+      // the tab comes back and the user still wants sound, audio
+      // resumes from where it paused — no restart, no jump.
+      let visible = !document.hidden;
+      function applyVisibility() {
+        const wantsAudio = enabled && visible;
+        // Chant element: pause/resume in place. _pausedByVisibility
+        // tracks "we paused this, so we may resume it" so we don't
+        // fight with an explicit user pause from elsewhere.
+        if (window._simranAudio) {
+          if (!wantsAudio && !window._simranAudio.paused) {
+            window._simranAudio.pause();
+            window._simranAudio._pausedByVisibility = true;
+          } else if (wantsAudio &&
+                     window._simranActive &&
+                     window._simranAudio._pausedByVisibility) {
+            window._simranAudio._pausedByVisibility = false;
+            window._simranAudio.play().catch(function() {});
+          }
+        }
+        // WebAudio bus: ramp masterGain over 150 ms so the duck is
+        // a soft fade, not a click. Doesn't tear down the graph,
+        // so drones and UI tones resume instantly when the tab
+        // comes back.
+        if (ctx && masterGain) {
+          const t = ctx.currentTime;
+          masterGain.gain.cancelScheduledValues(t);
+          masterGain.gain.linearRampToValueAtTime(
+            wantsAudio ? 1 : 0, t + 0.15);
+          // Also suspend/resume the AudioContext itself so the
+          // browser releases the audio thread while we're in the
+          // background — cleaner for battery on laptops.
+          if (!wantsAudio && ctx.state === 'running') {
+            try { ctx.suspend(); } catch (e) {}
+          } else if (wantsAudio && ctx.state === 'suspended') {
+            try { ctx.resume(); } catch (e) {}
+          }
+        }
+      }
+      document.addEventListener('visibilitychange', function() {
+        visible = !document.hidden;
+        applyVisibility();
+      });
+      // Some browsers fire only `blur`/`focus` for window switches
+      // even when the page itself isn't hidden — belt-and-braces.
+      window.addEventListener('blur', function() {
+        visible = false;
+        applyVisibility();
+      });
+      window.addEventListener('focus', function() {
+        visible = !document.hidden;
+        applyVisibility();
+      });
+
+      return { setEnabled, isEnabled, ensureCtx, tap, tick, chime, startAmbient, stopAmbient };
+    })();
+    window.AudioEngine = AudioEngine;
+
+    /* ── UI SOUND DELEGATION ──
+       One global pointerdown listener routes each interactive element
+       to its appropriate tone. We use pointerdown (not click) so the
+       sound feels physically coupled to the press, not the release.
+       Selectors are intentionally narrow so we never tone-spam the
+       whole page. Buttons that trigger toggleSimran() are excluded
+       because toggleSimran() plays its own chime/tick on enter/exit. */
+    document.addEventListener('pointerdown', function(e) {
+      if (!window.AudioEngine || !AudioEngine.isEnabled()) return;
+      const t = e.target;
+      if (!(t instanceof Element)) return;
+      if (t.closest('#simranBtn')) return;
+      if (t.closest('#loaderStartBtn')) return;
+      if (t.closest('#meditationToggleBtn')) return;
+      if (t.closest('.nav-cta, .ai-prompt-send, .btn-primary')) {
+        AudioEngine.tick();
+      } else if (t.closest('.ai-chip, .theme-toggle, .lang-toggle, .features-progress-dot, .nav-brand')) {
+        AudioEngine.tap();
+      }
+    }, { passive: true });
 
     /* ── THEME ── */
     function toggleTheme() {
@@ -2853,14 +3884,17 @@
         captureTitle: 'Stay connected', captureDesc: 'Get notified when new features drop. No spam, only updates.', captureBtn: 'Notify Me',
         ctaTitle: 'Begin your journey today', ctaDesc: 'Join 25,000+ Sikhs who start their day with Hukamnama, Gurbani, and Simran through Sikh AI.',
         ctaBtn: 'Download on Google Play', qrLabel: 'Scan to download',
-        aboutText: 'Discover the ultimate spiritual companion for the modern Gursikh. Sikh AI bridges the gap between the timeless wisdom of Gurbani and cutting-edge technology to keep you connected, informed, and grounded. Whether it is receiving the Daily Hukamnama from Sri Darbar Sahib or completing your Nitnem with high-quality audio, Sikh AI ensures your daily practice is seamless. With Chardikala AI, the world\u2019s first dedicated AI mentor for the Sikh community, designed to answer your questions and deepen your understanding of the Panth. Join a global Sangat on our real-time meditation globe, where you can see and meditate alongside thousands of Sikhs across the world. With Sikh AI, your spiritual journey is no longer solitary; it is a shared, high-tech experience built with deep reverence for the Khalsa.',
+        aboutText: 'Rooted in Sikhi\u2014one of the world\u2019s most deeply peaceful spiritual traditions\u2014this space is built for anyone curious about the art of slowing down. Every glowing dot on the interactive globe represents a real person, somewhere in the world, sitting in silence right now. Close your eyes, take a breath, and you\u2019ll appear on it, too\u2014instantly part of a quiet, global moment of stillness. Whenever you need guidance, an intuitive AI companion is a single tap away to answer questions in plain English: What does this teaching mean? How do I quiet a racing mind? Where do I even start? Drawing on centuries of timeless wisdom, it never preaches; it just offers thoughtful, conversational answers, like texting a calm, well-read friend. Pair that with gently narrated daily readings, soft morning and evening practices, and live music streamed directly from a centuries-old golden temple in northern India, and just five minutes a day becomes a noticeably calmer, more beautifully grounded life.',
         aiLabel: '\u2728 Spiritual AI Guide', aiTitle: 'Ask anything about Sikhi',
         aiSubtitle: 'Chardi Kala AI is your personal spiritual companion \u2014 powered by Gurbani wisdom, Sikh history, and the teachings of the Ten Gurus.',
         aiName: 'ChardiKala AI', aiRole: 'Spiritual Guide',
         aiGreeting: 'Sat Sri Akal! I\u2019m ChardiKala AI \u2014 your spiritual guide. Ask me anything about Gurbani, Sikh history, the Gurus, or daily practice.',
         aiChip1: 'What is Chardi Kala?', aiChip2: 'Tell me about Guru Nanak Dev Ji', aiChip3: 'Share a Shabad for peace',
+        aiChipHukam: '\u2728 Today\u2019s Hukamnama', aiHukamLoading: 'Fetching today\u2019s Hukamnama from Sri Darbar Sahib\u2026',
+        aiHukamError: 'I couldn\u2019t reach the Hukamnama service right now. Please try again, or open the Sikh AI app.',
+        aiHukamFollow1: 'What does this shabad mean?', aiHukamFollow2: 'How can I apply this today?', aiHukamFollow3: 'Share a similar shabad',
         aiPlaceholder: 'Ask about Gurbani, Sikh history, or life guidance...', aiPlaceholderShort: 'Ask anything about Sikhi...',
-        f1bg: 'Hukamnama', f1tag: 'Gurbani', f1title: 'Daily Hukamnama', f1desc: 'Receive the daily divine order from Sri Darbar Sahib, Amritsar \u2014 with Gurmukhi text, English translation, and meaning delivered every morning.',
+        f1bg: 'Hukamnama', f1tag: 'Live \u00B7 Daily', f1title: 'Hukamnama from Sri Darbar Sahib', f1desc: 'Every morning, the Granthi Singh at Sri Darbar Sahib in Amritsar opens Sri Guru Granth Sahib Ji and reads the day\u2019s Hukamnama. We bring it to you live \u2014 original Gurmukhi, English translation, and meaning \u2014 the moment it\u2019s recited.',
         f2bg: 'Gurbani Quotes', f2tag: 'Wisdom', f2title: '108 Gurbani Quotes', f2desc: 'Curated verses from Sri Guru Granth Sahib Ji. Share as beautiful images or text with family, friends, and the world.',
         f3bg: 'Nitnem', f3tag: 'Daily Practice', f3title: 'Nitnem with Audio', f3desc: 'Complete Nitnem Banis with professional audio playback. Read along or listen during your daily prayers and commute.',
         f4bg: 'Simran', f4tag: 'Meditation', f4title: 'Simran Counter', f4desc: 'A meditative Simran experience with a counter, calming globe visualization showing worldwide meditators, and haptic feedback.',
@@ -2900,7 +3934,7 @@
         aiGreeting: '\u0A38\u0A24\u0A3F \u0A38\u0A4D\u0A30\u0A40 \u0A05\u0A15\u0A3E\u0A32! \u0A2E\u0A48\u0A02 \u0A1A\u0A5C\u0A4D\u0A39\u0A26\u0A40 \u0A15\u0A32\u0A3E AI \u0A39\u0A3E\u0A02 \u2014 \u0A24\u0A41\u0A39\u0A3E\u0A21\u0A3E \u0A30\u0A42\u0A39\u0A3E\u0A28\u0A40 \u0A17\u0A3E\u0A08\u0A21\u0964 \u0A17\u0A41\u0A30\u0A2C\u0A3E\u0A23\u0A40, \u0A38\u0A3F\u0A71\u0A16 \u0A07\u0A24\u0A3F\u0A39\u0A3E\u0A38, \u0A17\u0A41\u0A30\u0A42 \u0A38\u0A3E\u0A39\u0A3F\u0A2C\u0A3E\u0A28, \u0A1C\u0A3E\u0A02 \u0A30\u0A4B\u0A1C\u0A3C\u0A3E\u0A28\u0A3E \u0A05\u0A2D\u0A3F\u0A06\u0A38 \u0A2C\u0A3E\u0A30\u0A47 \u0A15\u0A41\u0A1D \u0A35\u0A40 \u0A2A\u0A41\u0A71\u0A1B\u0A4B\u0964',
         aiChip1: '\u0A1A\u0A5C\u0A4D\u0A39\u0A26\u0A40 \u0A15\u0A32\u0A3E \u0A15\u0A40 \u0A39\u0A48?', aiChip2: '\u0A17\u0A41\u0A30\u0A42 \u0A28\u0A3E\u0A28\u0A15 \u0A26\u0A47\u0A35 \u0A1C\u0A40 \u0A2C\u0A3E\u0A30\u0A47 \u0A26\u0A71\u0A38\u0A4B', aiChip3: '\u0A36\u0A3E\u0A02\u0A24\u0A40 \u0A32\u0A08 \u0A36\u0A2C\u0A26 \u0A38\u0A41\u0A23\u0A3E\u0A13',
         aiPlaceholder: '\u0A17\u0A41\u0A30\u0A2C\u0A3E\u0A23\u0A40, \u0A38\u0A3F\u0A71\u0A16 \u0A07\u0A24\u0A3F\u0A39\u0A3E\u0A38, \u0A1C\u0A3E\u0A02 \u0A1C\u0A40\u0A35\u0A28 \u0A2E\u0A3E\u0A30\u0A17\u0A26\u0A30\u0A36\u0A28 \u0A2C\u0A3E\u0A30\u0A47 \u0A2A\u0A41\u0A71\u0A1B\u0A4B...', aiPlaceholderShort: '\u0A38\u0A3F\u0A71\u0A16\u0A40 \u0A2C\u0A3E\u0A30\u0A47 \u0A15\u0A41\u0A1D \u0A35\u0A40 \u0A2A\u0A41\u0A71\u0A1B\u0A4B...',
-        f1bg: '\u0A39\u0A41\u0A15\u0A2E\u0A28\u0A3E\u0A2E\u0A3E', f1tag: '\u0A17\u0A41\u0A30\u0A2C\u0A3E\u0A23\u0A40', f1title: '\u0A30\u0A4B\u0A1C\u0A3C\u0A3E\u0A28\u0A3E \u0A39\u0A41\u0A15\u0A2E\u0A28\u0A3E\u0A2E\u0A3E', f1desc: '\u0A38\u0A4D\u0A30\u0A40 \u0A26\u0A30\u0A2C\u0A3E\u0A30 \u0A38\u0A3E\u0A39\u0A3F\u0A2C, \u0A05\u0A70\u0A2E\u0A4D\u0A30\u0A3F\u0A24\u0A38\u0A30 \u0A24\u0A4B\u0A02 \u0A30\u0A4B\u0A1C\u0A3C\u0A3E\u0A28\u0A3E \u0A39\u0A41\u0A15\u0A2E \u0A2A\u0A4D\u0A30\u0A3E\u0A2A\u0A24 \u0A15\u0A30\u0A4B \u2014 \u0A17\u0A41\u0A30\u0A2E\u0A41\u0A16\u0A40 \u0A2A\u0A3E\u0A20, \u0A05\u0A70\u0A17\u0A4D\u0A30\u0A47\u0A1C\u0A3C\u0A40 \u0A05\u0A28\u0A41\u0A35\u0A3E\u0A26 \u0A05\u0A24\u0A47 \u0A05\u0A30\u0A25 \u0A28\u0A3E\u0A32\u0964',
+        f1bg: '\u0A39\u0A41\u0A15\u0A2E\u0A28\u0A3E\u0A2E\u0A3E', f1tag: '\u0A32\u0A3E\u0A08\u0A35 \u00B7 \u0A30\u0A4B\u0A1C\u0A3C\u0A3E\u0A28\u0A3E', f1title: '\u0A38\u0A4D\u0A30\u0A40 \u0A26\u0A30\u0A2C\u0A3E\u0A30 \u0A38\u0A3E\u0A39\u0A3F\u0A2C \u0A24\u0A4B\u0A02 \u0A39\u0A41\u0A15\u0A2E\u0A28\u0A3E\u0A2E\u0A3E', f1desc: '\u0A39\u0A30 \u0A38\u0A35\u0A47\u0A30, \u0A38\u0A4D\u0A30\u0A40 \u0A26\u0A30\u0A2C\u0A3E\u0A30 \u0A38\u0A3E\u0A39\u0A3F\u0A2C, \u0A05\u0A70\u0A2E\u0A4D\u0A30\u0A3F\u0A24\u0A38\u0A30 \u0A35\u0A3F\u0A16\u0A47 \u0A17\u0A4D\u0A30\u0A70\u0A25\u0A40 \u0A38\u0A3F\u0A70\u0A18 \u0A38\u0A4D\u0A30\u0A40 \u0A17\u0A41\u0A30\u0A42 \u0A17\u0A4D\u0A30\u0A70\u0A25 \u0A38\u0A3E\u0A39\u0A3F\u0A2C \u0A1C\u0A40 \u0A26\u0A3E \u0A2A\u0A4D\u0A30\u0A15\u0A3E\u0A38\u0A3C \u0A15\u0A30\u0A15\u0A47 \u0A05\u0A71\u0A1C \u0A26\u0A3E \u0A39\u0A41\u0A15\u0A2E\u0A28\u0A3E\u0A2E\u0A3E \u0A2A\u0A5C\u0A4D\u0A39\u0A26\u0A47 \u0A39\u0A28\u0964 \u0A05\u0A38\u0A40\u0A02 \u0A09\u0A39 \u0A24\u0A41\u0A39\u0A3E\u0A21\u0A47 \u0A24\u0A71\u0A15 \u0A32\u0A3E\u0A08\u0A35 \u0A2A\u0A39\u0A41\u0A70\u0A1A\u0A3E\u0A09\u0A02\u0A26\u0A47 \u0A39\u0A3E\u0A02 \u2014 \u0A2E\u0A42\u0A32 \u0A17\u0A41\u0A30\u0A2E\u0A41\u0A16\u0A40, \u0A05\u0A70\u0A17\u0A4D\u0A30\u0A47\u0A1C\u0A3C\u0A40 \u0A05\u0A28\u0A41\u0A35\u0A3E\u0A26 \u0A05\u0A24\u0A47 \u0A05\u0A30\u0A25 \u0A28\u0A3E\u0A32 \u2014 \u0A1C\u0A3F\u0A38 \u0A2A\u0A32 \u0A09\u0A1A\u0A3E\u0A30\u0A28 \u0A39\u0A41\u0A70\u0A26\u0A3E \u0A39\u0A48\u0964',
         f2bg: '\u0A17\u0A41\u0A30\u0A2C\u0A3E\u0A23\u0A40 \u0A39\u0A35\u0A3E\u0A32\u0A47', f2tag: '\u0A38\u0A3F\u0A06\u0A23\u0A2A', f2title: '108 \u0A17\u0A41\u0A30\u0A2C\u0A3E\u0A23\u0A40 \u0A39\u0A35\u0A3E\u0A32\u0A47', f2desc: '\u0A38\u0A4D\u0A30\u0A40 \u0A17\u0A41\u0A30\u0A42 \u0A17\u0A4D\u0A30\u0A70\u0A25 \u0A38\u0A3E\u0A39\u0A3F\u0A2C \u0A1C\u0A40 \u0A26\u0A47 \u0A1A\u0A41\u0A23\u0A47 \u0A39\u0A4B\u0A0F \u0A36\u0A2C\u0A26\u0964 \u0A38\u0A41\u0A70\u0A26\u0A30 \u0A24\u0A38\u0A35\u0A40\u0A30\u0A3E\u0A02 \u0A1C\u0A3E\u0A02 \u0A2A\u0A3E\u0A20 \u0A35\u0A1C\u0A4B\u0A02 \u0A2A\u0A30\u0A3F\u0A35\u0A3E\u0A30 \u0A05\u0A24\u0A47 \u0A26\u0A41\u0A28\u0A40\u0A06 \u0A28\u0A3E\u0A32 \u0A38\u0A3E\u0A02\u0A1D\u0A47 \u0A15\u0A30\u0A4B\u0964',
         f3bg: '\u0A28\u0A3F\u0A24\u0A28\u0A47\u0A2E', f3tag: '\u0A30\u0A4B\u0A1C\u0A3C\u0A3E\u0A28\u0A3E \u0A05\u0A2D\u0A3F\u0A06\u0A38', f3title: '\u0A06\u0A21\u0A3F\u0A13 \u0A28\u0A3E\u0A32 \u0A28\u0A3F\u0A24\u0A28\u0A47\u0A2E', f3desc: '\u0A2A\u0A47\u0A36\u0A47\u0A35\u0A30 \u0A06\u0A21\u0A3F\u0A13 \u0A28\u0A3E\u0A32 \u0A2E\u0A41\u0A15\u0A70\u0A2E\u0A32 \u0A28\u0A3F\u0A24\u0A28\u0A47\u0A2E \u0A2C\u0A3E\u0A23\u0A40\u0A06\u0A02\u0964 \u0A30\u0A4B\u0A1C\u0A3C\u0A3E\u0A28\u0A3E \u0A2A\u0A3E\u0A20 \u0A26\u0A47 \u0A28\u0A3E\u0A32 \u0A2A\u0A5C\u0A4D\u0A39\u0A4B \u0A1C\u0A3E\u0A02 \u0A38\u0A2B\u0A3C\u0A30 \u0A26\u0A4C\u0A30\u0A3E\u0A28 \u0A38\u0A41\u0A23\u0A4B\u0964',
         f4bg: '\u0A38\u0A3F\u0A2E\u0A30\u0A28', f4tag: '\u0A38\u0A3F\u0A2E\u0A30\u0A28', f4title: '\u0A38\u0A3F\u0A2E\u0A30\u0A28 \u0A15\u0A3E\u0A0A\u0A02\u0A1F\u0A30', f4desc: '\u0A15\u0A3E\u0A0A\u0A02\u0A1F\u0A30, \u0A26\u0A41\u0A28\u0A40\u0A06 \u0A2D\u0A30 \u0A26\u0A47 \u0A38\u0A3F\u0A2E\u0A30\u0A28 \u0A15\u0A30\u0A28 \u0A35\u0A3E\u0A32\u0A3F\u0A06\u0A02 \u0A26\u0A3E \u0A17\u0A4D\u0A32\u0A4B\u0A2C \u0A05\u0A24\u0A47 \u0A36\u0A3E\u0A02\u0A24\u0A40 \u0A2D\u0A30\u0A2A\u0A42\u0A30 \u0A38\u0A3F\u0A2E\u0A30\u0A28 \u0A24\u0A1C\u0A30\u0A2C\u0A3E\u0964',
@@ -2929,6 +3963,11 @@
       rebuildAboutWordReveal();
       if (typeof fetchDailyMeditationCount === 'function') fetchDailyMeditationCount();
     }
+    // Tracks the active listeners for the about-text word reveal so
+    // language toggles can tear down the old ones before installing
+    // fresh ones. Without this we'd leak handlers and stack writes
+    // against stale span references.
+    var __aboutWordCleanup = null;
     function rebuildAboutWordReveal() {
       var el = document.getElementById('aboutText');
       if (!el) return;
@@ -2945,18 +3984,147 @@
           el.appendChild(span);
         }
       });
-      var words = el.querySelectorAll('.about-word');
-      if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
-        ScrollTrigger.getAll().forEach(function(t) {
-          if (t.vars && t.vars.trigger === '#aboutIntro') t.kill();
-        });
-        var tl = gsap.timeline({
-          scrollTrigger: { trigger: '#aboutIntro', start: 'top 75%', end: 'bottom 35%', scrub: true }
-        });
-        words.forEach(function(w, i) {
-          tl.to(w, { color: 'var(--color-text)', duration: 0.1, ease: 'none' }, i * 0.1);
-        });
+      if (typeof __aboutWordCleanup === 'function') {
+        try { __aboutWordCleanup(); } catch (e) {}
+        __aboutWordCleanup = null;
       }
+      var words = Array.prototype.slice.call(el.querySelectorAll('.about-word'));
+      if (!words.length) return;
+      var section = document.getElementById('aboutIntro');
+      if (!section) return;
+
+      // Direct scroll-driven word reveal — a rAF + scroll listener
+      // is materially more reliable in this codebase than a GSAP
+      // scrub timeline (which kept locking every word to the final
+      // colour from the moment the page loaded). Only the section's
+      // bounding rect is read per frame; words reveal in READING
+      // ORDER, not by physical y-position, so within a single line
+      // the leading words brighten before trailing words do (the
+      // effect the user asked for).
+
+      // Parse the dim + bright colours from the live theme so the
+      // gradient between them works on both dark (#666 → #FFF) and
+      // light (#999 → #1A1A1A) themes. parseColor returns [r,g,b].
+      function parseColor(input) {
+        var s = (input || '').trim();
+        if (!s) return [255, 255, 255];
+        var m;
+        if (s.charAt(0) === '#') {
+          if (s.length === 4) {
+            return [
+              parseInt(s[1] + s[1], 16),
+              parseInt(s[2] + s[2], 16),
+              parseInt(s[3] + s[3], 16)
+            ];
+          }
+          return [
+            parseInt(s.substr(1, 2), 16),
+            parseInt(s.substr(3, 2), 16),
+            parseInt(s.substr(5, 2), 16)
+          ];
+        }
+        m = s.match(/rgba?\(([^)]+)\)/i);
+        if (m) {
+          var parts = m[1].split(',').map(function(x) { return parseFloat(x); });
+          return [parts[0]|0, parts[1]|0, parts[2]|0];
+        }
+        return [255, 255, 255];
+      }
+      var rootStyle = getComputedStyle(document.documentElement);
+      var dim    = parseColor(rootStyle.getPropertyValue('--color-text-muted'));
+      var bright = parseColor(rootStyle.getPropertyValue('--color-text'));
+
+      // Reading-order reveal parameters.
+      //   START / END define the section's scroll window in vh
+      //     fractions — when section's top is 80% from viewport top,
+      //     progress = 0; when section's bottom is 30% from viewport
+      //     top, progress = 1. Outside this window progress clamps.
+      //   WORD_FADE is how much "global progress" each word takes to
+      //     ramp from dim to bright. Smaller = sharper per-word
+      //     transitions; larger = softer overlap between consecutive
+      //     words. 0.06 means ~6% of the timeline per word's fade.
+      var START_OFFSET = 0.80;  // viewport y fraction where section's top kicks off the reveal
+      var END_OFFSET   = 0.30;  // viewport y fraction where section's bottom completes the reveal
+      var WORD_FADE    = 0.06;
+      var n = words.length;
+
+      var rafScheduled = false;
+      function update() {
+        rafScheduled = false;
+        var vh = window.innerHeight;
+        var rect = section.getBoundingClientRect();
+        // Map the section's progress through the viewport to [0,1].
+        // Equivalent to GSAP's trigger: section, start: 'top 80%',
+        // end: 'bottom 30%', scrub: true.
+        var startY = vh * START_OFFSET;
+        var endY   = vh * END_OFFSET;
+        // 0 when section.top >= startY (section still entering),
+        // 1 when section.bottom <= endY (section nearly past viewport).
+        var p;
+        if (rect.bottom <= endY) {
+          p = 1;
+        } else if (rect.top >= startY) {
+          p = 0;
+        } else {
+          // Linear interpolation of the section's scroll across the
+          // start/end pair. We use a normalised "how far past start
+          // we are vs. how far past start full reveal happens".
+          var total = (startY - endY) + rect.height;
+          var travelled = startY - rect.top;
+          p = Math.max(0, Math.min(1, travelled / total));
+        }
+
+        // Each word's reveal centre maps linearly across the
+        // timeline: word 0 reveals first, word n-1 reveals last.
+        // We add a small lead-in / lead-out (0.02) so the very first
+        // and very last words finish cleanly inside the window.
+        var span = Math.max(1, n - 1);
+        for (var i = 0; i < n; i++) {
+          var wordPoint = i / span;          // 0..1 in reading order
+          // t = how far past this word's reveal point we are,
+          // normalised by WORD_FADE so each word fades over a
+          // consistent slice of progress regardless of word count.
+          var t = (p - wordPoint) / WORD_FADE + 0.5;
+          if (t <= 0) { t = 0; } else if (t >= 1) { t = 1; }
+          var r = Math.round(dim[0] + (bright[0] - dim[0]) * t);
+          var g = Math.round(dim[1] + (bright[1] - dim[1]) * t);
+          var b = Math.round(dim[2] + (bright[2] - dim[2]) * t);
+          words[i].style.color = 'rgb(' + r + ',' + g + ',' + b + ')';
+        }
+      }
+      function request() {
+        if (rafScheduled) return;
+        rafScheduled = true;
+        requestAnimationFrame(update);
+      }
+      function handleResize() {
+        request();
+      }
+      // Initial paint so spans aren't stuck at the muted CSS default
+      // before the first scroll event arrives. We also re-cache once
+      // web fonts have settled (font swap can shift line wraps and
+      // therefore each word's y-position inside the section).
+      request();
+      if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(function() { handleResize(); });
+      }
+      window.addEventListener('scroll', request, { passive: true });
+      window.addEventListener('resize', handleResize);
+      // Lenis publishes its own smoothed scroll event; listening to
+      // both keeps the reveal in lockstep with the smooth scroll
+      // engine on devices where native scroll events are suppressed.
+      var lenisHandler = null;
+      if (window.__lenis && typeof window.__lenis.on === 'function') {
+        lenisHandler = request;
+        window.__lenis.on('scroll', lenisHandler);
+      }
+      __aboutWordCleanup = function() {
+        window.removeEventListener('scroll', request);
+        window.removeEventListener('resize', handleResize);
+        if (lenisHandler && window.__lenis && typeof window.__lenis.off === 'function') {
+          try { window.__lenis.off('scroll', lenisHandler); } catch (e) {}
+        }
+      };
     }
     if (currentLang !== 'en') applyLang();
 
@@ -2996,6 +4164,59 @@
       }
       gsap.registerPlugin(ScrollTrigger);
 
+      /* ═══ LENIS SMOOTH SCROLL ═══
+         Lenis is wired into GSAP's ticker so every scroll frame drives
+         ScrollTrigger in lockstep. We deliberately disable Lenis when:
+         - reduced-motion is requested (a11y),
+         - a coarse pointer is detected (mobile — native momentum is
+           smoother than any JS smoothing and Lenis can fight iOS
+           rubber-banding).
+         Without this guard the pinned 350vh Gurbani tunnel and 700vh
+         feature flipper feel laggy on touch devices. */
+      (function initLenis() {
+        if (typeof Lenis === 'undefined') return;
+        var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        var coarsePointer = window.matchMedia('(pointer: coarse)').matches;
+        if (reduceMotion || coarsePointer) return;
+
+        var lenis = new Lenis({
+          duration: 1.1,
+          easing: function(t) { return Math.min(1, 1.001 - Math.pow(2, -10 * t)); },
+          smoothWheel: true,
+          wheelMultiplier: 1,
+          touchMultiplier: 1.2,
+          lerp: 0.1
+        });
+        // Exposed for the global "always start at top" handlers
+        // (beforeunload / load / pageshow) so they can stomp Lenis's
+        // internal scroll offset back to 0 alongside the native one.
+        window.__lenis = lenis;
+        // Force Lenis itself to start at 0 the moment it spins up,
+        // covering the case where the browser had already restored
+        // scroll between script-parse and Lenis-init.
+        lenis.scrollTo(0, { immediate: true, force: true });
+
+        lenis.on('scroll', ScrollTrigger.update);
+
+        gsap.ticker.add(function(time) { lenis.raf(time * 1000); });
+        gsap.ticker.lagSmoothing(0);
+
+        /* Skip-nav and other in-page anchors must use Lenis so we don't
+           get a hard jump that the pinned ScrollTriggers can't react to. */
+        document.addEventListener('click', function(e) {
+          var a = e.target.closest('a[href^="#"]');
+          if (!a) return;
+          var id = a.getAttribute('href');
+          if (id.length < 2) return;
+          var target = document.querySelector(id);
+          if (!target) return;
+          e.preventDefault();
+          lenis.scrollTo(target, { offset: -72 });
+        });
+
+        window._lenis = lenis;
+      })();
+
       /* --- Fallback fade-ups for elements not covered by scenes --- */
       gsap.utils.toArray('.fade-up').forEach(el => {
         if (el.closest('.hero-inner') || el.closest('.hero-globe') || el.closest('.highlight-card')) return;
@@ -3007,38 +4228,27 @@
         );
       });
 
-      /* ═══ SCENE 1 — Hero Parallax ═══ */
-      const heroSection = document.querySelector('.hero');
-      const heroInner = document.querySelector('.hero-inner');
-      const heroGlobe = document.querySelector('.hero-globe');
-      if (heroSection && heroInner && heroGlobe) {
-        gsap.to(heroGlobe, {
-          y: -120,
-          ease: 'none',
-          scrollTrigger: {
-            trigger: heroSection,
-            start: 'top top',
-            end: 'bottom top',
-            scrub: 0.3
-          }
-        });
-        gsap.to(heroInner, {
-          y: 80, opacity: 0,
-          ease: 'none',
-          scrollTrigger: {
-            trigger: heroSection,
-            start: '60% top',
-            end: 'bottom top',
-            scrub: 0.3
-          }
-        });
-      }
+      /* SCENE 1 + GLOBE EXIT removed.
+         The old hero-inner parallax fade and the GSAP globe-exit
+         scrubbed animation (xPercent: 110, autoAlpha: 0) both wrote
+         inline transforms / opacity onto .hero-globe that fought with
+         the class-based stage transitions (body.globe-revealed →
+         globe-side-right → globe-receded). The result was the gap
+         the user saw: globe inline opacity got set to 0 between the
+         tunnel and about-intro, then the side-right class re-applied
+         it later. The class-based system (added by the gurbani-tunnel
+         init below) is now the single source of truth for the globe's
+         post-tunnel choreography — center → right slide → recede. */
 
-      /* ═══ About Intro — Ik Onkar background + word reveal ═══ */
+      /* ═══ Explore Sikhi — Ik Onkar background scribe ═══
+         Clones the Ik Onkar paths from the loader SVG into the static
+         background layer and the gradient-shine layer in the blog
+         section. Driven from the loader source so the two glyphs stay
+         in sync if the loader artwork ever changes. */
       (function() {
         var loaderSvg = document.getElementById('loaderSvg');
-        var bgWrap = document.getElementById('aboutIkBg');
-        var shineWrap = document.getElementById('aboutIkShine');
+        var bgWrap = document.getElementById('learnIkBg');
+        var shineWrap = document.getElementById('learnIkShine');
         if (loaderSvg && bgWrap && shineWrap) {
           var paths = loaderSvg.querySelectorAll('path');
           var bgSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
@@ -3118,11 +4328,33 @@
           return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
         }
 
+        // Toggle a media element's active state. For <video> we also
+        // drive playback: only the currently-visible feature should
+        // be decoding frames; everything else is paused + rewound to
+        // 0 so it starts fresh from the top whenever the user
+        // re-enters that slot.
+        function setMediaActive(el, isActive) {
+          el.classList.toggle('active', isActive);
+          if (el.tagName === 'VIDEO') {
+            if (isActive) {
+              // play() returns a promise that rejects on
+              // autoplay-gesture restrictions; swallow it because
+              // the videos are muted + playsinline so the browser
+              // should permit autoplay, but we don't want an
+              // unhandled rejection if the gesture policy bites.
+              var pr = el.play();
+              if (pr && typeof pr.catch === 'function') pr.catch(function(){});
+            } else {
+              el.pause();
+              try { el.currentTime = 0; } catch (e) {}
+            }
+          }
+        }
         function setActive(idx) {
           if (idx === lastIdx) return;
           lastIdx = idx;
-          screenImgs.forEach(function(img, i) { img.classList.toggle('active', i === idx); });
-          screenImgsBack.forEach(function(img, i) { img.classList.toggle('active', i === idx); });
+          screenImgs.forEach(function(el, i) { setMediaActive(el, i === idx); });
+          screenImgsBack.forEach(function(el, i) { setMediaActive(el, i === idx); });
           metaSlides.forEach(function(m, i) { m.classList.toggle('active', i === idx); });
           progressDots.forEach(function(d, i) { d.classList.toggle('active', i === idx); });
           if (bgTextEl) {
@@ -3278,12 +4510,76 @@
       var translationEl = document.getElementById('gurbaniTranslation');
       var tunnel = document.getElementById('highlightTunnel');
       var dotsContainer = document.getElementById('highlightDots');
+      var heroGlobeEl = document.querySelector('.hero-globe');
       if (!section || !pin || !card || !tunnel) return;
 
       var rings = tunnel.querySelectorAll('.highlight-ring');
       var flyQuotes = section.querySelectorAll('.highlight-fly-quote');
 
       function easeIO(t) { return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2; }
+
+      // ── Story-text storytelling layer ───────────────────────────
+      // Each phrase carries depthStart / peak / depthEnd. Between
+      // depthStart and peak it blurs in + scales up + opacity ramps
+      // 0→1 (the phrase arriving from far away). Between peak and
+      // depthEnd it blurs out + keeps scaling forward + opacity
+      // 1→0 (the phrase passing the viewer and receding behind).
+      // Outside its window the phrase is fully hidden, so the GPU
+      // isn't paying for filter:blur on five elements at once.
+      var storyEls = (function() {
+        var stack = document.getElementById('highlightStory');
+        if (!stack) return [];
+        var nodes = stack.querySelectorAll('.story-text');
+        var arr = [];
+        nodes.forEach(function(n) {
+          arr.push({
+            el: n,
+            depthStart: parseFloat(n.getAttribute('data-depth-start')) || 0,
+            depthEnd:   parseFloat(n.getAttribute('data-depth-end'))   || 1,
+            peak:       parseFloat(n.getAttribute('data-peak'))        || 0.5
+          });
+        });
+        return arr;
+      })();
+
+      function renderStoryText(p) {
+        for (var i = 0; i < storyEls.length; i++) {
+          var st = storyEls[i];
+          // Outside the phrase's active window: completely hidden,
+          // skip the inline style writes (cheap path).
+          if (p < st.depthStart || p > st.depthEnd) {
+            if (st.el.style.opacity !== '0') {
+              st.el.style.opacity = '0';
+              st.el.style.filter = 'blur(24px)';
+              st.el.style.transform = 'translate(-50%,-50%) scale(0.7)';
+            }
+            continue;
+          }
+          var local;     // 0 → 1 across the phrase's visibility window
+          if (p <= st.peak) {
+            // Approach: from far away, blurred, small, transparent.
+            local = (p - st.depthStart) / (st.peak - st.depthStart);
+            var aIn = easeIO(local);
+            st.el.style.opacity = String(aIn);
+            st.el.style.filter = 'blur(' + (24 * (1 - aIn)) + 'px)';
+            // Scale 0.7 → 1.0 as the phrase comes into focus.
+            var sIn = 0.7 + 0.3 * aIn;
+            st.el.style.transform =
+              'translate(-50%,-50%) scale(' + sIn + ')';
+          } else {
+            // Recession: phrase keeps scaling forward past the
+            // viewer, blurring + fading as it passes.
+            local = (p - st.peak) / (st.depthEnd - st.peak);
+            var aOut = 1 - easeIO(local);
+            st.el.style.opacity = String(aOut);
+            st.el.style.filter = 'blur(' + (18 * (1 - aOut)) + 'px)';
+            // Scale 1.0 → 1.35 as it recedes past the camera.
+            var sOut = 1.0 + 0.35 * local;
+            st.el.style.transform =
+              'translate(-50%,-50%) scale(' + sOut + ')';
+          }
+        }
+      }
 
       /* Pre-compute random fly distance per quote so animation is smooth */
       var quoteData = [];
@@ -3296,20 +4592,72 @@
         });
       });
 
-      /* Create dots */
-      var DOT_COUNT = 600;
+      /* Two-wave starfield on a single continuum.
+         The user reads the journey as one continuous experience by
+         design — first the galaxy zooms past, then dots emerge from
+         within the receding lines.
+           Wave A "galaxy" (~40%): pre-scattered across the viewport
+             at large homeR, kicks off its warp almost immediately
+             (warpStart ≈ 0). Because streak length is keyed off
+             current radial distance, these stars ALREADY look like
+             slow-moving streaks at p=0 — the galaxy of lines. They
+             accelerate outward and streak off-screen in the first
+             ~25% of the journey.
+           Wave B "warp dots" (~60%): clustered AT the center
+             (homeR ≈ 0), warpStart staggered across the rest of
+             the journey (0.05 → 0.85). They emerge from the
+             vanishing point as crisp points (r ≈ 0 → no streak),
+             then grow into streaks as they accelerate outward —
+             exactly "from within, dots appear".
+         Both waves render through identical math; what distinguishes
+         them is where they START, not how they're drawn. That's
+         what makes the handoff feel like one continuous warp. */
+      var DOT_COUNT = 1500;
+      var GALAXY_RATIO = 0.4;
       var dots = [];
       if (dotsContainer) {
         for (var i = 0; i < DOT_COUNT; i++) {
           var el = document.createElement('div');
           el.className = 'highlight-dot';
-          var sz = 2 + Math.random() * 5;
+          var sz = 1.2 + Math.random() * 4.5;
           el.style.width = sz + 'px';
           el.style.height = sz + 'px';
           el.style.left = '50%';
           el.style.top = '50%';
           dotsContainer.appendChild(el);
-          dots.push({ el: el, angle: Math.random() * Math.PI * 2, spawnAt: Math.random() * 0.55, maxR: 50 + Math.random() * 200, size: sz });
+
+          var isGalaxy = Math.random() < GALAXY_RATIO;
+          var homeR, warpStart, warpRate;
+          if (isGalaxy) {
+            // Galaxy wave: pre-scattered, kicks off near-immediately,
+            // streaks off-screen fast.
+            homeR = 150 + Math.pow(Math.random(), 0.65) * 700;
+            warpStart = Math.random() * 0.1;
+            warpRate = 1100 + Math.random() * 1800;
+          } else {
+            // Warp wave: emerges from center, staggered through the
+            // rest of the journey so the field is continuously
+            // populated all the way to Earth.
+            homeR = Math.pow(Math.random(), 2.4) * 40;
+            warpStart = 0.05 + Math.random() * 0.8;
+            warpRate = 700 + Math.random() * 2100;
+          }
+
+          dots.push({
+            el: el,
+            angle: Math.random() * Math.PI * 2,
+            homeR: homeR,
+            warpStart: warpStart,
+            warpRate: warpRate,
+            size: sz,
+            baseAlpha: 0.4 + Math.random() * 0.5,
+            // Per-star streak intensity. Now multiplies a r-based
+            // streak factor in renderDots — meaning a dot still at
+            // r≈0 looks circular regardless of bias (so warp dots
+            // emerge as crisp points), and only grows into a long
+            // trail as the dot moves away from center.
+            streakBias: 0.6 + Math.pow(Math.random(), 2) * 5
+          });
         }
       }
 
@@ -3318,16 +4666,137 @@
       var lastTime = 0;
       var isActive = false;
       var rafId = null;
-      var AUTO_SPEED = 0.025;
+      // Outro warp: the moment the globe locks at scale(1)
+      // (renderGlobe → globeRevealed), this fixed-duration
+      // progression takes over the starfield to FLUSH every
+      // remaining dot off-screen without needing the user to keep
+      // scrolling. It feeds an extra slug of "effective progress"
+      // into renderDots so warpEase keeps growing and stars
+      // continue streaking radially outward at the same rate they
+      // were just moving. By the time outroProgress reaches its
+      // cap, all warp dots have flown past the viewport edge and
+      // the meditation visuals (.globe-ripples driven by
+      // body.globe-revealed) carry the scene from there.
+      var outroProgress = 0;
+      var outroStartedAt = 0;
+      // Duration: long enough that the late-warpStart wave still
+      // has time to streak away (those dots only started moving
+      // late in the journey, so they need extra runway).
+      var OUTRO_DURATION_MS = 1600;
+      // Cap: how much extra "p" the outro contributes to renderDots
+      // beyond the natural p=0.92. With warpRate up to ~2800 and
+      // warpEase = warpP^2, an extra 1.5 of progress sends even
+      // late-spawning dots well off-screen.
+      var OUTRO_PUSH = 1.5;
+      // Auto-advance speed for the whole tunnel (rings, dots, quotes,
+      // AND the globe). With pin = 700% and AUTO_SPEED = 0.05/s, a
+      // user who never touches the wheel reaches Earth in ~20s — a
+      // patient, meditative auto-pilot through the journey. Scrolling
+      // accelerates it (the two progress sources are summed and
+      // clamped at 1.0), so scroll-readers still control the pace.
+      var AUTO_SPEED = 0.05;
+
+      // The globe IS the gurbani zoom — one continuous arc from a
+      // hidden during the storytelling phase (story phrases meditate
+      // → across the world → breathe → and recite → Waheguru play
+      // across p=0.04 → 0.82) and only emerges AFTER the last word
+      // has fully receded. The user complaint we're addressing: the
+      // globe was overlapping the "Waheguru" phrase because both
+      // were visible in the same scroll window.
+      //
+      // STORY_END (0.82) — matches the data-depth-end of the final
+      //   story-text phrase ("Waheguru"). Globe stays fully hidden
+      //   (opacity 0 AND scale ≈ 0) until then.
+      // OPACITY_FADE_FROM/UNTIL — opacity ramp begins the instant
+      //   the last word is gone and finishes a beat later.
+      // SETTLE_AT — progress at which we lock Earth to scale(1) and
+      //   hand control to body.globe-revealed (which keeps it at
+      //   rest while the .globe-ripples sonar starts and the warp
+      //   dots flush via the outro). Living at 0.95 leaves the
+      //   final 5% of the pin as a hold-on-Earth beat.
+      // SCALE_EXP — applied to scale progress WITHIN the
+      //   STORY_END → SETTLE_AT window (not the whole journey),
+      //   so 1 = linear growth from speck to full size across that
+      //   window. >1 = back-loaded (small for longer, then snaps
+      //   to full); <1 = front-loaded.
+      var STORY_END = 0.82;
+      var SCALE_MIN = 0.001;
+      var SETTLE_AT = 0.95;
+      var SCALE_EXP = 1.4;
+      var OPACITY_FADE_FROM = STORY_END;
+      var OPACITY_FADE_UNTIL = 0.92;
+      var globeRevealed = false;
+      function renderGlobe(p) {
+        if (!heroGlobeEl) return;
+        if (globeRevealed) return;
+        if (p >= SETTLE_AT) {
+          // Clear inline overrides and let body.globe-revealed clamp
+          // the globe to its visible rest state from here on.
+          heroGlobeEl.style.opacity = '';
+          heroGlobeEl.style.visibility = '';
+          heroGlobeEl.style.transform = '';
+          document.body.classList.add('globe-revealed');
+          globeRevealed = true;
+          // Kick off the outro warp: the tick loop will now ramp
+          // outroProgress for OUTRO_DURATION_MS, pushing all
+          // remaining stars off-screen automatically. This is what
+          // makes the field "zoom out of view" the instant Earth
+          // lands, instead of standing still until the user scrolls.
+          outroStartedAt = performance.now();
+          return;
+        }
+        var clamped = Math.max(p, 0);
+        // Quick fade-in at the very start so the speck materialises
+        // almost immediately and then stays at full opacity for the
+        // rest of the journey — the perceived "growing" is then
+        // driven entirely by the scale curve below, which is much
+        // smoother than mixing opacity + scale together.
+        var fadeIn = clamped < OPACITY_FADE_FROM
+          ? 0
+          : Math.min((clamped - OPACITY_FADE_FROM) /
+                     (OPACITY_FADE_UNTIL - OPACITY_FADE_FROM), 1);
+        // Scale growth is now gated by STORY_END: the globe stays
+        // at SCALE_MIN (sub-pixel speck, effectively invisible)
+        // until the last story phrase has fully receded, then
+        // grows from speck to full size across the remaining
+        // STORY_END → SETTLE_AT window. This guarantees there is
+        // never a frame where the globe and a story phrase are
+        // both visible — the user was seeing Earth dominate the
+        // viewport while "Waheguru" fragments were still drifting
+        // past, which broke the narrative pacing.
+        var scaleProgress;
+        if (clamped <= STORY_END) {
+          scaleProgress = 0;
+        } else {
+          var window = SETTLE_AT - STORY_END;
+          scaleProgress = Math.min(1, (clamped - STORY_END) / window);
+        }
+        var grow = Math.pow(scaleProgress, SCALE_EXP);
+        var scale = SCALE_MIN + grow * (1 - SCALE_MIN);
+        heroGlobeEl.style.visibility = 'visible';
+        heroGlobeEl.style.opacity = String(fadeIn);
+        heroGlobeEl.style.transform = 'scale(' + scale + ')';
+      }
 
       ScrollTrigger.create({
         trigger: section,
         start: 'top top',
-        end: '+=350%',
+        // Pin length sized for a long storytelling journey through
+        // space. The five story phrases ("meditate with Sikhs,",
+        // "across the world.", "breathe,", "and recite—",
+        // "Waheguru") play across the first ~80% of the pin, each
+        // blurring into focus then back out as the user scrolls
+        // forward through the warp tunnel. The globe is held back
+        // until p≈0.62 so the narrative finishes BEFORE the
+        // destination materialises. 7 screens of pinned scroll
+        // feels like genuinely crossing distance.
+        end: '+=700%',
         pin: pin,
         scrub: false,
         anticipatePin: 1,
-        onUpdate: function(self) { scrollProgress = self.progress; },
+        onUpdate: function(self) {
+          scrollProgress = self.progress;
+        },
         onToggle: function(self) {
           isActive = self.isActive;
           if (isActive && !rafId) {
@@ -3337,9 +4806,19 @@
           }
         },
         onLeave: function() {
-          card.style.opacity = '0';
-          card.style.transform = 'scale(0.8)';
-          if (translationEl) translationEl.style.opacity = '0';
+          // User scrolled past the tunnel — guarantee the globe is at
+          // its final rest state even if they outran the per-frame
+          // emerge animation, and kick the outro if it didn't already
+          // fire so the starfield still flushes before vanishing
+          // with the tunnel section.
+          if (heroGlobeEl) {
+            heroGlobeEl.style.opacity = '';
+            heroGlobeEl.style.visibility = '';
+            heroGlobeEl.style.transform = '';
+          }
+          document.body.classList.add('globe-revealed');
+          globeRevealed = true;
+          if (!outroStartedAt) outroStartedAt = performance.now();
         },
         onEnterBack: function() {
           if (!rafId && isActive) {
@@ -3348,6 +4827,44 @@
           }
         }
       });
+
+      // Three-step globe choreography that reads as one continuous
+      // arc with no gaps:
+      //   1. Tunnel zoom  → globe grows from speck to scale 1
+      //      (handled by renderGlobe + body.globe-revealed above).
+      //   2. Centered rest → globe-revealed keeps Earth dead-center
+      //      while .globe-ripples sonar starts; this is the
+      //      pulsating-with-dots beat between zoom and slide.
+      //   3. Slide-right  → the instant #aboutIntro starts entering
+      //      the viewport (top 80%), Earth slides to the right so
+      //      the editorial copy on the left has the stage; the
+      //      .globe-container CSS transition (0.9s ease) makes the
+      //      slide itself feel filmic. Globe finally recedes once
+      //      the user has scrolled past about-intro, handing off to
+      //      the rest of the page on a clean canvas.
+      var aboutIntroSection = document.getElementById('aboutIntro');
+      if (aboutIntroSection) {
+        ScrollTrigger.create({
+          trigger: aboutIntroSection,
+          start: 'top 80%',
+          onEnter: function() {
+            document.body.classList.add('globe-side-right');
+          },
+          onLeaveBack: function() {
+            document.body.classList.remove('globe-side-right');
+          }
+        });
+        ScrollTrigger.create({
+          trigger: aboutIntroSection,
+          start: 'bottom 70%',
+          onEnter: function() {
+            document.body.classList.add('globe-receded');
+          },
+          onLeaveBack: function() {
+            document.body.classList.remove('globe-receded');
+          }
+        });
+      }
 
       function renderRings(p) {
         for (var i = 0; i < rings.length; i++) {
@@ -3359,20 +4876,65 @@
         }
       }
 
+      // Pre-compute the viewport radius once per frame for the
+      // off-screen fade so stars dim out naturally as they streak past.
+      var vw = window.innerWidth;
+      var vh = window.innerHeight;
+      window.addEventListener('resize', function() {
+        vw = window.innerWidth;
+        vh = window.innerHeight;
+      });
+
       function renderDots(p) {
+        // Diagonal of the viewport, used as the "stars are now
+        // beyond the screen" threshold for the radial fade-out.
+        var bound = Math.sqrt(vw * vw + vh * vh) * 0.55;
         for (var i = 0; i < dots.length; i++) {
           var dt = dots[i];
-          if (p < dt.spawnAt) { dt.el.style.opacity = 0; continue; }
-          var localP = (p - dt.spawnAt) / 0.38;
-          if (localP > 1) { dt.el.style.opacity = 0; continue; }
-          var ease = localP * localP;
-          var r = dt.maxR * ease * (5 + p * 12);
+
+          // Pre-warp the star sits at its home position; once
+          // p crosses warpStart it accelerates outward along
+          // its angle.
+          var warpP = (p - dt.warpStart);
+          if (warpP < 0) warpP = 0;
+          // Quadratic ease so the warp builds up gradually (slow
+          // drift first, then real acceleration). Feels like a
+          // ship spinning up rather than instantly hitting top
+          // speed.
+          var warpEase = warpP * warpP;
+          var r = dt.homeR + dt.warpRate * warpEase;
           var x = Math.cos(dt.angle) * r;
           var y = Math.sin(dt.angle) * r;
-          var fadeIn = Math.min(localP * 3, 1);
-          var fadeOut = 1 - Math.pow(localP, 3);
-          dt.el.style.transform = 'translate(' + x + 'px,' + y + 'px) scale(' + (0.2 + ease * (1.2 + dt.size * 0.15)) + ')';
-          dt.el.style.opacity = fadeIn * fadeOut * (0.5 + dt.size / 14);
+
+          // The further the star streaks past the visible edge,
+          // the more it fades — sells "passing the camera" without
+          // popping it off-screen.
+          var fadeOut = r > bound
+            ? Math.max(0, 1 - (r - bound) / 380)
+            : 1;
+
+          // Streak length is now keyed off ABSOLUTE radial distance
+          // from center, not "distance from home". This is the key
+          // unification: warp dots emerging at r≈0 render as crisp
+          // circular points (streakFactor ≈ 0) and only grow into
+          // streaks as they fly outward — while galaxy stars that
+          // start at large homeR are already streaking at p=0
+          // because their r is already large. Both populations use
+          // the exact same math, which is what makes the handoff
+          // between "lines zooming away" and "dots emerging from
+          // within them" feel like one continuous phenomenon
+          // rather than two distinct effects.
+          var streakFactor = (r / 260) * dt.streakBias;
+          var baseScale = 0.55 + warpEase * (0.6 + dt.size * 0.1);
+          var sx = baseScale * (1 + streakFactor);
+          var sy = baseScale * (1 / (1 + streakFactor * 0.35));
+          var deg = (dt.angle * 180) / Math.PI;
+
+          dt.el.style.transform =
+            'translate(' + x + 'px,' + y + 'px) ' +
+            'rotate(' + deg + 'deg) ' +
+            'scale(' + sx + ',' + sy + ')';
+          dt.el.style.opacity = dt.baseAlpha * fadeOut;
         }
       }
 
@@ -3416,14 +4978,50 @@
       }
 
       function tick(time) {
-        if (!isActive) { rafId = null; return; }
-        if (lastTime) { autoProgress += ((time - lastTime) / 1000) * AUTO_SPEED; }
+        if (!isActive) {
+          // If we leave the active state mid-outro, stop ticking; the
+          // outro is a one-shot that runs while the user is still
+          // inside the pin, which they are when the globe lands.
+          rafId = null;
+          return;
+        }
+        // Only advance the auto-zoom once the loader has actually
+        // handed off control. While the loader is parked over the page,
+        // body lacks .site-revealed and we hold scrollProgress=0/
+        // autoProgress=0 so the user starts the tunnel from a clean
+        // frame the moment they click Begin Meditation.
+        if (lastTime && document.body.classList.contains('site-revealed')) {
+          autoProgress += ((time - lastTime) / 1000) * AUTO_SPEED;
+        }
         lastTime = time;
         var p = Math.min(scrollProgress + autoProgress, 1);
+
+        // Outro ramp. The instant the globe locks at SETTLE_AT,
+        // outroStartedAt was stamped; we now ease an extra progress
+        // term from 0 → OUTRO_PUSH over OUTRO_DURATION_MS using an
+        // outQuad curve so the flush starts smooth and accelerates,
+        // matching the warpEase = warpP^2 inside renderDots.
+        if (outroStartedAt) {
+          var outroT = Math.min(
+            (time - outroStartedAt) / OUTRO_DURATION_MS, 1);
+          // easeOutQuad: 1 - (1 - t)^2
+          var outroEase = 1 - (1 - outroT) * (1 - outroT);
+          outroProgress = outroEase * OUTRO_PUSH;
+        }
+
+        // Effective progress fed into the starfield. While the
+        // pin progress is still building (p < SETTLE_AT) outroProgress
+        // is 0 and this is identical to the natural p. Once the
+        // globe lands, outroProgress takes over and pushes p well
+        // past 1.0 to streak every remaining dot off-screen on a
+        // fixed timer — independent of the user scrolling.
+        var pDots = p + outroProgress;
+
         renderRings(p);
-        renderDots(p);
+        renderDots(pDots);
         renderQuotes(p);
-        renderCard(p);
+        renderStoryText(p);
+        renderGlobe(p);
         rafId = requestAnimationFrame(tick);
       }
     }
@@ -3514,6 +5112,13 @@
       globe.controls().autoRotate = true;
       globe.controls().autoRotateSpeed = 0.5;
       globe.controls().enableZoom = false;
+      // Resting vs meditating spin speeds. Globe idles at the gentle 0.5
+      // baseline; while Simran is active we ease up to ~3× that so the
+      // planet feels subtly "alive" alongside the breath/ripple visuals.
+      // Tween between them over ~700ms in toggleSimran() — instant jumps
+      // are jarring against the slow meditative pacing.
+      window._globeBaseSpin   = 0.5;
+      window._globeActiveSpin = 1.5;
       globe.pointOfView({ lat: 30, lng: 78, altitude: 1.8 });
       window._globe = globe;
       function onResize() {
@@ -3596,13 +5201,19 @@
           if (!data) return;
           const count = Object.keys(data).length;
           if (count >= 5) {
-            const badge = document.getElementById('heroBadgeText');
-            if (badge) {
-              const display = roundDisplayCount(count);
-              badge.textContent = currentLang === 'pa'
-                ? display + ' ਰੂਹਾਂ ਨੇ ਅੱਜ ਸਿਮਰਨ ਕੀਤਾ'
-                : display + ' Souls Meditated Today';
-            }
+            const display = roundDisplayCount(count);
+            const label = currentLang === 'pa'
+              ? display + ' ਰੂਹਾਂ ਨੇ ਅੱਜ ਸਿਮਰਨ ਕੀਤਾ'
+              : display + ' Souls Meditated Today';
+            // Two badges read the same count: the legacy hero-section
+            // badge (now hidden via .hero display:none — still updated
+            // for backwards compat with applyLang flows that may
+            // re-show .hero in the future) and the new globe-attached
+            // pill that floats below the planet after the tunnel lands.
+            const heroBadge = document.getElementById('heroBadgeText');
+            if (heroBadge) heroBadge.textContent = label;
+            const globeBadge = document.getElementById('globeBadgeText');
+            if (globeBadge) globeBadge.textContent = label;
           }
         })
         .catch(() => {});
@@ -3615,11 +5226,42 @@
 
     /* ── SIMRAN SESSION ── */
     let simranActive = false, simranStart = 0, particleInterval = null;
+
+    /* ── Globe spin tween ──
+       Ramp the globe's autoRotateSpeed between its idle and meditating
+       targets over ~700ms. Cancels any in-flight tween so rapid toggles
+       don't stack. Silently no-ops if the globe isn't ready yet. */
+    var _globeSpinTween = null;
+    function tweenGlobeSpin(targetSpeed, durationMs) {
+      if (!window._globe || !window._globe.controls) return;
+      var ctrl = window._globe.controls();
+      if (!ctrl) return;
+      if (_globeSpinTween) cancelAnimationFrame(_globeSpinTween);
+      var from = ctrl.autoRotateSpeed;
+      var to = targetSpeed;
+      var start = performance.now();
+      var dur = Math.max(1, durationMs || 700);
+      function step(now) {
+        var t = Math.min(1, (now - start) / dur);
+        // ease-in-out cubic — slow start, slow end
+        var e = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+        ctrl.autoRotateSpeed = from + (to - from) * e;
+        if (t < 1) _globeSpinTween = requestAnimationFrame(step);
+        else _globeSpinTween = null;
+      }
+      _globeSpinTween = requestAnimationFrame(step);
+    }
     let userGeoLat = null, userGeoLng = null;
     try { var _g = JSON.parse(localStorage.getItem('sikhai-geo')); if (_g) { userGeoLat = _g.lat; userGeoLng = _g.lng; } } catch(e) {}
     const simranAudio = new Audio('audio/waheguru.mp3');
     simranAudio.loop = true;
     simranAudio.preload = 'auto';
+    // Honor the global sound preference: the chant stays muted until
+    // the user has explicitly enabled sound. The AudioEngine flips
+    // simranAudio.muted whenever the toggle changes.
+    simranAudio.muted = !(window.AudioEngine && window.AudioEngine.isEnabled());
+    // Expose so AudioEngine.setEnabled() can unmute & resume mid-Simran.
+    window._simranAudio = simranAudio;
 
     function addUserToGlobe(lat, lng) {
       if (!window._globe) return;
@@ -3654,14 +5296,73 @@
       var heroBadge = document.querySelector('.hero-badge');
       var heroInner = document.querySelector('.hero-inner');
       if (heroInner) heroInner.style.setProperty('--hero-inner-h', heroInner.offsetHeight + 'px');
+      window._simranActive = simranActive;
+
+      // Nav meditation CTA — the primary entry/exit point. Its speaker
+      // icon doubles as the soundstage status indicator: muted while
+      // idle, active while meditating. Audio enable/disable is locked
+      // to this same toggle so there's a single source of truth.
+      var medBtn = document.getElementById('meditationToggleBtn');
+      var medLabel = document.getElementById('meditationBtnLabel');
+      if (simranActive) {
+        if (window.AudioEngine && !window.AudioEngine.isEnabled()) {
+          window.AudioEngine.setEnabled(true);
+        }
+        if (medBtn) {
+          medBtn.classList.add('is-active');
+          medBtn.setAttribute('aria-pressed', 'true');
+          medBtn.setAttribute('aria-label', 'End meditation');
+        }
+        if (medLabel) {
+          medLabel.setAttribute('data-i18n', 'simranStop');
+          medLabel.textContent = i18n[currentLang].simranStop;
+        }
+      } else {
+        if (medBtn) {
+          medBtn.classList.remove('is-active');
+          medBtn.setAttribute('aria-pressed', 'false');
+          medBtn.setAttribute('aria-label', 'Begin meditation');
+        }
+        if (medLabel) {
+          medLabel.setAttribute('data-i18n', 'simranStart');
+          medLabel.textContent = i18n[currentLang].simranStart;
+        }
+        // Disable sound only after we've handed audio-stop work to the
+        // stop-branch below (it still runs through AudioEngine.tick()).
+        // Deferring by a frame lets the closing bell ring cleanly
+        // before masterGain ramps to zero.
+        if (window.AudioEngine && window.AudioEngine.isEnabled()) {
+          requestAnimationFrame(function() {
+            requestAnimationFrame(function() {
+              window.AudioEngine.setEnabled(false);
+            });
+          });
+        }
+      }
       if (simranActive) {
         simranStart = Date.now();
-        icon.querySelector('path').setAttribute('d', pausePath);
-        btn.innerHTML = icon.outerHTML + ' ' + i18n[currentLang].simranStop;
-        btn.classList.remove('shine-border');
-        btn.style.borderColor = 'rgba(248,113,113,0.5)';
-        btn.style.color = '#f87171';
-        aura.classList.add('active');
+        // The Begin Meditation button now lives in the loader and is
+        // removed from the DOM once the loader exits — so all hero-button
+        // DOM updates are guarded. This keeps the lang-toggle path and
+        // any future re-introduction of the hero button working without
+        // throwing on a null reference.
+        if (btn && icon) {
+          var iconPath = icon.querySelector('path');
+          if (iconPath) iconPath.setAttribute('d', pausePath);
+          btn.innerHTML = icon.outerHTML + ' ' + i18n[currentLang].simranStop;
+          btn.classList.remove('shine-border');
+          btn.style.borderColor = 'rgba(248,113,113,0.5)';
+          btn.style.color = '#f87171';
+        }
+        if (aura) aura.classList.add('active');
+        tweenGlobeSpin(window._globeActiveSpin != null ? window._globeActiveSpin : 1.5, 700);
+        // Sound design: a tanpura-style drone fades up as the chant
+        // begins. The opening chime is intentionally omitted so the
+        // transition into meditation feels seamless rather than
+        // announced. Both are no-ops when sound is muted.
+        if (window.AudioEngine) {
+          window.AudioEngine.startAmbient(0.11);
+        }
         simranAudio.currentTime = 0;
         simranAudio.play().catch(() => {});
         particleInterval = setInterval(spawnParticle, 2200);
@@ -3679,13 +5380,20 @@
           );
         }
       } else {
-        btn.innerHTML = '<svg id="simranIcon" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="' + playPath + '"/></svg> ' + i18n[currentLang].simranStart;
-        btn.classList.add('shine-border');
-        btn.style.borderColor = '';
-        btn.style.color = '';
-        aura.classList.remove('active');
+        if (btn) {
+          btn.innerHTML = '<svg id="simranIcon" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="' + playPath + '"/></svg> ' + i18n[currentLang].simranStart;
+          btn.classList.add('shine-border');
+          btn.style.borderColor = '';
+          btn.style.color = '';
+        }
+        if (aura) aura.classList.remove('active');
+        tweenGlobeSpin(window._globeBaseSpin != null ? window._globeBaseSpin : 0.5, 900);
         simranAudio.pause();
         simranAudio.currentTime = 0;
+        if (window.AudioEngine) {
+          window.AudioEngine.stopAmbient();
+          window.AudioEngine.tick();
+        }
         clearInterval(particleInterval);
         stopBreathing();
         removeUserFromGlobe();
@@ -3771,12 +5479,23 @@
     }
 
     function startBreathing() {
-      var hero = document.querySelector('.hero');
       var globeEl = document.querySelector('.globe-container');
-      if (!hero || breathingActive) return;
+      if (breathingActive) return;
+
+      // Lazy-create the body-level particle layer. It lives OUTSIDE the
+      // hero (and outside any other section's stacking context) so its
+      // z-index can sit below the fixed globe — guaranteeing particles
+      // render behind the globe disk instead of on top of it.
+      var layer = document.getElementById('breathParticlesLayer');
+      if (!layer) {
+        layer = document.createElement('div');
+        layer.className = 'breath-particles-layer';
+        layer.id = 'breathParticlesLayer';
+        document.body.appendChild(layer);
+      }
+
       breathingActive = true;
       breathParticles = [];
-      hero.style.position = 'relative';
       for (var i = 0; i < PARTICLE_COUNT; i++) {
         var el = document.createElement('div');
         el.className = 'breath-particle';
@@ -3787,21 +5506,24 @@
         // Fully random angle — dense cloud rather than visible spokes.
         var angle = Math.random() * Math.PI * 2;
         // sqrt-biased maxR so most particles travel further (richer outer band).
-        var maxR = 25 + Math.sqrt(Math.random()) * 70;   // 25..95 (% of half-hero)
+        var maxR = 25 + Math.sqrt(Math.random()) * 70;   // 25..95 (% of viewport half)
         // Per-particle staggering so the field looks continuous, not pulsing.
         var lifeOffset = Math.random();          // 0..1 initial phase
         var lifeSpeedMul = 0.75 + Math.random() * 0.5;   // 0.75..1.25 variation
-        hero.appendChild(el);
+        layer.appendChild(el);
         breathParticles.push({ el: el, angle: angle, maxR: maxR, lifeOffset: lifeOffset, lifeSpeedMul: lifeSpeedMul, size: size });
       }
       var startTime = performance.now();
-      var globeRect, heroRect, cx, cy;
+      var globeRect, cx, cy;
       function updateCenter() {
-        if (!globeEl || !hero) return;
+        if (!globeEl) return;
         globeRect = globeEl.getBoundingClientRect();
-        heroRect = hero.getBoundingClientRect();
-        cx = ((globeRect.left + globeRect.width / 2) - heroRect.left) / heroRect.width * 100;
-        cy = ((globeRect.top + globeRect.height / 2) - heroRect.top) / heroRect.height * 100;
+        // Globe center as a percentage of the viewport — the particle
+        // layer is viewport-sized (position:fixed; inset:0), so % maps
+        // directly to vw/vh inside it. This keeps the cloud anchored
+        // to the globe regardless of scroll position.
+        cx = (globeRect.left + globeRect.width / 2) / window.innerWidth * 100;
+        cy = (globeRect.top + globeRect.height / 2) / window.innerHeight * 100;
       }
       updateCenter();
       var resizeTimer = setInterval(updateCenter, 1000);
@@ -3863,7 +5585,17 @@
           pt.el.style.transform = 'translate(-50%,-50%) scale(' + scale + ')';
         }
 
-        if (globeEl) globeEl.style.transform = 'scale(' + globeScale + ')';
+        // Apply breath scale to the INNER #globeViz element, not the
+        // outer .globe-container. The container owns its own
+        // transform (translateX from body.globe-side-right when the
+        // user reaches the about-intro section), and writing
+        // inline transform on the container every breath frame
+        // would stomp that translate — making the globe stay
+        // centered over the text. Scaling #globeViz instead leaves
+        // the slide animation intact while still pulsing the
+        // planet's size with the breath cycle.
+        var vizEl = document.getElementById('globeViz');
+        if (vizEl) vizEl.style.transform = 'scale(' + globeScale + ')';
         breathRafId = requestAnimationFrame(tick);
       }
       breathRafId = requestAnimationFrame(tick);
@@ -3878,8 +5610,8 @@
         breathParticles[i].el.remove();
       }
       breathParticles = [];
-      var globeEl = document.querySelector('.globe-container');
-      if (globeEl) globeEl.style.transform = '';
+      var vizEl = document.getElementById('globeViz');
+      if (vizEl) vizEl.style.transform = '';
     }
 
     /* ── SHARE BUTTONS ── */
@@ -3923,11 +5655,57 @@
 
     var aiStateOverlay = { messages: [], count: 0, loading: false };
 
+    // Mirror each AI input's value to its send button's `disabled`
+    // attribute so the send icon visually communicates whether
+    // there's anything to send. The aiSend flow also flips disabled
+    // during in-flight requests; this listener handles the empty /
+    // non-empty distinction. Wired for both the modal overlay
+    // (#aiInputFieldOverlay) and the floating action panel
+    // (#aiInputFieldFab) so the behaviour is consistent across both
+    // entry points.
+    (function wireSendBtnDisable() {
+      function bind(inputId, btnId) {
+        var input = document.getElementById(inputId);
+        var btn = document.getElementById(btnId);
+        if (!input || !btn) return;
+        function sync() {
+          // Don't override the disabled state while a request is
+          // in flight (aiSend sets state.loading + btn.disabled
+          // = true during the fetch). We approximate "in flight"
+          // by checking if the matching state object is loading.
+          var loadingFlag =
+            (btnId === 'aiSendBtnOverlay' && aiStateOverlay.loading) ||
+            (btnId === 'aiSendBtnFab'     && aiStateFab.loading);
+          if (loadingFlag) return;
+          btn.disabled = input.value.trim().length === 0;
+        }
+        input.addEventListener('input', sync);
+        // Initial sync — covers the case where the field is
+        // pre-populated (e.g. openAiChat receives a `text`
+        // argument, sets input.value, and calls aiSend on a
+        // timeout; the keystroke listener wouldn't have fired).
+        sync();
+      }
+      bind('aiInputFieldOverlay', 'aiSendBtnOverlay');
+      bind('aiInputFieldFab',     'aiSendBtnFab');
+    })();
+
     function openAiChat(text) {
       var overlay = document.getElementById('aiOverlay');
       var input = document.getElementById('aiInputFieldOverlay');
       overlay.classList.add('open');
+      // Native overflow:hidden alone is not enough when Lenis smooth
+      // scroll is active — Lenis intercepts wheel/touch events and
+      // applies its own scroll value, bypassing the overflow style.
+      // Stopping Lenis here freezes the page behind the modal; we
+      // restart it again in closeAiChat. The body.modal-open class
+      // gives us a CSS hook for the native fallback when Lenis is
+      // disabled (reduced-motion / coarse pointer paths).
+      document.body.classList.add('modal-open');
       document.body.style.overflow = 'hidden';
+      if (window.__lenis && typeof window.__lenis.stop === 'function') {
+        try { window.__lenis.stop(); } catch (e) {}
+      }
       if (!text) {
         var promptInput = document.getElementById('aiPromptInput');
         text = promptInput ? promptInput.value.trim() : '';
@@ -3941,10 +5719,219 @@
       }
     }
 
+    /* ──────────────── Today's Hukamnama ─────────────────
+       Wired to the "✨ Today's Hukamnama" chip in both the
+       chardiKalaAI section and the floating AI FAB. Fetches the
+       live shabad from Sri Darbar Sahib via the public gurbaninow
+       API (same source as the sikhai/ legacy page), then renders
+       it as a rich `.ai-msg--hukam` bubble inside the chat panel.
+       Follow-up chips let the user ask ChardiKala AI for meaning,
+       application, or a similar shabad — the hukamnama text is
+       seeded into the conversation context so the AI's reply is
+       grounded in the actual shabad. */
+    var __todaysHukamPromise = null;
+    function fetchTodaysHukamnama() {
+      // Cache the in-flight / resolved promise so repeated clicks
+      // on the chip don't fire duplicate network requests in the
+      // same session.
+      if (__todaysHukamPromise) return __todaysHukamPromise;
+      __todaysHukamPromise = fetch('https://api.gurbaninow.com/v2/hukamnama/today')
+        .then(function(r) {
+          if (!r.ok) throw new Error('hukam api ' + r.status);
+          return r.json();
+        })
+        .then(function(data) {
+          var lines = (data.hukamnama || []).filter(function(l) {
+            return l && l.line && l.line.gurmukhi;
+          });
+          if (!lines.length) throw new Error('no hukam lines');
+          var info = data.hukamnamainfo || {};
+          // Cap at six lines so the bubble stays readable inside
+          // the chat panel — the full shabad lives in the app.
+          var head = lines.slice(0, 6);
+          return {
+            gurmukhi: head.map(function(l) {
+              return l.line.gurmukhi.unicode;
+            }).join(' '),
+            english: head.map(function(l) {
+              return l.line.translation && l.line.translation.english
+                ? l.line.translation.english.default
+                : '';
+            }).filter(Boolean).join(' '),
+            ang: 'Ang ' + (info.pageno || '') +
+                 (info.raag && info.raag.english ? ' \u00B7 ' + info.raag.english : ''),
+            writer: info.writer && info.writer.english ? info.writer.english : ''
+          };
+        })
+        .catch(function(err) {
+          console.error('Hukamnama fetch failed:', err);
+          // Don't cache failures — next click should retry.
+          __todaysHukamPromise = null;
+          return null;
+        });
+      return __todaysHukamPromise;
+    }
+
+    function askHukamnama(target) {
+      // The chardiKalaAI section has no inline message panel, so
+      // 'section' routes through the same overlay as the FAB +
+      // prompt input. The FAB has its own embedded message list.
+      if (target === 'section') {
+        var overlay = document.getElementById('aiOverlay');
+        if (overlay) {
+          overlay.classList.add('open');
+          document.body.style.overflow = 'hidden';
+        }
+        renderHukamnamaConversation('overlay');
+      } else {
+        renderHukamnamaConversation('fab');
+      }
+    }
+
+    function renderHukamnamaConversation(target) {
+      var suffix = target === 'overlay' ? 'Overlay' : 'Fab';
+      var msgsEl = document.getElementById('aiMsgs' + suffix);
+      var chipsEl = document.getElementById('aiChips' + suffix);
+      var state = target === 'overlay' ? aiStateOverlay : aiStateFab;
+      if (!msgsEl) return;
+
+      // Suggestion chips were a "first run" affordance — hide them
+      // once the conversation has actually started.
+      if (chipsEl) chipsEl.style.display = 'none';
+
+      // 1. User-side bubble: the chip's own label, so the chat reads
+      // like the user asked for the Hukamnama.
+      var chipLabel = (i18n[currentLang] && i18n[currentLang].aiChipHukam)
+        || "Today's Hukamnama";
+      // Strip a leading sparkle (\u2728 + space) if present so the
+      // user bubble shows the question, not the chip decoration.
+      var userText = chipLabel.replace(/^\u2728\s*/, '').replace(/^\u25C6\s*/, '');
+      var userBubble = document.createElement('div');
+      userBubble.className = 'ai-msg ai-msg--user';
+      userBubble.textContent = userText;
+      msgsEl.appendChild(userBubble);
+      state.messages.push({ role: 'user', content: userText });
+
+      // 2. Loading row — typing dots beside the assistant avatar +
+      // a status line so the wait reads as "fetching from Sri
+      // Darbar Sahib", not "the AI is thinking".
+      var loadingText = (i18n[currentLang] && i18n[currentLang].aiHukamLoading)
+        || "Fetching today\u2019s Hukamnama from Sri Darbar Sahib\u2026";
+      var loadingRow = document.createElement('div');
+      loadingRow.className = 'ai-msg-row';
+      loadingRow.id = 'aiHukamLoading_' + target;
+      loadingRow.innerHTML =
+        '<div class="ai-avatar">&#9737;</div>' +
+        '<div class="ai-msg ai-msg--ai" style="display:flex;align-items:center;gap:10px;">' +
+          '<div class="ai-typing" style="margin:0;">' +
+            '<div class="ai-typing-dot"></div>' +
+            '<div class="ai-typing-dot"></div>' +
+            '<div class="ai-typing-dot"></div>' +
+          '</div>' +
+          '<span></span>' +
+        '</div>';
+      loadingRow.querySelector('span').textContent = loadingText;
+      msgsEl.appendChild(loadingRow);
+      msgsEl.scrollTop = msgsEl.scrollHeight;
+
+      fetchTodaysHukamnama().then(function(hukam) {
+        var loading = document.getElementById('aiHukamLoading_' + target);
+        if (loading) loading.remove();
+
+        if (!hukam) {
+          var errText = (i18n[currentLang] && i18n[currentLang].aiHukamError)
+            || "I couldn\u2019t reach the Hukamnama service right now. Please try again, or open the Sikh AI app.";
+          var errRow = document.createElement('div');
+          errRow.className = 'ai-msg-row';
+          errRow.innerHTML =
+            '<div class="ai-avatar">&#9737;</div>' +
+            '<div class="ai-msg ai-msg--ai"></div>';
+          errRow.querySelector('.ai-msg').textContent = errText;
+          msgsEl.appendChild(errRow);
+          msgsEl.scrollTop = msgsEl.scrollHeight;
+          return;
+        }
+
+        // 3. Rich hukamnama bubble. Uses .ai-msg--hukam styles
+        // (gold rail, display-font Gurmukhi, italic English).
+        var hukamRow = document.createElement('div');
+        hukamRow.className = 'ai-msg-row';
+        hukamRow.innerHTML =
+          '<div class="ai-avatar">&#9737;</div>' +
+          '<div class="ai-msg ai-msg--ai ai-msg--hukam">' +
+            '<div class="ai-hukam-meta">' +
+              '<span class="ai-hukam-live"><span class="livedot"></span> LIVE</span>' +
+              '<span class="ai-hukam-ang"></span>' +
+            '</div>' +
+            '<div class="ai-hukam-gurmukhi"></div>' +
+            '<div class="ai-hukam-english"></div>' +
+            (hukam.writer ? '<div class="ai-hukam-writer"></div>' : '') +
+          '</div>';
+        hukamRow.querySelector('.ai-hukam-ang').textContent = hukam.ang;
+        hukamRow.querySelector('.ai-hukam-gurmukhi').textContent = hukam.gurmukhi;
+        hukamRow.querySelector('.ai-hukam-english').textContent = hukam.english;
+        if (hukam.writer) {
+          hukamRow.querySelector('.ai-hukam-writer').textContent = hukam.writer;
+        }
+        msgsEl.appendChild(hukamRow);
+
+        // Seed the assistant's reply into the conversation context
+        // so follow-up questions ("what does it mean?") have the
+        // actual shabad text available to ChardiKala AI when the
+        // user asks.
+        var assistantContext =
+          "Today's Hukamnama from Sri Darbar Sahib (" + hukam.ang + "):\n\n" +
+          "Gurmukhi: " + hukam.gurmukhi + "\n\n" +
+          "Translation: " + hukam.english +
+          (hukam.writer ? "\n\nWriter: " + hukam.writer : '');
+        state.messages.push({ role: 'assistant', content: assistantContext });
+
+        // 4. Follow-up suggestion chips — each one routes through
+        // the normal aiSend pipeline so ChardiKala AI replies with
+        // full context including the shabad we just seeded.
+        var followups = [
+          (i18n[currentLang] && i18n[currentLang].aiHukamFollow1) || 'What does this shabad mean?',
+          (i18n[currentLang] && i18n[currentLang].aiHukamFollow2) || 'How can I apply this today?',
+          (i18n[currentLang] && i18n[currentLang].aiHukamFollow3) || 'Share a similar shabad'
+        ];
+        var chipRow = document.createElement('div');
+        chipRow.className = 'ai-suggestions ai-suggestions--inline';
+        chipRow.style.cssText = 'display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 4px 40px;';
+        followups.forEach(function(text) {
+          var chip = document.createElement('button');
+          chip.type = 'button';
+          chip.className = 'ai-chip';
+          chip.textContent = text;
+          chip.onclick = function() {
+            chipRow.remove();
+            var inputEl = document.getElementById('aiInputField' + suffix);
+            if (inputEl) {
+              inputEl.value = text;
+              if (target === 'overlay') aiSendOverlay();
+              else aiSendFab();
+            }
+          };
+          chipRow.appendChild(chip);
+        });
+        msgsEl.appendChild(chipRow);
+        msgsEl.scrollTop = msgsEl.scrollHeight;
+      });
+    }
+    // Expose globally so the inline onclick handlers can reach it.
+    window.askHukamnama = askHukamnama;
+
     function closeAiChat() {
       var overlay = document.getElementById('aiOverlay');
       overlay.classList.remove('open');
+      document.body.classList.remove('modal-open');
       document.body.style.overflow = '';
+      // Re-attach Lenis to the page so wheel/touch resume scrolling
+      // the document. Wrapped in try/catch because some Lenis
+      // configurations (touch devices that skipped init) won't have
+      // the instance attached.
+      if (window.__lenis && typeof window.__lenis.start === 'function') {
+        try { window.__lenis.start(); } catch (e) {}
+      }
     }
 
     function aiSendOverlay() { aiSend('overlay', aiStateOverlay); }
@@ -3994,7 +5981,11 @@
 
       function finishAi() {
         state.loading = false;
-        sendBtn.disabled = false;
+        // After a send completes, the input has been cleared — so the
+        // send button should re-disable until the user types again,
+        // matching its empty-state contract. Only re-enable when
+        // there's actually content to send.
+        sendBtn.disabled = inputEl.value.trim().length === 0;
         if (state.count >= AI_MAX_MESSAGES) {
           showLimitCta(msgsEl, inputBar, target);
         }
@@ -4093,12 +6084,25 @@
     (function initLoader() {
       var loader = document.getElementById('loader');
       var canvas = document.getElementById('loaderCanvas');
-      var tagline = document.getElementById('loaderTagline');
       var svgEl = document.getElementById('loaderSvg');
       var pen = document.getElementById('loaderPen');
       var loaderWrap = document.getElementById('loaderWrap');
       var strokes = document.querySelectorAll('.ik-stroke');
       if (!loader || !canvas || !strokes.length) return;
+
+      // Reduced-motion users get a CSS rule that hides the loader, so
+      // the click-to-enter mechanic is unreachable for them. Detect
+      // that here and short-circuit: reveal both the site and the
+      // globe immediately so they land on a usable page instead of
+      // a permanently-hidden one.
+      try {
+        var rm = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)');
+        if (rm && rm.matches) {
+          document.body.classList.add('site-revealed', 'globe-revealed');
+          loader.style.display = 'none';
+          return;
+        }
+      } catch (e) { /* matchMedia missing — fall through to default flow */ }
 
       var totalDrawTime = 0;
       // Hand-drawn cadence, now with each glyph split into outer + inner
@@ -4120,17 +6124,14 @@
       });
 
       function revealSite() {
+        // The site is parked on the .highlight section (the cover after
+        // the redesign). All we need to do here is fade the loader out;
+        // the gurbani-tunnel rings + dots take over visually as the
+        // dissolve particles disperse into them. Globe stays hidden
+        // until the highlight zoom completes — wired in the
+        // ScrollTrigger for #gurbaniHighlight.
         loader.classList.add('phase-out');
-        if (typeof gsap !== 'undefined') {
-          gsap.fromTo('.hero-inner > *',
-            { opacity: 0, y: 30 },
-            { opacity: 1, y: 0, duration: 0.7, stagger: 0.1, ease: 'power2.out', delay: 0.1 }
-          );
-          gsap.fromTo('.hero-globe',
-            { opacity: 0, scale: 0.92 },
-            { opacity: 1, scale: 1, duration: 1, ease: 'power2.out', delay: 0.2 }
-          );
-        }
+        document.body.classList.add('site-revealed');
       }
 
       function dissolveToParticles() {
@@ -4175,6 +6176,12 @@
         });
 
         svgEl.style.opacity = '0';
+        // Fade the loader's pill out the moment the dissolve starts so
+        // the eye is locked on the swarm, not on chrome lifting away.
+        var startBtnEl = document.getElementById('loaderStartBtn');
+        if (startBtnEl) startBtnEl.classList.remove('visible');
+
+        var revealFired = false;
         var start = performance.now();
         function frame(now) {
           var elapsed = (now - start) / 1000;
@@ -4197,9 +6204,19 @@
             ctx.fillStyle = 'rgba(212,168,83,' + (p.alpha * p.alpha).toFixed(3) + ')';
             ctx.fill();
           }
+          // Kick the page reveal early — once the swarm has expanded a
+          // bit (~0.9s) the loader background can begin fading and the
+          // gurbani-tunnel dots take over as the visible field. The
+          // dissolve keeps drawing on the canvas overlay until the
+          // particles die, but by then the user is already seeing the
+          // cover.
+          if (!revealFired && elapsed > 0.9) {
+            revealFired = true;
+            revealSite();
+          }
           if (alive && elapsed < 3.5) {
             requestAnimationFrame(frame);
-          } else {
+          } else if (!revealFired) {
             revealSite();
           }
         }
@@ -4208,7 +6225,38 @@
 
       function startSequence() {
         strokes.forEach(function(s) { s.classList.add('drawing'); });
-        if (tagline) setTimeout(function() { tagline.classList.add('visible'); }, 1000);
+
+        // The CTA is the ONLY way out of the loader — the site no longer
+        // auto-advances. We surface it once the Ik Onkar has both drawn
+        // and finished filling so the glyph is fully composed before the
+        // pill appears underneath. Wiring lives below; the actual
+        // dissolve + reveal don't run until the user clicks.
+        var startBtn = document.getElementById('loaderStartBtn');
+        if (startBtn) {
+          startBtn.addEventListener('click', function onStartMeditation() {
+            if (startBtn._fired) return;
+            startBtn._fired = true;
+            startBtn.disabled = true;
+
+            if (window.__loaderStopPen) window.__loaderStopPen();
+
+            if (window.AudioEngine && !window.AudioEngine.isEnabled()) {
+              window.AudioEngine.setEnabled(true);
+            }
+
+            try {
+              if (typeof toggleSimran === 'function' && !window._simranActive) {
+                toggleSimran();
+              }
+            } catch (e) { /* swallow — loader still needs to exit */ }
+
+            // Dissolve the Ik Onkar into the same dot field that powers
+            // the gurbani-tunnel cover. revealSite() runs inside the
+            // dissolve once the swarm has expanded enough to overlap the
+            // tunnel rings, making the loader→cover handoff continuous.
+            dissolveToParticles();
+          }, { once: true });
+        }
 
         // --- live pen-tip follow ------------------------------------
         // Reads the LIVE animated stroke-dashoffset of each stroke and
@@ -4267,12 +6315,24 @@
         var fillDelay = (totalDrawTime + 0.15) * 1000;
         setTimeout(function() {
           if (window.__loaderStopPen) window.__loaderStopPen();
+          // Stop the draw animation and lock each stroke at
+          // dashoffset 0 (fully drawn outline). We DO NOT add
+          // .filling — the user wants the glyph to read as a
+          // hand-drawn outline that then dissolves into dots, not
+          // as a solid gold blob. The dissolveToParticles step
+          // samples along the same path geometry regardless of
+          // whether the strokes are filled or outlined, so the
+          // particle handoff still works identically.
           strokes.forEach(function(s) {
             s.classList.remove('drawing');
-            s.classList.add('filling');
+            s.classList.add('drawn');
           });
-          if (tagline) setTimeout(function() { tagline.style.opacity = '0'; }, 600);
-          setTimeout(dissolveToParticles, 900);
+          // Surface the CTA once the outline is fully drawn. The
+          // loader then holds indefinitely — Ik Onkar stays as a
+          // crisp outline until the user clicks Begin Meditation.
+          if (startBtn) {
+            setTimeout(function() { startBtn.classList.add('visible'); }, 350);
+          }
         }, fillDelay);
       }
 
