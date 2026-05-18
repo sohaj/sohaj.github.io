@@ -4662,12 +4662,29 @@
         }
       }
 
-      /* Pre-compute random fly distance per quote so animation is smooth */
+      /* Pre-compute random fly distance per quote so animation is smooth.
+         The Gurmukhi fly-quotes used to emerge throughout the whole
+         tunnel (data-depth 0.15 → 0.62), which meant they were already
+         orbiting the storytelling phrases "Meditate with Sikhs" /
+         "across the world" / etc. — visually crowding text that was
+         meant to be in solitude. We now remap every quote's emergence
+         depth into the "Waheguru" phrase window so the entire chorus
+         of Gurmukhi terms only joins the scene alongside the final
+         invocation. */
+      var QUOTES_START = 0.60;   // ← matches "Waheguru" data-depth-start
+      var QUOTES_WINDOW = 0.20;  // staggered across the Waheguru phrase
+      var QUOTES_RAW_MIN = 0.15; // matches min(data-depth) in markup
+      var QUOTES_RAW_MAX = 0.62; // matches max(data-depth) in markup
+      var QUOTES_RAW_RANGE = QUOTES_RAW_MAX - QUOTES_RAW_MIN;
       var quoteData = [];
       flyQuotes.forEach(function(q) {
+        var raw = parseFloat(q.getAttribute('data-depth'));
+        if (isNaN(raw)) raw = QUOTES_RAW_MIN;
+        var normalized = (raw - QUOTES_RAW_MIN) / QUOTES_RAW_RANGE; // 0..1
+        var remapped = QUOTES_START + Math.max(0, Math.min(1, normalized)) * QUOTES_WINDOW;
         quoteData.push({
           el: q,
-          depthStart: parseFloat(q.getAttribute('data-depth')) || 0.2,
+          depthStart: remapped,
           angleRad: (parseFloat(q.getAttribute('data-angle')) || 0) * Math.PI / 180,
           flyDist: 900 + Math.random() * 1100
         });
