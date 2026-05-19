@@ -515,6 +515,27 @@
     body.globe-side-right .hero-globe .globe-container {
       transform: translateX(clamp(140px, 24vw, 320px));
     }
+    /* Mobile: the "slide right" choreography doesn't fit — at 390px
+       a globe sized 92vw can't translate far enough to clear the
+       editorial copy without leaving the viewport entirely, and any
+       partial translate leaves the planet overlapping the text. So
+       on mobile we HIDE the globe the moment about-intro starts
+       entering (same trigger as desktop's slide-right), and bring
+       it back if the user scrolls back up to the cover. Desktop
+       behaviour (translateX slide) is unchanged.
+       Suppress the meditation-orb backdrop and "souls meditated"
+       badge too so the about-intro reads on a clean canvas. */
+    @media (max-width: 768px) {
+      body.globe-side-right .hero-globe,
+      body.globe-side-right .globe-ripples,
+      body.globe-side-right .breath-particles-layer,
+      body.globe-side-right .globe-badge {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+        transition: opacity 0.55s ease, visibility 0s linear 0.55s;
+      }
+    }
 
     /* Live "150+ Souls Meditated Today" pill anchored below the
        centered globe. Position-fixed (independent of any section
@@ -5396,11 +5417,23 @@
           },
           onLeaveBack: function() {
             document.body.classList.remove('globe-sangat');
-            // Hand the planet back to the about-intro stage above —
-            // its ScrollTrigger will reapply globe-side-right on
-            // re-entry, but adding it here keeps the visual state
-            // consistent if the user scrolls up past sangat without
-            // triggering the about-intro onEnterBack first.
+            // Hand the planet back to the receded state above —
+            // when scrolling up out of sangat the next section
+            // visited is FEATURES (between sangat and about-intro),
+            // and features expects the globe HIDDEN so the phone
+            // mockups read on a clean canvas. Without this the
+            // globe popped back centred and overlapped each phone
+            // as the user scrolled up.
+            //
+            // about-intro's bottom-70% ScrollTrigger will remove
+            // globe-receded again the moment the user crosses
+            // back into about-intro proper, so the receded state
+            // is correctly scoped to "features only".
+            //
+            // globe-side-right is also added so once receded is
+            // dropped at the about-intro boundary the globe lands
+            // in its slide-right rest state instead of dead-centre.
+            document.body.classList.add('globe-receded');
             document.body.classList.add('globe-side-right');
             try {
               var ctrl = window._globe && window._globe.controls();
@@ -5935,10 +5968,28 @@
           trigger: aboutIntroSection,
           start: 'top 80%',
           onEnter: function() {
+            // Down-scroll into about-intro: globe moves into the
+            // slide-right (desktop) or hidden (mobile) rest state.
+            // Also clears globe-receded — if the user previously
+            // scrolled up past about-intro we set receded so the
+            // tunnel pin's reverse-scroll plays without the globe
+            // overlapping; remove it now so the globe re-appears
+            // for the about-intro stage.
             document.body.classList.add('globe-side-right');
+            document.body.classList.remove('globe-receded');
           },
           onLeaveBack: function() {
+            // Up-scroll out of about-intro back into the tunnel
+            // pin: hide the globe (add globe-receded) so the
+            // tunnel's storytelling text + warp dots can replay
+            // in reverse without the centred planet sitting on
+            // top of them. side-right is cleared because the
+            // tunnel section is the next stage above and uses
+            // its own scale animation (renderGlobe) — leaving
+            // side-right on would also bias the planet's resting
+            // position if the user resumes scrolling down.
             document.body.classList.remove('globe-side-right');
+            document.body.classList.add('globe-receded');
           }
         });
         ScrollTrigger.create({
