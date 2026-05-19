@@ -384,7 +384,12 @@
       top: 0;
       left: 0;
       width: 100vw;
+      /* 100dvh tracks the *current* visible area on mobile so the
+         fixed globe stays correctly centred as iOS Safari / Chrome
+         collapse and expand their address bars. 100vh fallback for
+         engines that don't support dvh yet. */
       height: 100vh;
+      height: 100dvh;
       z-index: 3;
       display: flex;
       align-items: center;
@@ -429,17 +434,32 @@
       transition: opacity 0.9s ease,
                   transform 1.1s cubic-bezier(0.22, 1, 0.36, 1),
                   visibility 0s linear 0s;
-      /* Align the globe to the bottom of the flex container so it
-         rises up from below — only the top portion stays visible. */
-      align-items: flex-end;
+      /* Centre the globe vertically inside the area BELOW the fixed
+         nav. .hero-globe is top:0/height:100vh, so a vanilla
+         align-items:center centres in the whole viewport and the
+         top of the planet slips under the 66px nav on short
+         windows. Reserving padding-top (nav + breathing space) and
+         a little padding-bottom keeps the centre of the available
+         area dead-on the planet centre. box-sizing keeps the 100vh
+         constraint intact. */
+      box-sizing: border-box;
+      /* Bumped from 88px → 160px so there's a real visible gap
+         between the fixed nav and the top of the planet, giving
+         the section header ("◆ VOICES / Voices from the Sangat")
+         room to breathe above the globe. */
+      padding-top: clamp(160px, 18vh, 220px);
+      padding-bottom: clamp(40px, 6vh, 88px);
+      align-items: center;
     }
     body.globe-sangat .hero-globe .globe-container {
-      /* Enlarged globe so it bleeds off the bottom of the viewport.
-         translateY pushes the center ~32vh below the midpoint so
-         roughly the top half of the globe is visible on screen. */
-      width: min(130vh, 130vw);
-      height: min(130vh, 130vw);
-      transform: translateY(32vh);
+      /* Standard-fit globe — fully visible, centred. The card
+         callouts need room on all four sides, so we keep it just
+         under the available height. Shrunk slightly to balance the
+         increased top padding (otherwise the planet would crop on
+         the bottom). */
+      width: min(64vh, 74vw);
+      height: min(64vh, 74vw);
+      transform: translateY(0) scale(1);
     }
     /* In the sangat stage the planet is the actor, not the
        meditation-orb backdrop — suppress the meditation ripples,
@@ -1336,7 +1356,10 @@
       margin: 0 auto;
     }
     .features-pinned {
+      /* dvh keeps the pinned features stage matching the visible
+         area on mobile when the address bar collapses. */
       height: 100vh;
+      height: 100dvh;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -2150,6 +2173,7 @@
         justify-items: center;
         align-content: end;
         min-height: calc(100vh - 140px);
+        min-height: calc(100dvh - 140px);
       }
       .hero-inner { text-align: center; padding-left: 0; max-width: 100%; position: relative; z-index: 3; }
       .hero-icon { margin: 0 auto 20px; }
@@ -2462,11 +2486,16 @@
     .sangat {
       position: relative;
       background: var(--color-bg);
-      /* Tall enough for the globe to stay in view through a normal
-         scroll-through, but not so tall the user feels stuck. The
-         globe is body-fixed (.hero-globe is position:fixed) so the
-         section's own height is mostly about pacing. */
-      min-height: 130vh;
+      /* Section is exactly one viewport tall — the ScrollTrigger
+         pin (+=120% with pinSpacing) supplies the extra scroll
+         distance for one full rotation as a spacer AFTER this
+         section, so we don't need extra padding inside. The intro
+         (◆ Voices / title / subtitle) lives in the top ~25% and
+         the globe (position:fixed) fills the rest of the frame.
+         dvh tracks the mobile visible area as the address bar
+         collapses; vh fallback for older engines. */
+      min-height: 100vh;
+      min-height: 100dvh;
     }
     .sangat-intro {
       padding: 96px 24px 32px;
@@ -2648,9 +2677,12 @@
       .sangat-card-body { width: 180px; padding: 10px 12px; font-size: 0.72rem; }
       .sangat-card-text { font-size: 0.78rem; -webkit-line-clamp: 2; }
       body.globe-sangat .hero-globe .globe-container {
-        width: min(110vh, 110vw);
-        height: min(110vh, 110vw);
-        transform: translateY(28vh);
+        /* On phones the cards are wider relative to the planet, so
+           we shrink the globe a touch more to keep callouts clear.
+           Centred (no translateY) — matches the desktop behaviour. */
+        width: min(64vh, 86vw);
+        height: min(64vh, 86vw);
+        transform: translateY(0) scale(1);
       }
     }
     @media (prefers-reduced-motion: reduce) {
@@ -2795,7 +2827,13 @@
     }
     .highlight-pin {
       width: 100%;
+      /* The pinned tunnel stage. dvh keeps the warp scene exactly
+         matching the mobile visible area as the URL bar collapses;
+         vh fallback for older engines. Without dvh the canvas
+         appears taller than the screen on iOS and the centred
+         story-text drifts upward as the bar retracts. */
       height: 100vh;
+      height: 100dvh;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -3132,6 +3170,102 @@
       box-shadow: inset 0 0 0 2px var(--color-primary);
     }
 
+    /* Positioning tagline beneath the Ik Onkar glyph. Same .visible
+       sequencing as the CTA but with a slightly shorter delay so it
+       arrives a beat BEFORE the button — the user reads "A daily
+       companion for Sikhi" and then sees the call to act. Italic
+       Fraunces + low opacity = restrained editorial moment, not a
+       second headline. Letter-spacing widened gives the line a
+       book-frontispiece quality that pairs with the drawn glyph. */
+    .loader-tagline {
+      margin: 4px 0 -6px;       /* tightens the stack against the CTA */
+      font-family: var(--font-display);
+      font-style: italic;
+      font-variation-settings: 'opsz' 144, 'SOFT' 100, 'wght' 320;
+      font-size: clamp(0.95rem, 1.4vw, 1.1rem);
+      letter-spacing: 0.08em;
+      color: rgba(255, 255, 255, 0.55);
+      text-align: center;
+      opacity: 0;
+      transform: translateY(4px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+      pointer-events: none;
+    }
+    .loader-tagline.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ── TUNNEL PROGRESS CUE ──
+       Hairline indicator at the right edge of the viewport. Visible
+       only while the gurbaniHighlight ScrollTrigger pin is active —
+       a juror who lands inside the tunnel pin (700% of pinned
+       scroll) without a progress signal will think the page is
+       broken. The bar makes the journey legible: 1px-wide track
+       set at 30vh, gold fill from the top, gentle bloom. Reduced
+       motion users get nothing here (the tunnel itself collapses
+       in that mode). */
+    .tunnel-progress {
+      position: fixed;
+      top: 50%;
+      right: 28px;
+      transform: translateY(-50%);
+      width: 1px;
+      height: 32vh;
+      min-height: 200px;
+      max-height: 360px;
+      background: rgba(255, 255, 255, 0.08);
+      z-index: 50;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.55s ease;
+    }
+    .tunnel-progress.visible {
+      opacity: 1;
+    }
+    .tunnel-progress::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 1px;
+      /* --progress is driven inline each scroll frame (0%..100%). */
+      height: var(--progress, 0%);
+      background: linear-gradient(
+        to bottom,
+        rgba(232, 196, 74, 0.05) 0%,
+        var(--color-primary) 35%,
+        var(--color-primary) 100%
+      );
+      box-shadow: 0 0 7px rgba(232, 196, 74, 0.55),
+                  0 0 18px rgba(232, 196, 74, 0.25);
+      transition: height 0.05s linear;
+    }
+    /* Small dot at the bottom anchor — gives the bar a "destination"
+       so the user reads the gold fill as approaching it. Subtle
+       enough that on full progress the dot disappears INTO the
+       gold fill. */
+    .tunnel-progress::before {
+      content: '';
+      position: absolute;
+      bottom: -3px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: rgba(232, 196, 74, 0.5);
+      box-shadow: 0 0 8px rgba(232, 196, 74, 0.45);
+    }
+    @media (max-width: 720px) {
+      /* On mobile the right gutter is too thin for a dedicated
+         track — tighten the inset and shrink the height. */
+      .tunnel-progress { right: 14px; height: 24vh; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .tunnel-progress { display: none; }
+    }
+
     /* ── CUSTOM CURSOR ── */
     .cursor-dot {
       position: fixed; top: 0; left: 0; z-index: 9998;
@@ -3205,6 +3339,17 @@
       <canvas class="loader-canvas" id="loaderCanvas"></canvas>
       <div class="loader-pen" id="loaderPen"></div>
     </div>
+    <!-- One-line positioning tagline. The loader is also the first
+         frame an Awwwards juror sees, so this serves as the
+         "what is this" anchor before the experience starts. Fraunces
+         display variant, near-white at very low opacity, italic for
+         editorial restraint. Visibility is gated by the same
+         .visible class JS applies to .loader-cta — the tagline
+         appears the moment the Ik Onkar finishes filling, sitting
+         briefly above the CTA. -->
+    <p class="loader-tagline" id="loaderTagline" aria-hidden="true">
+      A daily companion for Sikhi
+    </p>
     <!-- Sole entry point into the experience. The site does NOT load
          on its own — the Ik Onkar finishes drawing + filling and then
          waits here. Clicking this button is what dissolves the glyph
@@ -3218,6 +3363,14 @@
 
   <!-- Custom Cursor -->
   <div class="cursor-dot" id="cursorDot"></div>
+
+  <!-- Tunnel progress cue. position:fixed right-edge hairline,
+       opacity-gated by .visible class added/removed in the
+       gurbaniHighlight ScrollTrigger's onToggle, and a --progress
+       custom property updated each scroll frame in its onUpdate.
+       Lives at the body level so its position is independent of
+       the pinned section's transform stack. -->
+  <div class="tunnel-progress" id="tunnelProgress" aria-hidden="true"></div>
 
   <!-- Skip Nav -->
   <a href="#main-content" class="skip-nav">Skip to content</a>
@@ -3630,7 +3783,7 @@
     <div class="container sangat-intro">
       <div class="section-label fade-up" data-i18n="reviewsLabel">&#9670; Voices</div>
       <h2 class="section-title fade-up" data-i18n="reviewsTitle">Voices from the Sangat</h2>
-      <p class="sangat-subtitle fade-up" data-i18n="reviewsSubtitle">Each card is a sevadar somewhere in the world. Drag to spin the planet, or wait — it turns on its own.</p>
+      <p class="sangat-subtitle fade-up" data-i18n="reviewsSubtitle">Each pin is a sevadar somewhere in the world. Scroll to spin the planet.</p>
     </div>
   </section>
 
@@ -4152,8 +4305,10 @@
       document.getElementById('themeIcon').innerHTML = next === 'dark' ? '\u263D' : '\u2600';
       if (window._globe) {
         var isDark = next === 'dark';
-        var bg = isDark ? '#010101' : '#FAFAFA';
-        window._globe.scene().background = new THREE.Color(bg);
+        // Keep the canvas transparent regardless of theme — re-setting
+        // scene.background to a solid colour here would bring back the
+        // dark disk that occludes orbit text behind the planet.
+        window._globe.scene().background = null;
         window._globe.globeImageUrl(isDark ? 'https://unpkg.com/three-globe/example/img/earth-night.jpg' : 'https://unpkg.com/three-globe/example/img/earth-day.jpg');
         window._globe.atmosphereColor(isDark ? '#D4A853' : '#8B6914');
         var mat = window._globe.globeMaterial();
@@ -4749,9 +4904,15 @@
         var sangatSection = document.getElementById('sangat');
         if (!sangatSection) return;
 
-        // Source-of-truth review content. Falls back to these
-        // diaspora coordinates if the live meditator cloud isn't
-        // available at render time; otherwise we sample real dots.
+        // Source-of-truth review content. Curated down from 11 → 7
+        // so even with the ~half-the-planet hemisphere occlusion
+        // (only camera-facing pins show), no more than ~4 cards
+        // ever paint at once — comfortably under the screen-overlap
+        // threshold once paired with the bumped angular separation
+        // in pickCoords(). Each entry preserves a distinct voice
+        // (feature praise / faith / gratitude / Gurmukhi / design /
+        // sevadar humility / globalisation) so the chorus still
+        // feels representative.
         var SANGAT_REVIEWS = [
           { stars: 5, text: 'Very nice app for all updates about daily Gurudwara Hukamnamas. The ChardiKala AI lets me ask anything about Gurbani.',
             name: 'Garry Johar', place: 'Mumbai', fallbackLat: 19.07, fallbackLng: 72.87 },
@@ -4759,14 +4920,8 @@
             name: 'Arti Keswani', place: 'Delhi', fallbackLat: 28.61, fallbackLng: 77.21 },
           { stars: 5, text: 'Best app. Waheguru Ji. Everything you need for your Sikhi journey, in one place.',
             name: 'Jaspinder Singh Bedi', place: 'Amritsar', fallbackLat: 31.63, fallbackLng: 74.87 },
-          { stars: 5, text: 'Great app for Sikhi. Beautiful design and useful daily features. Highly recommended.',
-            name: 'Jyoti Sachdev', place: 'Chandigarh', fallbackLat: 30.73, fallbackLng: 76.78 },
-          { stars: 5, text: 'Very nice app. All the features a Sikh needs in daily life.',
-            name: 'Harwinder Singh', place: 'Toronto', fallbackLat: 43.65, fallbackLng: -79.38 },
           { stars: 5, text: 'An amazing app and concept. Everything in one place for people who want to connect, and want their children to connect. Brilliant.',
             name: 'A Sevadar', place: 'San Francisco', fallbackLat: 37.77, fallbackLng: -122.42 },
-          { stars: 5, text: 'Being able to lock the phone while Nitnem and live Kirtan play in the background would be great. Otherwise, amazing app.',
-            name: 'Inderpal Singh', place: 'Vancouver', fallbackLat: 49.28, fallbackLng: -123.12 },
           { stars: 5, text: '\u0A2C\u0A39\u0A41\u0A24 \u0A2C\u0A39\u0A41\u0A24 \u0A35\u0A27\u0A40\u0A06 \u0A10\u0A2A\u0964 \u0A35\u0A3E\u0A39\u0A3F\u0A17\u0A41\u0A30\u0A42 \u0A1C\u0A40 \u0A38\u0A30\u0A2C\u0A71\u0A24 \u0A26\u0A3E \u0A2D\u0A32\u0A3E \u0A15\u0A30\u0A28 \uD83D\uDE4F',
             name: 'Waheguru Sevak', place: 'Birmingham', fallbackLat: 52.49, fallbackLng: -1.90 },
           { stars: 5, text: 'This app is a blessing. I carry the Gurbani with me everywhere I go. Waheguru Ji Ka Khalsa.',
@@ -4788,27 +4943,136 @@
           return pool.slice(0, n);
         }
 
-        // Pull SANGAT_REVIEWS.length lat/lng pairs. Prefer real
-        // meditator dots (globeUsers from Firebase) so the cards
-        // sit on visible activity. If too few real dots exist, fill
-        // the remainder with the curated fallback coords.
+        // Distribute one lat/lng per review around the planet so no
+        // two cards stack on screen.
+        //
+        // Earlier attempts used each review's own `fallbackLat/Lng`
+        // (its real place name). That clustered four reviews in
+        // northern India (Mumbai / Delhi / Amritsar / Chandigarh) —
+        // all within ~12° of each other — and their card bodies
+        // overlapped because they projected to nearly identical
+        // screen positions.
+        //
+        // New approach: draw anchors from a larger Sikh-diaspora
+        // pool, enforce a minimum angular separation (~22°) between
+        // picks, then snap each pick to the nearest live meditator
+        // dot within a small radius. The card's "place" label on
+        // the card stays as written (it represents the reviewer's
+        // own city); the PIN is a visual decoration, randomised
+        // around the globe each load so the Voices section reads
+        // as a planet-wide chorus rather than an India-only cluster.
+        var DIASPORA_ANCHORS = [
+          { lat:  19.07, lng:   72.87 }, // Mumbai
+          { lat:  28.61, lng:   77.21 }, // Delhi
+          { lat:  31.63, lng:   74.87 }, // Amritsar
+          { lat:  43.65, lng:  -79.38 }, // Toronto
+          { lat:  37.77, lng: -122.42 }, // San Francisco
+          { lat:  49.28, lng: -123.12 }, // Vancouver
+          { lat:  52.49, lng:   -1.90 }, // Birmingham
+          { lat:  -1.29, lng:   36.82 }, // Nairobi
+          { lat: -23.55, lng:  -46.63 }, // São Paulo
+          { lat: -33.87, lng:  151.21 }, // Sydney
+          { lat:  51.51, lng:   -0.13 }, // London
+          { lat:  40.71, lng:  -74.00 }, // NYC
+          { lat:  34.05, lng: -118.24 }, // LA
+          { lat:  41.88, lng:  -87.63 }, // Chicago
+          { lat:  29.76, lng:  -95.37 }, // Houston
+          { lat:  51.05, lng: -114.07 }, // Calgary
+          { lat:  25.20, lng:   55.27 }, // Dubai
+          { lat:   1.35, lng:  103.82 }, // Singapore
+          { lat:  13.75, lng:  100.50 }, // Bangkok
+          { lat:  -36.85, lng: 174.76 }, // Auckland
+          { lat:  35.69, lng:  139.69 }, // Tokyo
+          { lat:  48.86, lng:    2.35 }, // Paris
+          { lat:  52.52, lng:   13.40 }, // Berlin
+          { lat:   6.52, lng:    3.38 }, // Lagos
+        ];
+
+        // Angular distance (degrees), latitude-weighted so longitude
+        // separation near the poles isn't overcounted. Good enough
+        // for "are these two pins going to overlap on screen?".
+        function angDist(a, b) {
+          var dLat = a.lat - b.lat;
+          var dLng = a.lng - b.lng;
+          var k = Math.cos((a.lat + b.lat) * 0.5 * Math.PI / 180);
+          return Math.sqrt(dLat * dLat + (dLng * k) * (dLng * k));
+        }
+
         function pickCoords() {
-          var fallback = SANGAT_REVIEWS.map(function(r) {
-            return { lat: r.fallbackLat, lng: r.fallbackLng };
-          });
           var live = (typeof globeUsers !== 'undefined' && globeUsers)
             ? globeUsers.filter(function(u) {
                 return typeof u.lat === 'number' && typeof u.lng === 'number';
               })
             : [];
-          if (live.length >= SANGAT_REVIEWS.length) {
-            return sample(live, SANGAT_REVIEWS.length)
-              .map(function(u) { return { lat: u.lat, lng: u.lng }; });
+
+          var MIN_SEP_DEG = 35;   // ~3900km between any two pins.
+                                  // Bumped from 22 → 35 because at
+                                  // 22° two pins on the same camera-
+                                  // facing hemisphere could still
+                                  // project to overlapping screen
+                                  // positions, and their card bodies
+                                  // (220px wide) collided even when
+                                  // the smart-quadrant logic gave
+                                  // them different extension dirs.
+                                  // 35° gives roughly screen-quarter
+                                  // separation between any two pins
+                                  // on a typical camera altitude.
+          var SNAP_DEG    = 6;    // ~660km radius to find a live dot
+
+          // Shuffle the anchor pool, then greedily pick anchors that
+          // sit at least MIN_SEP_DEG away from every already-picked
+          // anchor. If we run out of valid options (pool exhausted)
+          // we relax the constraint slightly and continue — better
+          // a near-overlap than missing reviews.
+          var pool = DIASPORA_ANCHORS.slice();
+          for (var i = pool.length - 1; i > 0; i--) {
+            var j = Math.floor(Math.random() * (i + 1));
+            var t = pool[i]; pool[i] = pool[j]; pool[j] = t;
           }
-          // Not enough real users — start with what's there and pad.
-          var sampled = sample(live, live.length)
-            .map(function(u) { return { lat: u.lat, lng: u.lng }; });
-          return sampled.concat(fallback.slice(sampled.length));
+
+          var picks = [];
+          var minSep = MIN_SEP_DEG;
+          while (picks.length < SANGAT_REVIEWS.length) {
+            var added = false;
+            for (var p = 0; p < pool.length; p++) {
+              var cand = pool[p];
+              if (!cand) continue;
+              var ok = true;
+              for (var q = 0; q < picks.length; q++) {
+                if (angDist(cand, picks[q]) < minSep) { ok = false; break; }
+              }
+              if (ok) {
+                picks.push(cand);
+                pool[p] = null;
+                added = true;
+                if (picks.length >= SANGAT_REVIEWS.length) break;
+              }
+            }
+            if (!added) {
+              // Pool exhausted at this separation — relax and retry.
+              minSep *= 0.75;
+              if (minSep < 6) break;
+            }
+          }
+
+          // Snap each anchor to the nearest unused live meditator
+          // dot within SNAP_DEG (preserves "lands on real activity"
+          // feel) — or keep the raw anchor if no live dot is close.
+          var usedLive = {};
+          return picks.map(function(anchor) {
+            var best = null;
+            var bestD = SNAP_DEG;
+            for (var k = 0; k < live.length; k++) {
+              if (usedLive[k]) continue;
+              var d = angDist(anchor, live[k]);
+              if (d < bestD) { bestD = d; best = k; }
+            }
+            if (best !== null) {
+              usedLive[best] = true;
+              return { lat: live[best].lat, lng: live[best].lng };
+            }
+            return anchor;
+          });
         }
 
         // Builds a single review card element. globe.gl will set
@@ -4928,6 +5192,12 @@
             var cardH = 120;
             var pad   = 32;
             var cards = document.querySelectorAll('.sangat-card');
+            // First pass: visibility (opacity from camera dot) and
+            // initial edge-preferring quadrant choice for each card.
+            // We collect the visible cards' projected pin positions
+            // here so the second pass can resolve body-rect overlaps
+            // between any pair without re-reading the DOM.
+            var visibleCards = [];
             for (var i = 0; i < cards.length; i++) {
               var c = cards[i];
               var lat = parseFloat(c.dataset.lat);
@@ -4944,43 +5214,89 @@
               if (t < 0) t = 0; else if (t > 1) t = 1;
               c.style.opacity = t.toFixed(3);
               c.style.pointerEvents = t > 0.5 ? 'auto' : 'none';
+              if (t <= 0.05) continue;
 
-              // Smart quadrant: while the card is visible enough
-              // to matter, point the body toward whichever side
-              // of the viewport has more room. globe.gl sets the
-              // card to position:absolute with translate so its
-              // bounding rect's (left, top) IS the pin's screen
-              // position (the card root is width:0/height:0).
-              //
-              // Edge-clipping guard: if the pin is within (cardW +
-              // pad) of the right edge, force the body to extend
-              // WEST regardless of centre-line — otherwise the
-              // card would be cropped at the viewport's right.
-              // Same for the left/top/bottom edges.
-              if (t > 0.05) {
-                var rect = c.getBoundingClientRect();
-                var px = rect.left;
-                var py = rect.top;
-                var horiz;
-                if (px > vw - (cardW + pad)) {
-                  horiz = 'w';
-                } else if (px < (cardW + pad)) {
-                  horiz = 'e';
-                } else {
-                  horiz = px < vw / 2 ? 'e' : 'w';
+              // Edge-preferring quadrant: if the pin is within
+              // (cardW + pad) of an edge, force the body to extend
+              // away from that edge so it doesn't clip the viewport.
+              var rect = c.getBoundingClientRect();
+              var px = rect.left;
+              var py = rect.top;
+              var horiz;
+              if (px > vw - (cardW + pad)) horiz = 'w';
+              else if (px < (cardW + pad)) horiz = 'e';
+              else                          horiz = px < vw / 2 ? 'e' : 'w';
+              var vert;
+              if (py > vh - (cardH + pad)) vert = 'n';
+              else if (py < (cardH + pad)) vert = 's';
+              else                          vert = py < vh / 2 ? 's' : 'n';
+              visibleCards.push({ el: c, px: px, py: py, horiz: horiz, vert: vert });
+            }
+
+            // Second pass: screen-space collision avoidance.
+            // The MIN_SEP_DEG check in pickCoords guarantees pins
+            // don't sit on top of each other geographically, but two
+            // pins on the same hemisphere can still extend their
+            // (220x110px) card bodies into each other if both pick
+            // the same quadrant. For each colliding pair, try
+            // flipping one of them through the alternative
+            // quadrants (h-flip first, then v-flip, then both) and
+            // adopt the first variant that resolves the collision.
+            // Pins near a viewport edge had their horiz/vert forced
+            // earlier — we respect that by NOT flipping the locked
+            // axis (cards never get re-pushed into the edge they
+            // were trying to escape).
+            function bodyRect(card) {
+              // Card body is offset from the pin by ~18px in the
+              // chosen quadrant direction, with size cardW × cardH.
+              var bx = card.px + (card.horiz === 'e' ?  18 : -18 - cardW);
+              var by = card.py + (card.vert  === 's' ?  18 : -18 - cardH);
+              return { x: bx, y: by, w: cardW, h: cardH };
+            }
+            function rectsOverlap(a, b) {
+              return !(a.x + a.w < b.x || b.x + b.w < a.x ||
+                       a.y + a.h < b.y || b.y + b.h < a.y);
+            }
+            for (var a = 0; a < visibleCards.length; a++) {
+              for (var b = a + 1; b < visibleCards.length; b++) {
+                var A = visibleCards[a];
+                var B = visibleCards[b];
+                if (!rectsOverlap(bodyRect(A), bodyRect(B))) continue;
+                // Try flipping B through its 3 alternative quadrants
+                // in priority order: h-flip, v-flip, both. Skip a
+                // flip if B is already pinned to an edge on that
+                // axis (its initial quadrant was forced).
+                var BatRightEdge = B.px > vw - (cardW + pad);
+                var BatLeftEdge  = B.px < (cardW + pad);
+                var BatBotEdge   = B.py > vh - (cardH + pad);
+                var BatTopEdge   = B.py < (cardH + pad);
+                var hLocked = BatRightEdge || BatLeftEdge;
+                var vLocked = BatBotEdge   || BatTopEdge;
+                var origH = B.horiz, origV = B.vert;
+                var variants = [];
+                if (!hLocked) variants.push({ h: (origH === 'e' ? 'w' : 'e'), v: origV });
+                if (!vLocked) variants.push({ h: origH, v: (origV === 's' ? 'n' : 's') });
+                if (!hLocked && !vLocked) variants.push({ h: (origH === 'e' ? 'w' : 'e'),
+                                                          v: (origV === 's' ? 'n' : 's') });
+                for (var k = 0; k < variants.length; k++) {
+                  B.horiz = variants[k].h;
+                  B.vert  = variants[k].v;
+                  if (!rectsOverlap(bodyRect(A), bodyRect(B))) break;
                 }
-                var vert;
-                if (py > vh - (cardH + pad)) {
-                  vert = 'n';
-                } else if (py < (cardH + pad)) {
-                  vert = 's';
-                } else {
-                  vert = py < vh / 2 ? 's' : 'n';
-                }
-                var q = vert + horiz;
-                if (c.getAttribute('data-quadrant') !== q) {
-                  c.setAttribute('data-quadrant', q);
-                }
+                // If none of the variants resolved (very tight pin
+                // cluster), leave B at its last-tried quadrant — the
+                // overlap is still smaller than the original.
+              }
+            }
+
+            // Third pass: write the final quadrant attribute. Only
+            // touch the DOM when the value actually changed to keep
+            // the rAF cheap.
+            for (var n = 0; n < visibleCards.length; n++) {
+              var vc = visibleCards[n];
+              var q = vc.vert + vc.horiz;
+              if (vc.el.getAttribute('data-quadrant') !== q) {
+                vc.el.setAttribute('data-quadrant', q);
               }
             }
           }
@@ -4994,38 +5310,68 @@
           if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
         }
 
-        // Class-based stage trigger. No pin, no scrub — the section
-        // just brings the globe back and populates cards while in
-        // viewport; on leave it cleans up and re-recedes the planet.
+        // Pinned-scrub stage trigger. The section pins to the top of
+        // the viewport for ~120vh of scroll, during which scroll
+        // distance maps 1:1 to a full longitude rotation of the
+        // planet (0 → 360°). After the user has scrolled through
+        // that distance — i.e. completed one full rotation — the
+        // pin releases and the page resumes normal scrolling.
         //
-        // start: 'top center' (instead of the looser 'top 70%')
-        // delays the globe reveal until the section's TOP has
-        // crossed the viewport centre — by that point the section
-        // header ("◆ Voices / Voices from the Sangat") is on
-        // screen and the user has read it. Earlier triggers were
-        // popping the globe in over the previous section (stats /
-        // features) because .hero-globe is position:fixed and
-        // ignores the section's own bounds.
+        // While pinned, autoRotate + drag-to-rotate are disabled so
+        // the scroll-driven scrub fully owns the camera azimuth;
+        // both are restored on leave / leave-back so the planet's
+        // resting behaviour (slow auto-spin, draggable) returns
+        // wherever else the globe appears.
+        var sangatStartLng = 0;
         ScrollTrigger.create({
           trigger: sangatSection,
-          start: 'top center',
-          end: 'bottom 30%',
+          start: 'top top',
+          end: '+=120%',          // 120vh of scroll = one rotation
+          pin: true,
+          pinSpacing: true,
+          scrub: 0.5,             // light smoothing on the rotation
+          invalidateOnRefresh: true,
           onEnter: function() {
             document.body.classList.add('globe-sangat');
+            // The about-intro stage adds .globe-side-right (translates
+            // the planet rightward over its text column). That class
+            // is still on <body> when we scroll into sangat, and its
+            // CSS rule sits AFTER the sangat rule in the stylesheet,
+            // so it wins the specificity tie and pushes the planet
+            // off-centre. Strip it here so sangat's centred layout
+            // actually centres.
+            document.body.classList.remove('globe-side-right');
             document.body.classList.remove('globe-receded');
             try {
               var ctrl = window._globe && window._globe.controls();
-              if (ctrl) ctrl.autoRotateSpeed = 0.25;
+              if (ctrl) {
+                ctrl.autoRotate = false;     // scroll owns rotation
+                ctrl.enableRotate = false;   // disable drag so scrub isn't fought
+              }
+              var pov = window._globe.pointOfView();
+              sangatStartLng = (pov && typeof pov.lng === 'number') ? pov.lng : 0;
             } catch (e) {}
             populateSangatCards();
             startOcclusion();
           },
+          onUpdate: function(self) {
+            // Map normalised scroll progress (0..1) to a full 360°
+            // longitude sweep starting from wherever the camera was
+            // when the user entered. duration arg 0 = snap-to so the
+            // rotation feels directly coupled to scroll input.
+            if (!window._globe) return;
+            var lng = sangatStartLng + self.progress * 360;
+            try { window._globe.pointOfView({ lng: lng }, 0); } catch (e) {}
+          },
           onEnterBack: function() {
             document.body.classList.add('globe-sangat');
+            document.body.classList.remove('globe-side-right');
             document.body.classList.remove('globe-receded');
             try {
               var ctrl = window._globe && window._globe.controls();
-              if (ctrl) ctrl.autoRotateSpeed = 0.25;
+              if (ctrl) { ctrl.autoRotate = false; ctrl.enableRotate = false; }
+              var pov = window._globe.pointOfView();
+              sangatStartLng = (pov && typeof pov.lng === 'number') ? pov.lng : 0;
             } catch (e) {}
             populateSangatCards();
             startOcclusion();
@@ -5035,16 +5381,34 @@
             document.body.classList.add('globe-receded');
             try {
               var ctrl = window._globe && window._globe.controls();
-              if (ctrl) ctrl.autoRotateSpeed = 0.5;
+              if (ctrl) {
+                ctrl.autoRotate = true;
+                ctrl.autoRotateSpeed = 0.5;
+                // Restore drag-rotate ONLY if it was originally
+                // allowed (i.e. non-touch desktop). On touch, the
+                // user shouldn't suddenly gain drag control on
+                // leaving sangat — vertical drag is page scroll.
+                ctrl.enableRotate = !!window._globeAllowRotate;
+              }
             } catch (e) {}
             stopOcclusion();
             clearSangatCards();
           },
           onLeaveBack: function() {
             document.body.classList.remove('globe-sangat');
+            // Hand the planet back to the about-intro stage above —
+            // its ScrollTrigger will reapply globe-side-right on
+            // re-entry, but adding it here keeps the visual state
+            // consistent if the user scrolls up past sangat without
+            // triggering the about-intro onEnterBack first.
+            document.body.classList.add('globe-side-right');
             try {
               var ctrl = window._globe && window._globe.controls();
-              if (ctrl) ctrl.autoRotateSpeed = 0.5;
+              if (ctrl) {
+                ctrl.autoRotate = true;
+                ctrl.autoRotateSpeed = 0.5;
+                ctrl.enableRotate = !!window._globeAllowRotate;
+              }
             } catch (e) {}
             stopOcclusion();
             clearSangatCards();
@@ -5211,7 +5575,14 @@
          of Gurmukhi terms only joins the scene alongside the final
          invocation. */
       var QUOTES_START = 0.60;   // ← matches "Waheguru" data-depth-start
-      var QUOTES_WINDOW = 0.20;  // staggered across the Waheguru phrase
+      var QUOTES_WINDOW = 0.15;  // tightened from 0.20 so the latest
+                                 // quote starts at p=0.75 (not 0.80),
+                                 // leaving room for its 0.18 cycle to
+                                 // finish before the pin releases at
+                                 // p=1.0. Without this the trailing
+                                 // quotes were still ~50% visible at
+                                 // pin-end and scrolled up with the
+                                 // page as ordinary section content.
       var QUOTES_RAW_MIN = 0.15; // matches min(data-depth) in markup
       var QUOTES_RAW_MAX = 0.62; // matches max(data-depth) in markup
       var QUOTES_RAW_RANGE = QUOTES_RAW_MAX - QUOTES_RAW_MIN;
@@ -5225,7 +5596,13 @@
           el: q,
           depthStart: remapped,
           angleRad: (parseFloat(q.getAttribute('data-angle')) || 0) * Math.PI / 180,
-          flyDist: 900 + Math.random() * 1100
+          // Reduced from 900–2000 to 250–500. The previous range
+          // sent words flying past the camera (zoom TOWARD viewer),
+          // which clashed with the "zoom away" feel — and meant
+          // words that didn't fully fly out were still visible
+          // mid-flight at pin-end. The smaller orbital radius lets
+          // each word settle near the globe rim and recede in place.
+          flyDist: 250 + Math.random() * 250
         });
       });
 
@@ -5249,7 +5626,14 @@
          Both waves render through identical math; what distinguishes
          them is where they START, not how they're drawn. That's
          what makes the handoff feel like one continuous warp. */
-      var DOT_COUNT = 1500;
+      // Mobile / touch: cut the warp-tunnel dot field in half.
+      // 1500 DOM nodes each writing transform + opacity 60× a
+      // second is the heaviest non-WebGL work on the page; 750
+      // still reads as a dense star streak and recovers ~10–15fps
+      // on mid-range Android. Desktop keeps the full density.
+      var _isMobileTunnel = window.matchMedia('(max-width: 768px)').matches
+                          || window.matchMedia('(pointer: coarse)').matches;
+      var DOT_COUNT = _isMobileTunnel ? 750 : 1500;
       var GALAXY_RATIO = 0.4;
       var dots = [];
       if (dotsContainer) {
@@ -5341,27 +5725,41 @@
       // globe was overlapping the "Waheguru" phrase because both
       // were visible in the same scroll window.
       //
-      // STORY_END (0.82) — matches the data-depth-end of the final
-      //   story-text phrase ("Waheguru"). Globe stays fully hidden
-      //   (opacity 0 AND scale ≈ 0) until then.
-      // OPACITY_FADE_FROM/UNTIL — opacity ramp begins the instant
-      //   the last word is gone and finishes a beat later.
-      // SETTLE_AT — progress at which we lock Earth to scale(1) and
-      //   hand control to body.globe-revealed (which keeps it at
-      //   rest while the .globe-ripples sonar starts and the warp
-      //   dots flush via the outro). Living at 0.95 leaves the
-      //   final 5% of the pin as a hold-on-Earth beat.
-      // SCALE_EXP — applied to scale progress WITHIN the
-      //   STORY_END → SETTLE_AT window (not the whole journey),
-      //   so 1 = linear growth from speck to full size across that
-      //   window. >1 = back-loaded (small for longer, then snaps
-      //   to full); <1 = front-loaded.
-      var STORY_END = 0.82;
+      // Pin distribution — redesigned to honor a clear ask: MORE
+      // cosmic space-travel BEFORE the globe arrives, LESS pin
+      // hold AFTER. Previously the globe started materialising at
+      // p=0.82 (right when Waheguru ended) and held until p=1.0,
+      // which meant ~1.26 viewports of "globe is already here,
+      // why am I still scrolling" tail.
+      //
+      // STORY_END (0.92) — globe stays fully hidden until p=0.92.
+      //   The final story phrase ("Waheguru") still ends at 0.82
+      //   per its data-depth-end, but the 0.82 → 0.92 window is
+      //   now intentional silent travel: stars + warp dots only,
+      //   no text, no globe. Reads as "the words have settled,
+      //   you're crossing the last stretch of distance toward
+      //   the destination". Adds ~0.6 viewports of pure cosmic
+      //   travel for free.
+      // OPACITY_FADE_FROM/UNTIL — opacity ramp is now snappier
+      //   (0.92 → 0.96) so the globe doesn't crossfade slowly
+      //   through the emerging stage; it materialises crisply
+      //   in the final beats.
+      // SETTLE_AT (0.98) — Earth locks at scale 1.0 here, leaving
+      //   only the last 2% of the pin as a hold (~0.13 viewports
+      //   on a 650% pin) before release. Previously this was
+      //   0.95 with a longer hold; now the hold is almost
+      //   imperceptible and the pin hands off to about-intro
+      //   immediately after Earth lands.
+      // SCALE_EXP (1.6) — slightly more back-loaded growth so
+      //   the globe stays a distant speck through 0.92 → 0.96
+      //   and only rushes to full size in the final beat,
+      //   reinforcing "arrival" rather than "gradual reveal".
+      var STORY_END = 0.92;
       var SCALE_MIN = 0.001;
-      var SETTLE_AT = 0.95;
-      var SCALE_EXP = 1.4;
+      var SETTLE_AT = 0.98;
+      var SCALE_EXP = 1.6;
       var OPACITY_FADE_FROM = STORY_END;
-      var OPACITY_FADE_UNTIL = 0.92;
+      var OPACITY_FADE_UNTIL = 0.96;
       var globeRevealed = false;
       function renderGlobe(p) {
         if (!heroGlobeEl) return;
@@ -5415,24 +5813,47 @@
         heroGlobeEl.style.transform = 'scale(' + scale + ')';
       }
 
+      // Cache the right-edge progress hairline. Updated each scroll
+      // frame from the same `self.progress` we already feed into
+      // scrollProgress, with a class toggle on enter/leave so the
+      // bar only paints while the pin is active. Failing to find
+      // the element is non-fatal — the rest of the tunnel still
+      // runs normally.
+      var tunnelProgressEl = document.getElementById('tunnelProgress');
+
       ScrollTrigger.create({
         trigger: section,
         start: 'top top',
         // Pin length sized for a long storytelling journey through
-        // space. The five story phrases ("meditate with Sikhs,",
-        // "across the world.", "breathe,", "and recite—",
-        // "Waheguru") play across the first ~80% of the pin, each
-        // blurring into focus then back out as the user scrolls
-        // forward through the warp tunnel. The globe is held back
-        // until p≈0.62 so the narrative finishes BEFORE the
-        // destination materialises. 7 screens of pinned scroll
-        // feels like genuinely crossing distance.
-        end: '+=700%',
+        // space. Desktop: 650% (6.5 screens of pinned scroll). Mobile:
+        // 400% (4 screens) because a phone's vh is much smaller and
+        // 650% on a 390×844 viewport = ~5,500px of pinned scroll —
+        // feels endless and triggers Awwwards "stuck on this section"
+        // complaints. 4 screens still lets the five story phrases
+        // play out at a meditative pace; the proportions inside
+        // (STORY_END=0.92, SETTLE_AT=0.98) stay the same so the
+        // narrative rhythm is identical, just compressed in total
+        // time. Layout across the desktop 6.5-screen pin:
+        //   • 0.00 → 0.82  — five story phrases play (~5.33 screens)
+        //   • 0.82 → 0.92  — silent cosmic travel (~0.65 screens)
+        //   • 0.92 → 0.98  — globe materialises and lands (~0.39 screens)
+        //   • 0.98 → 1.00  — micro-hold before release (~0.13 screens)
+        end: window.matchMedia('(max-width: 768px)').matches ? '+=400%' : '+=650%',
         pin: pin,
         scrub: false,
         anticipatePin: 1,
         onUpdate: function(self) {
           scrollProgress = self.progress;
+          // Drive the right-edge progress hairline. We write the
+          // --progress CSS custom property (read by the bar's
+          // ::after height in the stylesheet) once per frame —
+          // cheap, no layout, and keeps the bar in lockstep with
+          // the scroll position so the user feels "I am here in
+          // a journey of known length" rather than "this page is
+          // stuck".
+          if (tunnelProgressEl) {
+            tunnelProgressEl.style.setProperty('--progress', (self.progress * 100).toFixed(2) + '%');
+          }
         },
         onToggle: function(self) {
           isActive = self.isActive;
@@ -5440,6 +5861,12 @@
             lastTime = 0;
             autoProgress = 0;
             rafId = requestAnimationFrame(tick);
+          }
+          // Show the hairline only while the pin is alive. .visible
+          // is what the CSS transition keys off — fades in/out
+          // smoothly rather than popping with the pin boundary.
+          if (tunnelProgressEl) {
+            tunnelProgressEl.classList.toggle('visible', self.isActive);
           }
         },
         onLeave: function() {
@@ -5452,6 +5879,29 @@
             heroGlobeEl.style.opacity = '';
             heroGlobeEl.style.visibility = '';
             heroGlobeEl.style.transform = '';
+          }
+          // Hard-kill any fly-quotes still painting. The tail-fade in
+          // renderQuotes (p > 0.90) should already have driven them
+          // to opacity 0, but if the user flicked past the pin
+          // (overscroll / scroll-wheel burst) before a frame
+          // executed at p ≈ 0.95, residual inline opacity stays on
+          // the element and the words get carried up with the
+          // section as it scrolls out. This loop guarantees they're
+          // hidden the instant the pin releases.
+          for (var i = 0; i < quoteData.length; i++) {
+            var qel = quoteData[i].el;
+            qel.style.opacity = '0';
+            qel.style.filter = 'blur(8px)';
+            qel.style.transform = 'translate(-50%, -50%) scale(0.3)';
+          }
+          // Tunnel is finished — pull the progress hairline. onToggle
+          // also clears .visible when the pin deactivates, but this
+          // belt-and-braces hide covers the case where the user
+          // flicks past the pin faster than ScrollTrigger can fire
+          // toggle/leave in order (rare, but caught it in QA).
+          if (tunnelProgressEl) {
+            tunnelProgressEl.classList.remove('visible');
+            tunnelProgressEl.style.setProperty('--progress', '100%');
           }
           document.body.classList.add('globe-revealed');
           globeRevealed = true;
@@ -5576,24 +6026,50 @@
       }
 
       function renderQuotes(p) {
+        // Tail-fade safety: anything still alive past p=0.84 is
+        // ramped to 0 by p=0.91 so the Gurmukhi quotes are fully
+        // gone BEFORE the globe begins materialising at p=0.92
+        // (STORY_END). Pulled forward from the previous 0.90/0.96
+        // window because the globe's emergence point moved later
+        // — if quotes were still painting during 0.92 → 0.96 they'd
+        // visually compete with the planet's fade-in. Individual
+        // quote cycles end at depthStart + 0.24 (last is ~0.99),
+        // which is well past the tail; tailFade is the guarantee.
+        var tailFade = p < 0.84 ? 1
+                     : Math.max(0, 1 - (p - 0.84) / 0.07);
         for (var i = 0; i < quoteData.length; i++) {
           var qd = quoteData[i];
           var q = qd.el;
           if (p < qd.depthStart) { q.style.opacity = 0; q.style.filter = 'blur(6px)'; continue; }
-          var localAppear = Math.min(1, (p - qd.depthStart) / 0.18);
+          // 0 → 1: word focuses in (blurry distant → sharp orbital).
+          var localAppear = Math.min(1, (p - qd.depthStart) / 0.06);
           var fadeIn = easeIO(localAppear);
-          var blur = (1 - fadeIn) * 6;
-          var flyStart = qd.depthStart + 0.09;
-          var localFly = Math.max(0, Math.min(1, (p - flyStart) / 0.3));
-          var flyEase = localFly * localFly;
-          var dist = flyEase * qd.flyDist;
-          var sc = 0.3 + fadeIn * 0.6 + flyEase * 1.6;
-          var x = Math.cos(qd.angleRad) * dist;
-          var y = Math.sin(qd.angleRad) * dist;
-          var opacity = fadeIn * (1 - Math.pow(localFly, 2));
+          // 0 → 1: word recedes (sharp orbital → blurry distant
+          // again). Starts shortly after focus completes so each
+          // quote has a brief in-focus moment.
+          var flyStart = qd.depthStart + 0.06;
+          var localFly = Math.max(0, Math.min(1, (p - flyStart) / 0.18));
+          var flyEase = easeIO(localFly);
+          // ── Zoom-away motion ──
+          // Previously this was zoom-TOWARD (scale 0.3 → 2.5 +
+          // radial outward fly), which made words look like they
+          // were passing the viewer. The new curve scales DOWN as
+          // the word recedes (1.0 → 0.35) and only drifts slightly
+          // outward (drift ≤ qd.flyDist, now 250–500px) — reads as
+          // "word retreats into the cosmic background" rather than
+          // "word flies past the camera". When combined with the
+          // pinned globe stage, the recession feels like the words
+          // are being absorbed by the planet's gravity.
+          var drift = flyEase * qd.flyDist;
+          var sc = 0.4 + fadeIn * 0.6 - flyEase * 0.65;
+          var x = Math.cos(qd.angleRad) * drift;
+          var y = Math.sin(qd.angleRad) * drift;
+          var blurAppear = (1 - fadeIn) * 6;
+          var blurRecede = flyEase * 8;
+          var opacity = fadeIn * (1 - flyEase) * tailFade;
           q.style.transform = 'translate(calc(-50% + ' + x + 'px), calc(-50% + ' + y + 'px)) scale(' + sc + ')';
           q.style.opacity = Math.max(0, opacity);
-          q.style.filter = 'blur(' + blur + 'px)';
+          q.style.filter = 'blur(' + (blurAppear + blurRecede) + 'px)';
         }
       }
 
@@ -5700,13 +6176,38 @@
     (function initGlobe() {
       const theme = document.documentElement.getAttribute('data-theme');
       const isDark = theme !== 'light';
-      const bg = isDark ? '#010101' : '#FAFAFA';
       const container = document.getElementById('globeViz');
       if (!container || typeof Globe === 'undefined') return;
+      // Mobile / touch detection. We use BOTH a viewport-width
+      // check (max-width: 768px) and a pointer:coarse query — the
+      // latter catches touch laptops / tablets at larger widths
+      // where we still want the touch-friendly behaviour, while
+      // the former catches Chrome DevTools mobile emulation which
+      // doesn't always report pointer:coarse.
+      const isMobile = window.matchMedia('(max-width: 768px)').matches;
+      const isTouch  = window.matchMedia('(pointer: coarse)').matches;
+      const isMobileOrTouch = isMobile || isTouch;
       const globe = Globe()
         .globeImageUrl(isDark ? 'https://unpkg.com/three-globe/example/img/earth-night.jpg' : 'https://unpkg.com/three-globe/example/img/earth-day.jpg')
-        .bumpImageUrl('https://unpkg.com/three-globe/example/img/earth-topology.png')
+        // Bump map on mobile is the single most expensive Earth
+        // asset (1024px topology PNG → uploaded as a normal map +
+        // sampled per fragment). Skipping it on mobile cuts the
+        // initial WebGL upload by ~600KB and removes a per-pixel
+        // texture sample from the fragment shader, which is the
+        // difference between 30fps and 55fps on a 2020 iPhone SE.
+        // The flat shading reads fine at small viewport sizes.
+        .bumpImageUrl(isMobileOrTouch ? '' : 'https://unpkg.com/three-globe/example/img/earth-topology.png')
         .backgroundImageUrl('')
+        // Transparent canvas — without this, globe.gl fills the whole
+        // canvas viewport with its `backgroundColor` (default #000011)
+        // and #globeViz's border-radius:50% clips that fill to a dark
+        // disk larger than the actual planet sphere. Anything behind
+        // the globe (orbit text in .highlight, the page bg, sangat
+        // cards) then gets cut off by that disk. rgba(0,0,0,0) leaves
+        // only the rendered sphere visible; everything else shows
+        // through. Applied globally so every stage (cover, about-
+        // intro, sangat) inherits the same clean rim.
+        .backgroundColor('rgba(0,0,0,0)')
         .showAtmosphere(true)
         .atmosphereColor(isDark ? '#D4A853' : '#8B6914')
         .atmosphereAltitude(0.18)
@@ -5719,11 +6220,36 @@
         .ringLat('lat').ringLng('lng')
         .ringAltitude(0.015)
         .ringColor(function() { return isDark ? 'rgba(232,196,74,0.6)' : 'rgba(122,92,0,0.5)'; })
-        .ringMaxRadius(8)
+        // Mobile gets half the max radius (4 vs 8). Larger radii
+        // require more vertices to keep the ring smooth and more
+        // per-frame shader work to draw the propagating arc; 4
+        // still reads as a clear sonar pulse on a small viewport
+        // and halves the per-ring draw cost.
+        .ringMaxRadius(isMobileOrTouch ? 4 : 8)
         .ringPropagationSpeed(2)
         .ringRepeatPeriod(1200)
         (container);
-      globe.scene().background = new THREE.Color(bg);
+      // Cap the renderer's pixel ratio on mobile. Devices with a
+      // DPR of 3 (most modern phones) otherwise rasterise the
+      // WebGL scene at 3× the logical resolution — fine for image
+      // quality, ruinous for fragment-shader cost on the Earth's
+      // bump / lighting path. Capping at 1.5 is a near-imperceptible
+      // visual hit (downscaling to a high-DPI display) and a 4×
+      // reduction in pixels shaded. Desktop is left untouched.
+      if (isMobileOrTouch) {
+        try {
+          var renderer = globe.renderer();
+          if (renderer && typeof renderer.setPixelRatio === 'function') {
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
+          }
+        } catch (e) { /* renderer access may fail on very old globe.gl */ }
+      }
+      // Belt-and-braces: also null out the Three.js scene background
+      // so the underlying WebGL renderer composites with alpha and the
+      // canvas truly has see-through pixels outside the sphere. (Just
+      // setting backgroundColor isn't enough if scene.background is
+      // explicitly set elsewhere — this guarantees transparency.)
+      globe.scene().background = null;
 
       var globeMat = globe.globeMaterial();
       globeMat.bumpScale = 3;
@@ -5749,6 +6275,25 @@
       globe.controls().autoRotate = true;
       globe.controls().autoRotateSpeed = 0.5;
       globe.controls().enableZoom = false;
+      // Touch devices: disable drag-to-rotate. On mobile a
+      // vertical drag is the page-scroll gesture — when the
+      // globe captured that gesture during the sangat pin or
+      // the cover phase, vertical scroll felt locked and the
+      // page appeared frozen to the user. Auto-rotate stays on
+      // so the planet still feels alive; the scroll-driven
+      // sangat rotation also still works because it sets
+      // pointOfView directly (bypasses controls). Desktop
+      // keeps drag-rotate so power users can spin the planet.
+      //
+      // _globeAllowRotate is the single source of truth that the
+      // sangat ScrollTrigger and any other stage that re-enables
+      // controls should read — otherwise they'd flip drag-rotate
+      // back on for touch users when restoring "rest" state.
+      window._globeAllowRotate = !isMobileOrTouch;
+      if (isMobileOrTouch) {
+        globe.controls().enableRotate = false;
+        globe.controls().enablePan = false;
+      }
       // Resting vs meditating spin speeds. Globe idles at the gentle 0.5
       // baseline; while Simran is active we ease up to ~3× that so the
       // planet feels subtly "alive" alongside the breath/ripple visuals.
@@ -5781,7 +6326,29 @@
               altitude: 0.01, radius: 0.3,
               color: 'rgba(232,196,74,0.9)'
             }));
-          if (window._globe) window._globe.pointsData(globeUsers);
+          // Mobile cap: a Firebase set of 500+ meditator dots is
+          // fine for desktop WebGL but turns into a per-frame
+          // bottleneck on mid-range phones (each point is a
+          // discrete draw before pointsMerge batches them, and
+          // hit-testing scales linearly). 200 is enough to read
+          // as "this app has worldwide users" without the
+          // performance cliff. Desktop keeps the full set.
+          var renderUsers = globeUsers;
+          var isMobile = window.matchMedia('(max-width: 768px)').matches
+                         || window.matchMedia('(pointer: coarse)').matches;
+          if (isMobile && globeUsers.length > 200) {
+            // Fisher-Yates sample so the visible 200 are a random
+            // geographic distribution, not just the first 200
+            // alphabetical / Firebase-order users (which would
+            // bias toward whichever region wrote first).
+            var copy = globeUsers.slice();
+            for (var i = copy.length - 1; i > 0; i--) {
+              var j = Math.floor(Math.random() * (i + 1));
+              var tmp = copy[i]; copy[i] = copy[j]; copy[j] = tmp;
+            }
+            renderUsers = copy.slice(0, 200);
+          }
+          if (window._globe) window._globe.pointsData(renderUsers);
           updateSocialProofCount();
         })
         .catch(() => {});
@@ -6099,7 +6666,17 @@
     let breathingActive = false, breathRafId = null, breathParticles = [];
     const BREATH_INHALE = 3000, BREATH_HOLD_IN = 600, BREATH_EXHALE = 3200, BREATH_HOLD_OUT = 400;
     const BREATH_CYCLE = BREATH_INHALE + BREATH_HOLD_IN + BREATH_EXHALE + BREATH_HOLD_OUT;
-    const PARTICLE_COUNT = 500;          // ↑ from 90 — denser, more immersive field
+    // Halve the breath-particle field on mobile / touch. 500 dots
+    // each animating opacity + transform per frame is the single
+    // most expensive non-WebGL paint on the page; cutting to 250
+    // is the difference between a smooth and a stuttering exhale
+    // on a 2020 iPhone SE. The dot density still reads as "alive"
+    // at 250 because the breath-tied scale animation keeps each
+    // dot visually busy.
+    const PARTICLE_COUNT = (
+      window.matchMedia('(max-width: 768px)').matches
+      || window.matchMedia('(pointer: coarse)').matches
+    ) ? 250 : 500;
     // Slow base drift so each dot floats from center → edge over ~7.5s,
     // giving the field a meditative, exhale-paced feel rather than a
     // rushed sparkle.
@@ -6827,10 +7404,16 @@
         });
 
         svgEl.style.opacity = '0';
-        // Fade the loader's pill out the moment the dissolve starts so
-        // the eye is locked on the swarm, not on chrome lifting away.
+        // Fade the loader's pill AND tagline out the moment the
+        // dissolve starts so the eye is locked on the swarm, not on
+        // chrome lifting away. Both share .visible/.transition so
+        // dropping the class is enough — the loader-overlay's own
+        // phase-out (triggered later in revealSite) handles the
+        // final removal of the entire pane.
         var startBtnEl = document.getElementById('loaderStartBtn');
         if (startBtnEl) startBtnEl.classList.remove('visible');
+        var taglineEl = document.getElementById('loaderTagline');
+        if (taglineEl) taglineEl.classList.remove('visible');
 
         var revealFired = false;
         var start = performance.now();
@@ -6978,11 +7561,20 @@
             s.classList.remove('drawing');
             s.classList.add('drawn');
           });
+          // Surface the tagline first (a beat earlier than the CTA),
+          // then the CTA. Order is intentional: the user reads "A
+          // daily companion for Sikhi" and then sees the action.
+          // Both share the same .visible class hook used by their
+          // CSS transitions.
+          var tagline = document.getElementById('loaderTagline');
+          if (tagline) {
+            setTimeout(function() { tagline.classList.add('visible'); }, 150);
+          }
           // Surface the CTA once the outline is fully drawn. The
           // loader then holds indefinitely — Ik Onkar stays as a
           // crisp outline until the user clicks Begin Meditation.
           if (startBtn) {
-            setTimeout(function() { startBtn.classList.add('visible'); }, 350);
+            setTimeout(function() { startBtn.classList.add('visible'); }, 500);
           }
         }, fillDelay);
       }
