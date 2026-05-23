@@ -2991,23 +2991,33 @@ video.immersive-bg {
 #headerbottom > .row {
   display: flex;
   flex-wrap: wrap;
-  align-items: flex-start;
+  align-items: stretch; /* both columns share the same height */
   gap: 0 40px;
 }
 
-/* Video column: shrink from Bootstrap's col-lg-4 (33%) to ~26% */
+/* Space between "About" title/hr and the bio content */
+#about #headerbottom > .row {
+  padding-top: 48px;
+}
+
+/* Video column: fixed width; height is driven by the text column */
 #headerbottom > .row > .col-lg-4 {
   flex: 0 0 26%;
   max-width: 26%;
   padding-left: 0;
   padding-right: 0;
+  overflow: hidden;          /* clips the video to the column height */
+  border-radius: var(--radius-lg);
 }
 
+/* Video fills the full column height and crops as needed */
 video.aboutimgbox {
   width: 100%;
-  height: auto;
+  height: 100%;
   display: block;
-  border-radius: var(--radius-lg);
+  object-fit: cover;         /* crop to fill; keeps subject centred */
+  object-position: 50% 20%; /* bias toward the top (head/flowers) */
+  border-radius: 0;          /* parent clips with border-radius */
 }
 
 /* Text column: take the remaining space */
@@ -3021,6 +3031,11 @@ video.aboutimgbox {
   #headerbottom > .row > .col-lg-13 {
     flex: 0 0 100%;
     max-width: 100%;
+    overflow: visible;
+  }
+  video.aboutimgbox {
+    height: auto;
+    object-fit: unset;
   }
 }
 
