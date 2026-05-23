@@ -11,16 +11,41 @@
   // a max timeout so the page is never permanently stuck behind the loader.
   var LOADER_MAX_MS = 3000;
   var heroAnimationTriggered = false;
+  // Pages with the dot-portrait intro (#hero-dot-stage) gate hero
+  // reveal on the `dot-bust:assembled` event instead of the legacy
+  // letter loader. We detect once at module load so every callback
+  // below can branch consistently.
+  var hasDotIntro = !!document.querySelector('#hero-dot-stage');
   function forceHideLoader() {
     var loader = document.querySelector('.page-loader');
     if (loader && !loader.classList.contains('loaded')) {
       loader.classList.add('loaded');
     }
+    // On the dot-portrait intro flow, the inline <head> script in
+    // index.html (window.__sohajRevealIntro) owns the reveal — don't
+    // pre-empt it from here, or the hero text will pop in before the
+    // dots have assembled.
+    if (hasDotIntro) {
+      if (typeof window.__sohajRevealIntro === 'function') {
+        try { window.__sohajRevealIntro(); } catch (e) { /* no-op */ }
+      }
+      return;
+    }
     if (!heroAnimationTriggered && typeof triggerHeroAnimation === 'function') {
       try { triggerHeroAnimation(); } catch (e) { /* no-op */ }
     }
   }
-  setTimeout(forceHideLoader, LOADER_MAX_MS);
+  // Skip the 3s legacy safety net on the dot-intro flow — the inline
+  // script in index.html has its own 5s safety net that's coordinated
+  // with the dot-bust:assembled event.
+  if (!hasDotIntro) {
+    setTimeout(forceHideLoader, LOADER_MAX_MS);
+  }
+
+  // Expose triggerHeroAnimation on window so the inline intro-reveal
+  // script in index.html can call it once dot-bust:assembled fires
+  // (it's defined later in this IIFE but hoisted by the function
+  // declaration; we publish it inside DOMContentLoaded below).
 
   document.addEventListener('DOMContentLoaded', function() {
     try { initPageLoader(); } catch (e) { forceHideLoader(); }
@@ -32,6 +57,7 @@
     try { initYouTubeAutoplay(); } catch (e) {}
     try { initWorkHorizontal(); } catch (e) {}
     try { initWorkCardLift(); } catch (e) {}
+    try { initIntroReveal(); } catch (e) {}
     // Portrait animation now controlled by typed.js in typewriter.js
     // initPortraitScrollAnimation();
   });
@@ -571,7 +597,76 @@
   function initPageLoader() {
     const loader = document.querySelector('.page-loader');
     const chars = document.querySelectorAll('.loader-char');
-    
+
+    // Dot-portrait intro path: the letter loader plays FIRST, then
+    // dispatches `loader:done`. dot-bust.js listens for that event and
+    // starts the dot assemble animation, which (when 75% complete)
+    // fires `dot-bust:assembled` and triggers the hero reveal. So the
+    // full intro sequence becomes:
+    //   1. letter loader visible
+    //   2. letters fade out, loader → .loaded
+    //   3. `loader:done` fires → dots begin assembling
+    //   4. `dot-bust:assembled` fires → hero text + nav blur-to-focus
+    if (hasDotIntro) {
+      // Wire the hero animation to fire when the dots have assembled
+      // (handled by the inline reveal script in index.html as well —
+      // this is a belt-and-braces hook in case animations.js loads
+      // before the inline script's listener is attached).
+      window.addEventListener('dot-bust:assembled', function () {
+        try { triggerHeroAnimation(); } catch (e) { /* no-op */ }
+      });
+
+      if (chars.length > 0) {
+        // Stagger fade in each letter.
+        chars.forEach(function (char, index) {
+          setTimeout(function () { char.classList.add('visible'); }, 150 + (index * 120));
+        });
+
+        const totalFadeInTime = 150 + (chars.length * 120) + 600;
+
+        setTimeout(function () {
+          // Fade out letters in reverse with stagger.
+          chars.forEach(function (char, index) {
+            setTimeout(function () { char.classList.add('fade-out'); }, index * 60);
+          });
+
+          // Once the letters have started leaving, mark the loader as
+          // .loaded (kicks off the overlay's fade) AND tell dot-bust
+          // it can begin assembling. Syncing the two so the dots fade
+          // in as the loader fades out makes the handoff seamless.
+          // We set `window.__sohajLoaderDone = true` BEFORE dispatching
+          // so dot-bust.js (whose listener might not yet be attached
+          // if buildAndRun is still awaiting GLB parse) can poll the
+          // flag inside its own setup and not miss the cue.
+          setTimeout(function () {
+            if (loader) loader.classList.add('loaded');
+            window.__sohajLoaderDone = true;
+            try {
+              window.dispatchEvent(new CustomEvent('loader:done'));
+            } catch (e) { /* no-op */ }
+          }, (chars.length * 60) + 200);
+        }, totalFadeInTime);
+      } else if (loader) {
+        // No chars to animate — fade the loader out quickly so dots
+        // can take over.
+        setTimeout(function () {
+          loader.classList.add('loaded');
+          window.__sohajLoaderDone = true;
+          try {
+            window.dispatchEvent(new CustomEvent('loader:done'));
+          } catch (e) { /* no-op */ }
+        }, 400);
+      } else {
+        // No loader element at all — dispatch immediately so dot-bust
+        // doesn't sit forever waiting on `loader:done`.
+        window.__sohajLoaderDone = true;
+        try {
+          window.dispatchEvent(new CustomEvent('loader:done'));
+        } catch (e) { /* no-op */ }
+      }
+      return;
+    }
+
     if (chars.length > 0) {
       // Stagger fade in each letter
       chars.forEach(function(char, index) {
@@ -624,6 +719,9 @@
       }, i * 120);
     });
   }
+  // Surface to the inline intro-reveal script in index.html so it can
+  // trigger the hero `.reveal` cascade once dot-bust:assembled fires.
+  window.triggerHeroAnimation = triggerHeroAnimation;
 
   /* ============================================
      PORTRAIT SCROLL ANIMATION
@@ -1117,6 +1215,109 @@
   initAchievementsParallax();
 
   /* ============================================
+     INTRO REVEAL — scroll-driven word fade-in
+     Splits the intro paragraph into per-word spans
+     and brightens them as the section scrolls past.
+     ============================================ */
+  function initIntroReveal() {
+    var section = document.getElementById('introReveal');
+    if (!section) return;
+    var el = section.querySelector('[data-intro-reveal]');
+    if (!el) return;
+
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      // CSS already lights up every word for reduced-motion users.
+      return;
+    }
+
+    // Split the paragraph text into <span class="intro-word"> per token,
+    // preserving whitespace as text nodes so layout flows naturally.
+    var rawText = el.textContent.trim();
+    el.innerHTML = '';
+    var words = [];
+    rawText.split(/(\s+)/).forEach(function (token) {
+      if (!token) return;
+      if (/^\s+$/.test(token)) {
+        el.appendChild(document.createTextNode(' '));
+      } else {
+        var span = document.createElement('span');
+        span.className = 'intro-word';
+        span.textContent = token;
+        el.appendChild(span);
+        words.push(span);
+      }
+    });
+    if (!words.length) return;
+
+    var total = words.length;
+    var lastActive = -1;
+    var ticking = false;
+    var inView = false;
+
+    function update() {
+      ticking = false;
+      var rect = section.getBoundingClientRect();
+      var vh = window.innerHeight || document.documentElement.clientHeight;
+
+      // Map scroll progress through the section to [0..1].
+      // Start: section top crosses 80% of viewport (just entering).
+      // End:   section bottom crosses 25% of viewport (well past center).
+      var startY = vh * 0.80;
+      var endY = vh * 0.25;
+      var span = startY - endY;
+      var progress = (startY - rect.top) / span;
+      if (progress < 0) progress = 0;
+      if (progress > 1) progress = 1;
+
+      // Slight ease-out so the last words don't lag visually.
+      var eased = 1 - Math.pow(1 - progress, 1.4);
+
+      // Number of words that should be active at this scroll position.
+      // We scale to total so the very last word lights only at full progress.
+      var activeCount = Math.round(eased * total);
+      if (activeCount === lastActive) return;
+
+      if (activeCount > lastActive) {
+        for (var i = Math.max(0, lastActive); i < activeCount && i < total; i++) {
+          words[i].classList.add('active');
+        }
+      } else {
+        for (var j = lastActive - 1; j >= activeCount && j >= 0; j--) {
+          if (words[j]) words[j].classList.remove('active');
+        }
+      }
+      lastActive = activeCount;
+    }
+
+    function onScroll() {
+      if (!inView || ticking) return;
+      ticking = true;
+      requestAnimationFrame(update);
+    }
+
+    // Only listen for scroll while the section is anywhere near the viewport.
+    if ('IntersectionObserver' in window) {
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          inView = entry.isIntersecting;
+          if (inView) {
+            requestAnimationFrame(update);
+          }
+        });
+      }, { rootMargin: '50% 0px 50% 0px', threshold: 0 });
+      io.observe(section);
+    } else {
+      inView = true;
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll, { passive: true });
+    // Run once on init so the correct initial state is set if the page
+    // loads with the section already partly in view.
+    requestAnimationFrame(update);
+  }
+
+  /* ============================================
      CUSTOM CURSOR (sikhAI-style)
      Smooth-trailing dot that grows on interactives
      ============================================ */
@@ -1124,48 +1325,44 @@
     if (window.matchMedia('(pointer: coarse)').matches) return;
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-    var dot = document.getElementById('cursorDot');
-    if (!dot) {
-      dot = document.createElement('div');
-      dot.className = 'cursor-dot';
-      dot.id = 'cursorDot';
-      document.body.appendChild(dot);
-    }
+    // The cursor dot is now rendered as a CSS `body::before` pseudo-element
+    // driven by CSS custom properties (--cdx / --cdy set in the rAF loop).
+    // Pseudo-elements are invisible to DevTools element-picker and to
+    // document.elementFromPoint(), so they can never block element inspection
+    // or intercept real click events — unlike a real DOM div at z-index 9998.
+    // Remove any legacy DOM cursor-dot that may exist from a prior render.
+    var legacyDot = document.getElementById('cursorDot');
+    if (legacyDot) legacyDot.remove();
 
     var mx = 0, my = 0, dx = 0, dy = 0;
-    var visible = false;
+    var body = document.body;
 
     document.addEventListener('mousemove', function (e) {
       mx = e.clientX;
       my = e.clientY;
-      if (!visible) {
-        dot.classList.add('visible');
-        visible = true;
-      }
+      body.classList.add('cursor-visible');
     }, { passive: true });
 
     document.addEventListener('mouseleave', function () {
-      dot.classList.remove('visible');
-      visible = false;
+      body.classList.remove('cursor-visible');
     });
 
     document.addEventListener('mouseenter', function () {
-      dot.classList.add('visible');
-      visible = true;
+      body.classList.add('cursor-visible');
     });
 
     document.addEventListener('mousedown', function () {
-      dot.classList.add('click');
+      body.classList.add('cursor-click');
     });
     document.addEventListener('mouseup', function () {
-      dot.classList.remove('click');
+      body.classList.remove('cursor-click');
     });
 
     function loop() {
       dx += (mx - dx) * 0.18;
       dy += (my - dy) * 0.18;
-      dot.style.left = dx + 'px';
-      dot.style.top = dy + 'px';
+      body.style.setProperty('--cdx', dx + 'px');
+      body.style.setProperty('--cdy', dy + 'px');
       requestAnimationFrame(loop);
     }
     requestAnimationFrame(loop);
@@ -1180,8 +1377,8 @@
     ].join(',');
 
     function bindHover(el) {
-      el.addEventListener('mouseenter', function () { dot.classList.add('hover'); });
-      el.addEventListener('mouseleave', function () { dot.classList.remove('hover'); });
+      el.addEventListener('mouseenter', function () { body.classList.add('cursor-hover'); });
+      el.addEventListener('mouseleave', function () { body.classList.remove('cursor-hover'); });
     }
 
     document.querySelectorAll(hoverSelector).forEach(bindHover);

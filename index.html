@@ -24,6 +24,53 @@
 
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  <!-- Intro reveal — set BEFORE first paint so the page never flashes
+       the unstyled / unblurred state. While `html.intro-loading` is
+       set, every visible element except the cover-portrait dot stage
+       is hidden behind a blur (see css/modern.css). dot-bust.js fires
+       `dot-bust:assembled` when the portrait has assembled; we then
+       swap to `html.intro-revealed` which triggers a 1.2s blur-to-
+       focus reveal on everything else. A 5s safety net guarantees the
+       page never stays stuck if dot-bust fails to load. -->
+  <script>
+    (function () {
+      document.documentElement.classList.add('intro-loading');
+      var revealed = false;
+      function reveal() {
+        if (revealed) return;
+        revealed = true;
+        // Explicitly mark the page-loader as done so .page-loader.loaded
+        // takes effect regardless of whether the JS animation chain ran.
+        // This is the safety-net: even if initPageLoader() in animations.js
+        // never fires its setTimeout chain, the page-loader is hidden here.
+        var loader = document.querySelector('.page-loader');
+        if (loader) loader.classList.add('loaded');
+        document.documentElement.classList.remove('intro-loading');
+        document.documentElement.classList.add('intro-revealed');
+        // Activate any hero `.reveal` elements (animations.js exposes
+        // `triggerHeroAnimation`; fall back to a manual pass if it
+        // hasn't loaded yet).
+        if (typeof window.triggerHeroAnimation === 'function') {
+          try { window.triggerHeroAnimation(); } catch (e) { /* no-op */ }
+        } else {
+          document.querySelectorAll('header .reveal').forEach(function (el, i) {
+            setTimeout(function () { el.classList.add('active'); }, i * 120);
+          });
+        }
+      }
+      window.__sohajRevealIntro = reveal;
+      window.addEventListener('dot-bust:assembled', reveal);
+      // Hard safety net: if dot-bust never fires (e.g. WebGL blocked,
+      // GLB fails to load, etc.) reveal anyway so the page is always
+      // usable. 12s gives enough headroom even on slow connections
+      // for the 11 MB GLB + three.js to download + the 2.6s assemble
+      // animation to play out before this preempts the dot-bust:
+      // assembled event.
+      setTimeout(reveal, 12000);
+    })();
+  </script>
+
   <title>Sohaj Singh Brar | UX Designer</title>
   <meta name="description" content="Staff Product Designer with 11+ years of experience leading AI-powered monetization at Meta (WhatsApp Business, Partnership Ads, Advantage+ Creative). Previously Oracle, Monotype, and Help-Full. ~$1B in estimated business value.">
   <meta name="keywords" content="Sohaj, Singh, Brar, SohajBrar, SohajSinghBrar, UX Design, User, Experience, Human, Computer, Interaction, Design, User research, Monotype, Indian, Institute, technology, UX Guy, Interface, Roorkee">
@@ -41,7 +88,7 @@
   <link rel="stylesheet" href="css/style.css" />
   
   <!-- Modern Elegant Theme -->
-  <link rel="stylesheet" href="css/modern.css?v=20260510i" />
+  <link rel="stylesheet" href="css/modern.css?v=20260523b" />
   
   <!-- AI Chat Widget -->
   <link rel="stylesheet" href="css/chat.css" />
@@ -49,9 +96,20 @@
   
   <link rel="shortcut icon" href="img/favicon2.png">
   
-  <!-- Preload Critical Assets -->
-  <link rel="preload" href="img/state1.jpg" as="image">
-  <link rel="preload" href="css/modern.css?v=20260510i" as="style">
+  <!-- Preload Critical Assets — the cover-portrait dot bust is the
+       single most important visual element on the page, so we kick
+       off downloads for the GLB, three.js, and the cover photo right
+       at the top of the head. The browser starts fetching them in
+       parallel with the rest of the HTML/CSS, so by the time
+       dot-bust.js (deferred) runs they're already cached. Without
+       these preloads, the GLB (~11 MB) is requested only after every
+       deferred script before it has executed, which on slower
+       connections pushes the dot portrait past the intro safety net
+       and reveals the rest of the page before the portrait is up. -->
+  <link rel="preload" href="img/cover_sohaj_simple.png" as="image">
+  <link rel="preload" href="img/Meshy_AI_Sohaj.glb" as="fetch" type="model/gltf-binary">
+  <link rel="preload" href="https://unpkg.com/three@0.158.0/build/three.min.js" as="script" crossorigin="anonymous">
+  <link rel="preload" href="css/modern.css?v=20260523b" as="style">
   
   <!-- Google Fonts - DM Sans -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -116,7 +174,7 @@ document.addEventListener('DOMContentLoaded', function () {
   <script defer src="js/typed.js"></script>
   <script defer src="js/loader.js"></script>
   <script defer src="js/image.js"></script>
-  <script defer src="js/typewriter.js"></script>
+  <script defer src="js/typewriter.js?v=20260518m"></script>
   <!-- Removed duplicate jQuery - using CDN version from head -->
   <!-- Navigation -->
   <nav class="navbar navbar-default navbar-fixed-top">
@@ -163,45 +221,24 @@ document.addEventListener('DOMContentLoaded', function () {
       <div class="hero-text">
         <div id="typed-strings">
           <p>Hi! I'm <span class="text-accent">Sohaj.</span></p>
+          <p>Your AI <span class="text-accent">expert.</span></p>
           <p>I help teams <span class="text-accent">grow.</span></p>
           <p>I design for <span class="text-accent">impact.</span></p>
           <p>I simplify <span class="text-accent">complexity.</span></p>
         </div>
         <span id="typed"></span>
         <br>
-        <div class="reveal stagger-2">
-          <p class="hero-description">
-            Currently at Meta, leading end-to-end UX for WhatsApp Business — and previously Partnership Ads and Advantage+ Creative GenAI. Earlier, redesigned Oracle's Supply Chain solutions and launched 0-to-1 products at Monotype.
-          </p>
-        </div>
-        <br>
-        <div class="hero-chat-trigger reveal stagger-3">
-          <form class="hero-chat-form" id="hero-chat-form">
-            <input 
-              type="text" 
-              class="hero-chat-input-field" 
-              id="hero-chat-input" 
-              placeholder="Ask me anything..."
-              autocomplete="off"
-            />
-            <button type="submit" class="hero-chat-send" id="hero-chat-send" aria-label="Send message">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                <path d="M3.4 20.4l17.45-7.48c.81-.35.81-1.49 0-1.84L3.4 3.6c-.66-.29-1.39.2-1.39.91L2 9.12c0 .5.37.93.87.99L17 12 2.87 13.88c-.5.07-.87.5-.87 1l.01 4.61c0 .71.73 1.2 1.39.91z"/>
-              </svg>
-            </button>
-          </form>
-        </div>
+        <p class="hero-description reveal stagger-2">
+          Currently at WhatsApp, scaling businesses across the world. Previously helped
+          double YoY growth for Partnership ads and mainstreamed GenAI for ad creation.
+          Earlier, redesigned Oracle&rsquo;s Supply Chain solutions and launched 0-to-1
+          products at Monotype.
+        </p>
       </div>
-      
-      <!-- Right: Hero Image with Scroll Animation -->
+
+      <!-- Right: dot-portrait column -->
       <div class="hero-image reveal stagger-4">
-        <div class="portrait-container">
-          <img src="img/state1.jpg" alt="Sohaj Singh Brar" class="portrait-state portrait-state1 active" />
-          <video src="img/money.mp4" class="portrait-state portrait-state-impact" muted playsinline></video>
-          <img src="img/simple.jpg" alt="Sohaj Singh Brar - Simplify" class="portrait-state portrait-state-simple" />
-          <video src="img/grow.mp4" class="portrait-state portrait-state2" muted playsinline></video>
-          <img src="img/state3.jpg" alt="Sohaj Singh Brar - Expression 3" class="portrait-state portrait-state3" />
-        </div>
+        <div id="hero-dot-stage" aria-hidden="true"></div>
       </div>
     </div>
     
@@ -264,6 +301,17 @@ document.addEventListener('DOMContentLoaded', function () {
     document.querySelector(".logos").appendChild(copy);
   </script>
   </div>
+
+  <!-- Intro Reveal — scroll-driven word-by-word fade-in statement -->
+  <section class="intro-reveal" id="introReveal" aria-label="Sohaj — at a glance">
+    <div class="intro-reveal-inner">
+      <p class="intro-reveal-text" data-intro-reveal>Currently at WhatsApp, scaling businesses across the world. Previously helped double YoY growth for Partnership ads and mainstreamed GenAI for ad creation. Earlier, redesigned Oracle&rsquo;s Supply Chain solutions and launched 0&#8209;to&#8209;1 products at Monotype.</p>
+    </div>
+  </section>
+
+  <!-- (Previously: "Particle Bust" section. The dot portrait has moved
+       into the cover/hero — it now overlays cover_sohaj_simple.png in
+       the .portrait-container — so this standalone section is gone.) -->
 
   <!-- Ask Sohaj AI — second entry-point for the floating chat widget.
        Submitting this form (or clicking a chip) opens the chat panel
@@ -1062,7 +1110,14 @@ document.addEventListener('DOMContentLoaded', function () {
   <script defer src="js/freelancer.js"></script>
   
   <!-- Modern Animations -->
-  <script src="js/animations.js?v=20260510i" defer></script>
+  <script src="js/animations.js?v=20260522s" defer></script>
+
+  <!-- Hero portrait dot field (Three.js, lazy-loaded inside the script) -->
+  <script src="js/dots-portrait.js?v=20260510k" defer></script>
+
+  <!-- Particle bust section — kodee.no-style assembling 3D dot portrait -->
+  <script src="js/dot-bust.js?v=20260523d" defer></script>
+  <script src="js/hero-bg.js?v=20260518a" defer></script>
 
   <!-- AI Chat Widget -->
   <script src="js/chat.js" defer></script>

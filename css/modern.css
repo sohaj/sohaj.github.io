@@ -246,28 +246,43 @@ p {
    ============================================ */
 
 .navbar.navbar-default {
-  background: rgba(10, 10, 10, 0.95) !important;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  z-index: 1000 !important; /* Ensure navbar stays on top */
+  /* Fully transparent at the top of the page so the nav floats over
+     the cover-wide dot portrait + wisp atmosphere without painting a
+     dark bar across it. The shrink state below still gets a soft
+     background once the user has scrolled past the hero, where a
+     readable backdrop matters for contrast. */
+  background: transparent !important;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  z-index: 1000 !important;
+  /* Always keep the navbar and its links interactive — no other rule
+     should ever override this. The intro-loading opacity/blur visually
+     hides the nav during the letter-loader phase without needing to
+     disable pointer events. */
+  pointer-events: auto !important;
   border: none !important;
-  border-bottom: 1px solid var(--color-border-light) !important;
   padding: 0 !important;
   margin: 0 !important;
   transition: all 0.4s var(--ease-smooth), transform 0.3s var(--ease-out) !important;
 }
 
+.navbar.navbar-default * {
+  pointer-events: auto !important;
+}
+
 [data-theme="light"] .navbar.navbar-default {
-  background: rgba(255, 255, 255, 0.95) !important;
+  background: transparent !important;
 }
 
 .navbar.navbar-default.navbar-shrink {
-  background: rgba(10, 10, 10, 0.98) !important;
+  background: rgba(10, 10, 10, 0.92) !important;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   box-shadow: var(--shadow-md);
 }
 
 [data-theme="light"] .navbar.navbar-default.navbar-shrink {
-  background: rgba(255, 255, 255, 0.98) !important;
+  background: rgba(255, 255, 255, 0.95) !important;
 }
 
 /* Navbar container - edge to edge with consistent padding matching hero */
@@ -735,17 +750,136 @@ body.menu-open {
 
 header#headerImg {
   position: relative;
-  min-height: 100vh;
+  /* Cover always fills exactly one viewport — never shorter, never
+     taller. `min-height` allowed the section to be shorter on some
+     viewport sizes (Safari-style toolbar collapse, content rounding,
+     etc.), which left a visible dark band of the next section
+     poking up under the cover. Using `height` locks the cover at
+     100vh so the dot portrait + headline always own a full screen
+     and the logos band only appears AFTER the user scrolls. */
+  height: 100vh;
   display: flex;
   align-items: center;
   background: var(--color-bg) !important;
   overflow: hidden;
   padding: 0;
+  /* The hero cover is purely visual — the fixed navbar sits above it
+     and must always receive pointer events. Setting none here ensures
+     no child element (hero-wrapper, hero-image, dot stage) can ever
+     accidentally intercept clicks meant for the nav links. The dot
+     portrait interaction uses window-level pointermove listeners so
+     it works fine regardless of this setting. */
+  pointer-events: none;
+  /* CSS variables driven by js/hero-bg.js — they smooth-track the
+     pointer position over the hero, expressed as a 0–100 percentage
+     of the hero's bounding box. The ::before layer uses them to
+     anchor a soft wisp at the cursor; the ::after layer drifts on
+     its own as an ambient backdrop. Defaults keep the wisp gently
+     off-center for any device that never reports a pointer. */
+  --hero-mx: 62%;
+  --hero-my: 38%;
 }
 
+/* Background wisp layers — heavily blurred, low-opacity radial
+   gradients in the theme's accent palette (green + cool teals). They
+   sit BEHIND the hero content (z-index 1 on header children below)
+   so the dot portrait and hero text always read on top. */
 header#headerImg::before,
 header#headerImg::after {
-  display: none;
+  content: '';
+  display: block;
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Mouse-following primary wisp. Two stacked gradients: a brighter
+   teal-green near the cursor, plus a dimmer counter-wisp on the
+   diagonal opposite so the composition stays balanced regardless of
+   where the cursor sits. The heavy blur is what gives it the
+   "smoke" feel rather than a sharp spotlight. */
+header#headerImg::before {
+  background:
+    radial-gradient(45% 60% at var(--hero-mx) var(--hero-my),
+      rgba(74, 222, 128, 0.085) 0%,
+      rgba(74, 222, 128, 0.038) 25%,
+      rgba(74, 222, 128, 0.012) 50%,
+      transparent 72%),
+    radial-gradient(35% 50% at calc(100% - var(--hero-mx)) calc(100% - var(--hero-my)),
+      rgba(60, 170, 200, 0.06) 0%,
+      transparent 65%);
+  filter: blur(48px);
+  /* Smooth-track the cursor position even if rAF in js/hero-bg.js
+     misses a frame on slower devices. */
+  transition: background 0.18s ease-out;
+}
+
+/* Ambient drifting wisps — independent of the cursor, just gives the
+   hero a slow living quality. translate+scale on a single layer is
+   cheap and never triggers layout. */
+header#headerImg::after {
+  background:
+    radial-gradient(55% 70% at 25% 75%,
+      rgba(38, 90, 110, 0.10) 0%,
+      transparent 58%),
+    radial-gradient(50% 60% at 78% 22%,
+      rgba(70, 130, 150, 0.075) 0%,
+      transparent 58%),
+    radial-gradient(40% 50% at 50% 50%,
+      rgba(74, 222, 128, 0.025) 0%,
+      transparent 70%);
+  filter: blur(70px);
+  animation: hero-bg-drift 28s ease-in-out infinite;
+  will-change: transform;
+}
+
+@keyframes hero-bg-drift {
+  0%, 100% { transform: translate3d(0%, 0%, 0)   scale(1.00); }
+  33%      { transform: translate3d(3%, -2%, 0)  scale(1.04); }
+  66%      { transform: translate3d(-2%, 3%, 0)  scale(1.04); }
+}
+
+/* Lift the actual hero content above the wisp layers AND the
+   cover-wide dot portrait. Stack order inside the hero:
+     ::before  (wisp)     z-index 0
+     ::after   (wisp)     z-index 0
+     #hero-dot-stage      z-index 1   (dots)
+     .hero-wrapper        z-index 2   (headline + description)
+   Without this lift the text would sit underneath the dots. */
+header#headerImg > .hero-wrapper {
+  position: relative;
+  z-index: 2;
+}
+
+[data-theme="light"] header#headerImg::before {
+  background:
+    radial-gradient(45% 60% at var(--hero-mx) var(--hero-my),
+      rgba(22, 163, 74, 0.10) 0%,
+      rgba(22, 163, 74, 0.04) 25%,
+      transparent 70%),
+    radial-gradient(35% 50% at calc(100% - var(--hero-mx)) calc(100% - var(--hero-my)),
+      rgba(40, 120, 150, 0.06) 0%,
+      transparent 65%);
+}
+
+[data-theme="light"] header#headerImg::after {
+  background:
+    radial-gradient(55% 70% at 25% 75%,
+      rgba(180, 200, 220, 0.20) 0%,
+      transparent 58%),
+    radial-gradient(50% 60% at 78% 22%,
+      rgba(200, 220, 230, 0.16) 0%,
+      transparent 58%),
+    radial-gradient(40% 50% at 50% 50%,
+      rgba(22, 163, 74, 0.04) 0%,
+      transparent 70%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  header#headerImg::after {
+    animation: none;
+  }
 }
 
 /* Hero Two-Column Wrapper - edge to edge with consistent padding */
@@ -759,10 +893,23 @@ header#headerImg::after {
   padding-left: 5%;
   padding-right: 5%;
   display: grid;
-  grid-template-columns: 1.4fr 1fr;
+  /* Portrait column gets slightly more room than the text column so
+     the dot portrait can render larger without overflowing the cover.
+     Was 1.4fr 1fr (text 58% / portrait 42%) — that bottlenecked the
+     stage at ~360px wide on a 1024 viewport, capping the visible
+     bust regardless of how much vh we gave it. 1fr 1.15fr gives the
+     portrait ~54% of the row, which translates to ~20–25% bigger
+     visible bust + photo overlay (both scale together because they
+     share #hero-dot-stage as their container). */
+  grid-template-columns: 1fr 1.15fr;
   gap: 60px;
   align-items: center;
-  min-height: 100vh;
+  /* Match the locked 100vh on header#headerImg above. `min-height`
+     used to leave the wrapper free to shrink, which on some viewport
+     sizes caused the dot portrait to sit higher than expected with
+     dead space below it. Locking at exact 100vh keeps the grid
+     vertically centered inside a known box. */
+  height: 100vh;
   box-sizing: border-box;
 }
 
@@ -777,9 +924,12 @@ header#headerImg::after {
 .hero-description {
   font-size: 1.125rem !important;
   color: var(--color-text-secondary) !important;
-  max-width: 700px;
+  max-width: 640px;
   line-height: 1.7 !important;
-  margin: 0;
+  /* Sit between the typewriter headline and the chat input with
+     comfortable breathing room. Headline → 24px gap → description →
+     32px gap → chat input. */
+  margin: 24px 0 32px;
 }
 
 /* Hero Image */
@@ -787,11 +937,17 @@ header#headerImg::after {
   position: relative;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-end;
+  transform: translateX(6%);
   height: 100%;
   background: transparent !important;
   border: none !important;
   box-shadow: none !important;
+  /* The dot stage inside this column handles all interaction via
+     window-level pointermove listeners. The column div itself must be
+     non-interactive so it never intercepts clicks intended for the
+     fixed navbar, which sits above the right-column area. */
+  pointer-events: none;
 }
 
 .hero-image img {
@@ -819,6 +975,28 @@ header#headerImg::after {
   border: none;
   outline: none;
   box-shadow: none;
+}
+
+/* Rounded rectangular frame around the portrait — a phone-shaped
+   outline that sits behind the credentials chips but in front of the
+   page background. Stroke is a soft translucent white in dark mode
+   and a soft black in light mode. */
+.portrait-frame {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  height: 78vh;
+  max-height: 78vh;
+  aspect-ratio: 9 / 16;
+  border: 1.5px solid rgba(255, 255, 255, 0.28);
+  border-radius: 56px;
+  pointer-events: none;
+  z-index: 3;
+}
+
+[data-theme="light"] .portrait-frame {
+  border-color: rgba(0, 0, 0, 0.18);
 }
 
 .portrait-state,
@@ -861,20 +1039,170 @@ img.portrait-state {
   z-index: 5;
 }
 
-.portrait-state-impact {
-  z-index: 4;
+/* Hero dot-bust stage — replaces .portrait-state1 img in the cover.
+   Sized to occupy the same box that cover_sohaj_simple.png used to
+   render in (height 80vh, aspect = source PNG 1780/2054 ≈ 0.866), so
+   the dots that dot-bust.js renders inside it line up exactly with
+   where the photo used to be. dot-bust.js injects a <canvas> and a
+   masked <img class="particle-bust-photo"> inside this stage, both
+   absolutely positioned to fill it. */
+#hero-dot-stage {
+  position: relative;
+  width: 100%;
+  height: 95vh;
+  max-width: 100%;
+  max-height: 95vh;
+  background: transparent;
+  border-radius: 24px;
+  overflow: hidden;
+  pointer-events: none;
+  touch-action: none;
 }
 
-.portrait-state-simple {
-  z-index: 3;
+/* The WebGL canvas dot-bust.js injects sits inside #hero-dot-stage.
+   Belt-and-braces: even though the parent is pointer-events: none, we
+   pin the canvas to none too so a stray `pointer-events: auto` reset
+   never leaks back in and steals navbar clicks. */
+#hero-dot-stage > canvas,
+#hero-dot-stage > .particle-bust-photo {
+  pointer-events: none !important;
+}
+
+/* Neutralise any legacy `.hero-image img` constraints (max-height,
+   object-fit: contain) so the dot-bust photo overlay fills the stage
+   100% × 100% and overlays the dot canvas 1:1. */
+#hero-dot-stage > .particle-bust-photo {
+  max-width: none !important;
+  max-height: none !important;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: 50% 50% !important;
 }
 
 .portrait-state2 {
   z-index: 2;
 }
 
-.portrait-state3 {
-  z-index: 1;
+/* ============================================
+   FLOATING CREDENTIALS — small chips arranged
+   around the portrait, only fade in when the
+   typewriter is on "I design for impact." or
+   "I simplify complexity." (driven by the
+   .with-logos class on .portrait-container).
+   ============================================ */
+.portrait-logos {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.portrait-logo {
+  position: absolute;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--color-text);
+  font-family: var(--font-display, inherit);
+  font-weight: 500;
+  font-size: 1.1rem;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.7s var(--ease-out, cubic-bezier(0.16, 1, 0.3, 1)),
+              transform 0.7s var(--ease-out, cubic-bezier(0.16, 1, 0.3, 1));
+  will-change: opacity, transform;
+}
+
+.portrait-logo img {
+  height: 26px;
+  width: auto;
+  object-fit: contain;
+  display: block;
+  /* keep brand marks neutral — let the wordmark next to them carry color */
+  filter: brightness(0) invert(1);
+  opacity: 0.92;
+}
+
+/* When active, fade the chips in with a soft cascade */
+.portrait-container.with-logos .portrait-logo {
+  opacity: 0.95;
+  transform: translateY(0);
+}
+
+.portrait-container.with-logos .portrait-logo--money     { transition-delay: 0.05s; }
+.portrait-container.with-logos .portrait-logo--whatsapp  { transition-delay: 0.15s; }
+.portrait-container.with-logos .portrait-logo--meta      { transition-delay: 0.25s; }
+.portrait-container.with-logos .portrait-logo--instagram { transition-delay: 0.35s; }
+.portrait-container.with-logos .portrait-logo--fastco    { transition-delay: 0.45s; }
+.portrait-container.with-logos .portrait-logo--monotype  { transition-delay: 0.55s; }
+
+/* Per-chip positions — roughly match the reference screenshot */
+.portrait-logo--money {
+  top: 6%;
+  right: -4%;
+  font-size: clamp(1.15rem, 1.5vw, 1.5rem);
+  color: var(--color-text-secondary);
+  font-weight: 500;
+}
+
+.portrait-logo--whatsapp {
+  top: 30%;
+  left: -14%;
+  color: rgba(255, 255, 255, 0.85);
+}
+.portrait-logo--whatsapp img {
+  /* keep the WhatsApp green badge intact */
+  filter: none;
+  height: 28px;
+  opacity: 1;
+}
+
+.portrait-logo--meta {
+  top: 22%;
+  right: -2%;
+  color: rgba(255, 255, 255, 0.85);
+  gap: 8px;
+}
+.portrait-logo--meta img {
+  height: 22px;
+}
+
+.portrait-logo--instagram {
+  top: 56%;
+  left: -12%;
+}
+.portrait-logo--instagram img {
+  height: 38px;
+  filter: none;
+  opacity: 0.95;
+}
+
+.portrait-logo--fastco {
+  bottom: 14%;
+  left: -8%;
+}
+.portrait-logo--fastco img {
+  height: 24px;
+  opacity: 0.85;
+}
+
+.portrait-logo--monotype {
+  bottom: 16%;
+  right: -6%;
+  font-size: clamp(1.2rem, 1.6vw, 1.55rem);
+  font-weight: 600;
+  color: var(--color-text);
+}
+/* The Monotype mark is the wordmark itself — hide the imported logo image
+   and let the styled text carry the brand. */
+.portrait-logo--monotype img { display: none; }
+
+/* Hide the floating chips on small screens — too cramped to read. */
+@media (max-width: 991px) {
+  .portrait-logos { display: none; }
 }
 
 /* Hero Typography */
@@ -936,12 +1264,18 @@ img.portrait-state {
     max-height: 50vh;
     height: 50vh;
   }
-  
+
   .portrait-container {
     height: 50vh;
     max-height: 50vh;
   }
-  
+
+  .portrait-frame {
+    height: 48vh;
+    max-height: 48vh;
+    border-radius: 40px;
+  }
+
   .hero-description {
     margin: 0 auto;
   }
@@ -963,12 +1297,18 @@ img.portrait-state {
     max-height: 50vh;
     height: 50vh;
   }
-  
+
   .portrait-container {
     height: 50vh;
     max-height: 50vh;
   }
-  
+
+  .portrait-frame {
+    height: 48vh;
+    max-height: 48vh;
+    border-radius: 36px;
+  }
+
   #typed {
     font-size: clamp(2rem, 8vw, 3rem) !important;
   }
@@ -2642,6 +2982,48 @@ video.immersive-bg {
   padding: 12px !important;
 }
 
+/* ============================================
+   ABOUT PAGE — bio layout
+   Make the portrait video column narrow enough
+   so the video's natural height (portrait ratio)
+   equals the text block's height.
+   ============================================ */
+#headerbottom > .row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 0 40px;
+}
+
+/* Video column: shrink from Bootstrap's col-lg-4 (33%) to ~26% */
+#headerbottom > .row > .col-lg-4 {
+  flex: 0 0 26%;
+  max-width: 26%;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+video.aboutimgbox {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: var(--radius-lg);
+}
+
+/* Text column: take the remaining space */
+#headerbottom > .row > .col-lg-13 {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+@media (max-width: 991px) {
+  #headerbottom > .row > .col-lg-4,
+  #headerbottom > .row > .col-lg-13 {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+}
+
 .aboutimgbox {
   background: transparent !important;
   border: none !important;
@@ -3110,6 +3492,140 @@ footer .col-lg-12 {
 .loader-char.fade-out {
   opacity: 0;
   transform: translateY(-40px);
+}
+
+/* ============================================
+   INTRO REVEAL — dot portrait first, then everything else
+   blurs into focus.
+
+   Flow:
+     • Inline <script> in <head> sets `html.intro-loading` before first
+       paint.
+     • Everything visible EXCEPT the cover-portrait dot stage is hidden
+       behind a heavy blur + zero opacity while `intro-loading` is set.
+     • dot-bust.js dispatches `dot-bust:assembled` once the dot portrait
+       has finished assembling; the inline script swaps the class to
+       `intro-revealed`, and the rules below run a 1.2s blur-to-focus
+       reveal on everything else (including the nav bar).
+     • Page-loader (the legacy letter loader) is suppressed entirely —
+       the dot portrait IS the loading state now.
+   ============================================ */
+/* Intro flow: the "Sohaj" letter loader IS the first state. It paints
+   fullscreen (z-index 99999) over everything while the letters stagger
+   in and out, then fades out via its own `.loaded` class. The fade-out
+   is when we dispatch `loader:done` from animations.js, which tells
+   dot-bust.js to start the assemble animation in sync. After
+   dot-bust:assembled fires, the rest of the page reveals (intro-
+   revealed CSS below). So:
+     html.intro-loading        →  letter loader visible, everything
+                                   else hidden behind blur, dots not
+                                   yet assembling.
+     html.intro-loading + loader.loaded  →  letter loader fading out,
+                                            dots begin assembling.
+     html.intro-revealed       →  loader gone, dots assembled, hero
+                                   text + nav fading from blur to focus.
+*/
+
+/* We CANNOT just `opacity: 0` everything outside the dot stage,
+   because opacity composes through descendants — fading the hero
+   wrapper would fade the dot stage along with it. So we target each
+   peer element we want hidden specifically, leaving the chain from
+   <header> down through .portrait-container un-faded so the dots
+   render at full opacity inside an otherwise blurred page. */
+/* Nav is intentionally excluded from pointer-events: none here.
+   It is transparent/blurred during loading so it is effectively
+   invisible, but keeping it pointer-events: auto ensures it is
+   always clickable once revealed and eliminates any risk of the
+   intro-revealed swap failing to re-enable it. */
+html.intro-loading nav.navbar {
+  opacity: 0;
+  filter: blur(24px);
+  transition: none;
+}
+
+html.intro-loading .mobile-menu-overlay,
+html.intro-loading .hero-text,
+html.intro-loading .floating-chat,
+html.intro-loading .ai-chat-launcher,
+html.intro-loading #sohaj-ai-chat,
+html.intro-loading #sohaj-ai-launcher,
+html.intro-loading footer,
+html.intro-loading body > section,
+html.intro-loading body > div:not(.page-loader):not([id^="sohaj-ai"]) {
+  opacity: 0;
+  filter: blur(24px);
+  pointer-events: none;
+  transition: none;
+}
+
+/* The letter loader is the FIRST visible state — make sure it sits on
+   top of everything else (which it already does via z-index: 99999)
+   and isn't accidentally caught by the `body > div` blur rule above
+   (it's not, because of the `:not(.page-loader)` exclusion, but this
+   keeps the intent explicit and survives future refactors).
+   IMPORTANT: scope to `:not(.loaded)` — once the JS animation chain
+   adds `.loaded`, this rule must NOT override `.page-loader.loaded`
+   (which sets opacity:0, visibility:hidden, pointer-events:none).
+   Without `:not(.loaded)`, the specificity of `html.intro-loading .page-loader`
+   (1,1,0) beats `.page-loader.loaded` (0,2,0), keeping the loader at
+   opacity:1 and pointer-events:auto — an invisible but fully click-
+   blocking overlay that makes the entire home page unclickable. */
+html.intro-loading .page-loader:not(.loaded) {
+  opacity: 1;
+  filter: none;
+  pointer-events: auto;
+}
+
+/* Belt-and-braces: once the intro is revealed, the page-loader must
+   NEVER intercept pointer events regardless of whether .loaded was
+   successfully added by the JS animation chain. */
+html.intro-revealed .page-loader {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+/* Reveal state — flip the same elements back on with a soft
+   blur-to-focus transition. Nav slightly faster so it lands first. */
+html.intro-revealed nav.navbar,
+html.intro-revealed .mobile-menu-overlay,
+html.intro-revealed .hero-text,
+html.intro-revealed .floating-chat,
+html.intro-revealed .ai-chat-launcher,
+html.intro-revealed #sohaj-ai-chat,
+html.intro-revealed #sohaj-ai-launcher,
+html.intro-revealed footer,
+html.intro-revealed body > section,
+html.intro-revealed body > div:not(.page-loader):not([id^="sohaj-ai"]) {
+  opacity: 1;
+  filter: blur(0);
+  pointer-events: auto;
+  /* Shortened 1.2s → 0.8s so the page feels alive sooner once the
+     dot portrait has assembled. Combined with dot-bust.js firing
+     `dot-bust:assembled` at 50% of the assemble window (down from
+     75%), the full intro now lands ~1.4s sooner than before. */
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+              filter  0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+html.intro-revealed nav.navbar {
+  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+              filter  0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.intro-revealed nav.navbar,
+  html.intro-revealed .mobile-menu-overlay,
+  html.intro-revealed .hero-text,
+  html.intro-revealed .floating-chat,
+  html.intro-revealed .ai-chat-launcher,
+  html.intro-revealed #sohaj-ai-chat,
+  html.intro-revealed #sohaj-ai-launcher,
+  html.intro-revealed footer,
+  html.intro-revealed body > section,
+  html.intro-revealed body > div:not(.page-loader):not([id^="sohaj-ai"]) {
+    transition: none;
+  }
 }
 
 /* ============================================
@@ -3923,10 +4439,21 @@ header#headerImg > .hero-wrapper > .hero-text {
    CUSTOM CURSOR (sikhAI-style)
    Smooth-trailing dot with mix-blend-mode
    ============================================ */
-.cursor-dot {
+/* Custom cursor implemented as a body::before pseudo-element so it is
+   invisible to DevTools element-picker (pseudo-elements are not returned
+   by elementFromPoint / the inspector), fixing the issue where the old
+   DOM div at z-index 9998 was always selected instead of real content.
+   Position is driven by CSS custom properties --cdx / --cdy set in the
+   rAF loop inside animations.js. */
+body {
+  --cdx: -200px;
+  --cdy: -200px;
+}
+body::before {
+  content: '';
   position: fixed;
-  top: 0;
-  left: 0;
+  left: var(--cdx);
+  top: var(--cdy);
   z-index: 9998;
   width: 10px;
   height: 10px;
@@ -3935,32 +4462,270 @@ header#headerImg > .hero-wrapper > .hero-text {
   pointer-events: none;
   transform: translate(-50%, -50%);
   transition:
-    width 0.25s var(--ease-out),
+    width  0.25s var(--ease-out),
     height 0.25s var(--ease-out),
     opacity 0.25s,
     background 0.25s;
   opacity: 0;
   mix-blend-mode: difference;
-  will-change: transform, left, top;
+  will-change: left, top;
 }
-.cursor-dot.visible { opacity: 1; }
-.cursor-dot.hover {
-  width: 48px;
-  height: 48px;
-}
-.cursor-dot.click {
-  width: 6px;
-  height: 6px;
-}
+body.cursor-visible::before { opacity: 1; }
+body.cursor-hover::before   { width: 48px; height: 48px; }
+body.cursor-click::before   { width: 6px;  height: 6px;  }
 
-/* Hide on touch devices */
+/* Legacy DOM element — hidden so any cached HTML doesn't show a stale dot */
+.cursor-dot { display: none !important; }
+
+/* Hide on touch devices or reduced motion */
 @media (pointer: coarse) {
-  .cursor-dot { display: none; }
+  body::before { display: none !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+  body::before { display: none !important; }
 }
 
-/* Respect reduced motion */
+
+/* ============================================
+   INTRO REVEAL — scroll-driven word-by-word
+   fade-in statement that lives between the logo
+   strip and the Ask Sohaj AI section. Each word
+   starts muted and brightens as the section
+   scrolls through the viewport.
+   ============================================ */
+
+.intro-reveal {
+  padding: clamp(96px, 14vh, 180px) 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 70vh;
+  position: relative;
+  overflow: hidden;
+}
+
+.intro-reveal-inner {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 clamp(20px, 5vw, 64px);
+  position: relative;
+  z-index: 2;
+}
+
+.intro-reveal-text {
+  font-size: clamp(1.75rem, 3.6vw, 3rem);
+  line-height: 1.4;
+  font-weight: 500;
+  letter-spacing: -0.015em;
+  margin: 0;
+  color: var(--color-text-muted);
+}
+
+.intro-reveal-text .intro-word {
+  display: inline-block;
+  color: var(--color-text-muted);
+  transition: color 0.35s var(--ease-out, ease-out),
+              opacity 0.35s var(--ease-out, ease-out);
+  opacity: 0.55;
+  will-change: color, opacity;
+}
+
+.intro-reveal-text .intro-word.active {
+  color: var(--color-text);
+  opacity: 1;
+}
+
+@media (max-width: 767px) {
+  .intro-reveal {
+    padding: 64px 0;
+    min-height: auto;
+  }
+  .intro-reveal-text {
+    font-size: clamp(1.35rem, 5vw, 1.85rem);
+    line-height: 1.45;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .cursor-dot { display: none; }
+  .intro-reveal-text .intro-word {
+    opacity: 1;
+    color: var(--color-text);
+    transition: none;
+  }
+}
+
+/* ======================================================================
+   Particle Bust — kodee.no-inspired full-bleed assembling dot portrait.
+   The stage is the canvas host; dot-bust.js creates the <canvas> inside.
+   ====================================================================== */
+.particle-bust {
+  position: relative;
+  background: #08080a;
+  color: #eae8d8;
+  overflow: hidden;
+  padding: clamp(80px, 12vh, 160px) 0 clamp(40px, 6vh, 80px);
+  isolation: isolate;
+}
+
+.particle-bust::before,
+.particle-bust::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+.particle-bust::before {
+  background:
+    radial-gradient(60% 60% at 50% 45%, rgba(255, 255, 255, 0.035), transparent 70%);
+}
+.particle-bust::after {
+  /* very subtle vertical pinstripe, like kodee.no's background grid */
+  background-image:
+    repeating-linear-gradient(90deg,
+      rgba(255, 255, 255, 0.025) 0,
+      rgba(255, 255, 255, 0.025) 1px,
+      transparent 1px,
+      transparent 64px);
+  opacity: 0.6;
+}
+
+.particle-bust-inner {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 clamp(20px, 5vw, 64px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.particle-bust-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(234, 232, 216, 0.6);
+  margin-bottom: 18px;
+}
+.particle-bust-spark {
+  display: inline-block;
+  color: rgba(234, 232, 216, 0.85);
+  transform: translateY(-1px);
+}
+
+.particle-bust-title {
+  font-size: clamp(2rem, 4.6vw, 3.4rem);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  margin: 0 0 14px;
+  color: #eae8d8;
+}
+
+.particle-bust-subtitle {
+  font-size: clamp(0.98rem, 1.4vw, 1.1rem);
+  font-weight: 400;
+  line-height: 1.55;
+  color: rgba(234, 232, 216, 0.55);
+  max-width: 540px;
+  margin: 0 0 clamp(32px, 5vh, 56px);
+}
+
+.particle-bust-stage {
+  position: relative;
+  width: 100%;
+  max-width: 920px;
+  aspect-ratio: 4 / 5;
+  /* The phone-frame look from the screenshot: a tall rounded rectangle
+     with a soft inner glow. The photo + canvas sit inside this frame. */
+  border-radius: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.03),
+    0 60px 120px -40px rgba(0, 0, 0, 0.6);
+  background:
+    radial-gradient(70% 70% at 50% 40%, rgba(255, 255, 255, 0.025), transparent 70%);
+  overflow: hidden;
+  touch-action: none;
+  cursor: crosshair;
+}
+
+/* The portrait photo lives inside the stage in both modes. JS drives the
+   --mx / --my CSS variables to the cursor's stage-local position; the
+   mode-specific mask uses them to reveal or conceal the photo:
+
+   • .depth-mode — photo visible at rest, mask CARVES a disk at the cursor
+                   so dots can spill out of the hole.
+   • .mesh-mode  — photo HIDDEN at rest, mask REVEALS a disk at the cursor
+                   so the photograph emerges as the bust opens up.
+*/
+.particle-bust-photo {
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  transition: opacity 250ms ease;
+}
+
+/* Intro state: photo visible up-front before dots assemble.
+   Strips the hover mask entirely so the portrait is fully revealed.
+   JS removes this class once assembly finishes, restoring the
+   normal hover-reveal behaviour. */
+.particle-bust-photo.intro-visible {
+  -webkit-mask-image: none !important;
+  mask-image: none !important;
+  opacity: 1;
+}
+
+.particle-bust-photo.depth-mode {
+  -webkit-mask-image:
+    radial-gradient(circle at var(--mx, -9999px) var(--my, -9999px),
+      transparent 0,
+      transparent var(--hole-in, 0px),
+      #000 var(--hole-out, 0px));
+  mask-image:
+    radial-gradient(circle at var(--mx, -9999px) var(--my, -9999px),
+      transparent 0,
+      transparent var(--hole-in, 0px),
+      #000 var(--hole-out, 0px));
+}
+
+.particle-bust-photo.mesh-mode {
+  -webkit-mask-image:
+    radial-gradient(circle at var(--mx, -9999px) var(--my, -9999px),
+      #000 0,
+      #000 var(--reveal-in, 0px),
+      transparent var(--reveal-out, 0px));
+  mask-image:
+    radial-gradient(circle at var(--mx, -9999px) var(--my, -9999px),
+      #000 0,
+      #000 var(--reveal-in, 0px),
+      transparent var(--reveal-out, 0px));
+}
+
+@media (max-width: 767px) {
+  .particle-bust {
+    padding: 64px 0 32px;
+  }
+  .particle-bust-stage {
+    aspect-ratio: 3 / 4;
+    border-radius: 20px;
+  }
+  .particle-bust-title {
+    font-size: clamp(1.6rem, 7vw, 2.2rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .particle-bust-stage {
+    display: none;
+  }
 }
 
 
