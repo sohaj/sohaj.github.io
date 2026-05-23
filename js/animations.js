@@ -1260,10 +1260,10 @@
       var vh = window.innerHeight || document.documentElement.clientHeight;
 
       // Map scroll progress through the section to [0..1].
-      // Start: section top crosses 80% of viewport (just entering).
-      // End:   section bottom crosses 25% of viewport (well past center).
-      var startY = vh * 0.80;
-      var endY = vh * 0.25;
+      // Start: section top crosses 50% of viewport (mid-screen).
+      // End:   section bottom crosses 10% of viewport (almost past).
+      var startY = vh * 0.50;
+      var endY = vh * 0.10;
       var span = startY - endY;
       var progress = (startY - rect.top) / span;
       if (progress < 0) progress = 0;
