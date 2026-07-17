@@ -413,11 +413,15 @@ document.addEventListener('DOMContentLoaded', function () {
         // eslint-disable-next-line no-unused-expressions
         modal.offsetHeight;
         modal.classList.add('is-open');
+        // Lock scroll — same pattern as the Sikhai page.
         document.body.classList.add('sohaj-ai-modal-open');
+        document.body.style.overflow = 'hidden';
         setTimeout(function() {
           var input = $('sohaj-ai-modal-input');
-          if (input) input.focus();
-        }, 220);
+          // preventScroll stops the browser from scrolling to the element's
+          // document position (the modal HTML sits near the bottom of the DOM).
+          if (input) input.focus({ preventScroll: true });
+        }, 400);
       }
 
       function closeModal() {
@@ -425,9 +429,12 @@ document.addEventListener('DOMContentLoaded', function () {
         if (!modal) return;
         modal.classList.remove('is-open');
         document.body.classList.remove('sohaj-ai-modal-open');
+        document.body.style.overflow = '';
         setTimeout(function() {
           modal.hidden = true;
-          if (lastFocusedEl && lastFocusedEl.focus) lastFocusedEl.focus();
+          if (lastFocusedEl && lastFocusedEl.focus) {
+            lastFocusedEl.focus({ preventScroll: true });
+          }
         }, 240);
       }
 
@@ -510,18 +517,30 @@ document.addEventListener('DOMContentLoaded', function () {
           });
         }
 
-        // Modal-internal wiring
-        var modalForm  = $('sohaj-ai-modal-form');
-        var modalInput = $('sohaj-ai-modal-input');
-        var modalChips = document.querySelectorAll('.sohaj-ai-modal-chip');
+        // Modal-internal wiring — mirrors the Sikhai page pattern:
+        // click handler on the button + keydown on the input.
+        // No <form> submit is involved so there is no risk of page navigation.
+        var modalInput   = $('sohaj-ai-modal-input');
+        var modalSendBtn = $('sohaj-ai-modal-send');
+        var modalChips   = document.querySelectorAll('.sohaj-ai-modal-chip');
 
-        if (modalForm && modalInput) {
-          modalForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            var text = modalInput.value.trim();
-            if (!text) return;
-            modalInput.value = '';
-            sendToAI(text);
+        function modalSend() {
+          if (!modalInput) return;
+          var text = modalInput.value.trim();
+          if (!text) return;
+          modalInput.value = '';
+          sendToAI(text);
+        }
+
+        if (modalSendBtn) {
+          modalSendBtn.addEventListener('click', modalSend);
+        }
+        if (modalInput) {
+          modalInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              modalSend();
+            }
           });
         }
 
@@ -1203,16 +1222,16 @@ document.addEventListener('DOMContentLoaded', function () {
         <button type="button" class="sohaj-ai-modal-chip" data-prompt="Why did you become a designer?">Why design?</button>
       </div>
 
-      <form class="sohaj-ai-modal-input-bar" id="sohaj-ai-modal-form" autocomplete="off">
+      <div class="sohaj-ai-modal-input-bar">
         <input class="sohaj-ai-modal-input" id="sohaj-ai-modal-input" type="text"
                placeholder="Ask a follow-up…"
                aria-label="Ask Sohaj's AI assistant" />
-        <button class="sohaj-ai-modal-send" type="submit" id="sohaj-ai-modal-send" aria-label="Send">
+        <button class="sohaj-ai-modal-send" type="button" id="sohaj-ai-modal-send" aria-label="Send">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true">
             <path fill="#fff" d="M3.4 20.4l17.45-7.48c.81-.35.81-1.49 0-1.84L3.4 3.6c-.66-.29-1.39.2-1.39.91L2 9.12c0 .5.37.93.87.99L17 12 2.87 13.88c-.5.07-.87.5-.87 1l.01 4.61c0 .71.73 1.2 1.39.91z"/>
           </svg>
         </button>
-      </form>
+      </div>
     </div>
   </div>
 
