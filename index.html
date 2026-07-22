@@ -88,7 +88,7 @@
   <link rel="stylesheet" href="css/style.css" />
   
   <!-- Modern Elegant Theme -->
-  <link rel="stylesheet" href="css/modern.css?v=20260523b" />
+  <link rel="stylesheet" href="css/modern.css?v=20260722" />
   
   <!-- AI Chat Widget -->
   <link rel="stylesheet" href="css/chat.css" />
@@ -109,7 +109,7 @@
   <link rel="preload" href="img/cover_sohaj_simple.png" as="image">
   <link rel="preload" href="img/Meshy_AI_Sohaj.glb" as="fetch" type="model/gltf-binary">
   <link rel="preload" href="https://unpkg.com/three@0.158.0/build/three.min.js" as="script" crossorigin="anonymous">
-  <link rel="preload" href="css/modern.css?v=20260523b" as="style">
+  <link rel="preload" href="css/modern.css?v=20260722" as="style">
   
   <!-- Google Fonts - DM Sans -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -404,38 +404,39 @@ document.addEventListener('DOMContentLoaded', function () {
         return row;
       }
 
+      var isModalClosing = false;
+
       function openModal() {
         var modal = $('sohaj-ai-modal');
-        if (!modal) return;
+        if (!modal || modal.open) return;
+        isModalClosing = false;
         lastFocusedEl = document.activeElement;
-        modal.hidden = false;
-        // Force reflow so the open transition runs even when toggling rapidly.
-        // eslint-disable-next-line no-unused-expressions
+        // showModal() places the element in the browser's top layer —
+        // immune to any CSS filter/transform containing-block issues.
+        modal.showModal();
+        // Force reflow so the opacity transition starts from 0.
         modal.offsetHeight;
         modal.classList.add('is-open');
-        // Lock scroll — same pattern as the Sikhai page.
-        document.body.classList.add('sohaj-ai-modal-open');
-        document.body.style.overflow = 'hidden';
+        document.documentElement.style.overflow = 'hidden';
         setTimeout(function() {
           var input = $('sohaj-ai-modal-input');
-          // preventScroll stops the browser from scrolling to the element's
-          // document position (the modal HTML sits near the bottom of the DOM).
           if (input) input.focus({ preventScroll: true });
-        }, 400);
+        }, 300);
       }
 
       function closeModal() {
         var modal = $('sohaj-ai-modal');
-        if (!modal) return;
+        if (!modal || !modal.open || isModalClosing) return;
+        isModalClosing = true;
         modal.classList.remove('is-open');
-        document.body.classList.remove('sohaj-ai-modal-open');
-        document.body.style.overflow = '';
+        document.documentElement.style.overflow = '';
         setTimeout(function() {
-          modal.hidden = true;
+          modal.close();
+          isModalClosing = false;
           if (lastFocusedEl && lastFocusedEl.focus) {
             lastFocusedEl.focus({ preventScroll: true });
           }
-        }, 240);
+        }, 280);
       }
 
       function hideSuggestions() {
@@ -552,15 +553,21 @@ document.addEventListener('DOMContentLoaded', function () {
         });
 
         // Close affordances: × button, backdrop click, Escape key.
-        document.querySelectorAll('[data-ai-modal-close]').forEach(function(el) {
-          el.addEventListener('click', closeModal);
-        });
-        document.addEventListener('keydown', function(e) {
-          var modal = $('sohaj-ai-modal');
-          if (e.key === 'Escape' && modal && modal.classList.contains('is-open')) {
+        var modalEl = $('sohaj-ai-modal');
+        if (modalEl) {
+          // × close button
+          modalEl.querySelector('.sohaj-ai-modal-close').addEventListener('click', closeModal);
+          // Clicking on the <dialog> element itself (outside the card = backdrop)
+          modalEl.addEventListener('click', function(e) {
+            if (e.target === modalEl) closeModal();
+          });
+          // Escape key fires 'cancel' on <dialog> before closing it natively.
+          // We intercept to run our animated close instead.
+          modalEl.addEventListener('cancel', function(e) {
+            e.preventDefault();
             closeModal();
-          }
-        });
+          });
+        }
       }
 
       if (document.readyState === 'loading') {
@@ -1197,8 +1204,7 @@ document.addEventListener('DOMContentLoaded', function () {
        chat-card aesthetic, opened from the
        "Ask anything about me" section).
        ───────────────────────────────────────── -->
-  <div class="sohaj-ai-modal" id="sohaj-ai-modal" role="dialog" aria-modal="true" aria-labelledby="sohaj-ai-modal-title" hidden>
-    <div class="sohaj-ai-modal-backdrop" data-ai-modal-close></div>
+  <dialog class="sohaj-ai-modal" id="sohaj-ai-modal" aria-labelledby="sohaj-ai-modal-title">
     <div class="sohaj-ai-modal-card" role="document">
       <header class="sohaj-ai-modal-header">
         <img src="img/about9.jpg" alt="Sohaj" class="sohaj-ai-modal-avatar" loading="lazy">
@@ -1233,7 +1239,7 @@ document.addEventListener('DOMContentLoaded', function () {
         </button>
       </div>
     </div>
-  </div>
+  </dialog>
 
 </body>
 
