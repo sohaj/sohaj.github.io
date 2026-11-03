@@ -874,7 +874,7 @@
 
     .stats-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(4, 1fr);
       gap: 32px;
       text-align: center;
     }
@@ -1663,7 +1663,7 @@
       .hero p { margin: 0 auto 28px; font-size: 0.95rem; max-width: 100%; }
       .hero-actions { justify-content: center; }
       .hero-globe .globe-container { max-width: 340px; margin: 0 auto; }
-      .stats-grid { grid-template-columns: repeat(3, 1fr); gap: 16px; }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 16px; }
       .stat-item h3 { font-size: 1.8rem; }
       .features-header { padding: 40px 24px 0; }
       .highlight-card { padding: 40px 24px; }
@@ -2542,12 +2542,16 @@
     <div class="container">
       <div class="stats-grid">
         <div class="stat-item fade-up">
-          <h3><span data-count="20000" data-suffix="K+" data-divide="1000">0</span></h3>
+          <h3><span data-count="50000" data-suffix="K+" data-divide="1000">0</span></h3>
           <p data-i18n="statDownloads">Downloads</p>
         </div>
         <div class="stat-item fade-up">
           <h3>&#9733; <span data-count="50" data-suffix="" data-divide="10" data-decimals="1">0</span></h3>
           <p data-i18n="statRating">Play Store Rating</p>
+        </div>
+        <div class="stat-item fade-up">
+          <h3><span data-count="21" data-suffix="K+" data-divide="10" data-decimals="1">0</span></h3>
+          <p data-i18n="statReviews">Play Store Reviews</p>
         </div>
         <div class="stat-item fade-up">
           <h3 data-i18n="statFree">Free</h3>
@@ -2826,7 +2830,7 @@
         <div class="proof-avatar" style="background:#DAA520">H</div>
         <div class="proof-avatar" style="background:#7A5C00">D</div>
       </div>
-      <div class="proof-text" data-i18n="proofText">Join <span>20,000+</span> Sikhs worldwide</div>
+      <div class="proof-text" data-i18n="proofText">Join <span>50,000+</span> Sikhs worldwide</div>
       <div class="proof-sub" data-i18n="proofSub">Growing every day through the power of Sangat</div>
     </div>
   </section>
@@ -2955,7 +2959,7 @@
     <div class="container">
       <div class="cta-inner fade-up">
         <h2 data-i18n="ctaTitle">Begin your journey today</h2>
-        <p data-i18n="ctaDesc">Join 20,000+ Sikhs who start their day with Hukamnama, Gurbani, and Simran through Sikh AI.</p>
+        <p data-i18n="ctaDesc">Join 50,000+ Sikhs who start their day with Hukamnama, Gurbani, and Simran through Sikh AI.</p>
         <div class="qr-section">
           <a href="https://play.google.com/store/apps/details?id=com.anhadapp" class="btn-primary shine-border" id="ctaDownloadBtn" target="_blank" rel="noopener">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M3.609 1.814L13.792 12 3.61 22.186a.996.996 0 01-.61-.92V2.734a1 1 0 01.609-.92zm10.89 10.893l2.302 2.302-10.937 6.333 8.635-8.635zm3.199-3.199l2.807 1.626a1 1 0 010 1.732l-2.807 1.626L15.206 12l2.492-2.492zM5.864 2.658L16.8 8.99l-2.302 2.302-8.634-8.634z"/></svg>
@@ -3095,7 +3099,7 @@
       en: {
         heroBadge: 'Souls meditating today', heroTitle: 'Meditate with Sikhs<br>', heroSikhi: 'across the world',
         heroDesc: 'Each glowing dot is a Sikh meditating right now. Press Begin Meditation, close your eyes, and repeat \u201CWaheguru\u201D with each breath \u2014 you\u2019ll appear on the globe too.',
-        statDownloads: 'Downloads', statRating: 'Play Store Rating', statFree: 'Free', statNoAds: 'No Ads, No Fees',
+        statDownloads: 'Downloads', statRating: 'Play Store Rating', statReviews: 'Play Store Reviews', statFree: 'Free', statNoAds: 'No Ads, No Fees',
         screenshotsLabel: '\u25C6 See it in Action', screenshotsTitle: 'Designed with care,<br>built for your daily practice',
         hukamnamaLabel: '\u25C6 Live from Sri Darbar Sahib', hukamnamaTitle: "Today's Hukamnama",
         hukamnamaLoading: "Loading today's Hukamnama...", hukamnamaCta: 'Read Full Hukamnama in App',
@@ -3103,7 +3107,7 @@
         featuresLabel: '\u25C6 Features', featuresTitle: 'Everything for your<br>Sikhi journey',
         featuresSubtitle: 'A thoughtfully designed app that brings the richness of Gurbani and Sikh traditions to your fingertips.',
         reviewsLabel: '\u25C6 Reviews', reviewsTitle: 'Loved by the Sangat',
-        proofText: 'Join <span>20,000+</span> Sikhs worldwide', proofSub: 'Growing every day through the power of Sangat',
+        proofText: 'Join <span>50,000+</span> Sikhs worldwide', proofSub: 'Growing every day through the power of Sangat',
         blogLabel: '\u25C6 Learn', blogTitle: 'Explore Sikhi', blogSubtitle: 'Deepen your understanding of Sikh traditions and daily practice.',
         blog1Title: 'What is Hukamnama?',
         blog1Text: 'Hukamnama is the daily divine order read from Sri Guru Granth Sahib Ji at Sri Darbar Sahib, Amritsar. Every morning, the Granthi Singh opens the Holy Scripture at random and reads the first shabad on the left page. This becomes the Hukam (command) for the entire Sikh community for that day. It offers spiritual guidance, comfort, and direction for daily life. Sikh AI delivers this Hukamnama to your phone every morning with full Gurmukhi text, English translation, and meaning.',
@@ -3120,7 +3124,7 @@
         blog7Title: 'What is Sewa in Sikhi?',
         blog7Text: 'Sewa (selfless service) is one of the three pillars of Sikhi, alongside Naam Japna (meditation) and Vand Chakna (sharing). It means serving others without expectation of reward. From langar (community kitchen) to community cleanups, Sewa is practiced daily by Sikhs worldwide. Guru Nanak Dev Ji taught that serving humanity is serving God. Sikh AI\u2019s Sewa Pulse feature highlights active volunteer opportunities and trusted Sikh-led NGOs where you can contribute.',
         captureTitle: 'Stay connected', captureDesc: 'Get notified when new features drop. No spam, only updates.', captureBtn: 'Notify Me',
-        ctaTitle: 'Begin your journey today', ctaDesc: 'Join 20,000+ Sikhs who start their day with Hukamnama, Gurbani, and Simran through Sikh AI.',
+        ctaTitle: 'Begin your journey today', ctaDesc: 'Join 50,000+ Sikhs who start their day with Hukamnama, Gurbani, and Simran through Sikh AI.',
         ctaBtn: 'Download on Google Play', qrLabel: 'Scan to download',
         aboutText: 'Discover the ultimate spiritual companion for the modern Gursikh. Sikh AI bridges the gap between the timeless wisdom of Gurbani and cutting-edge technology to keep you connected, informed, and grounded. Whether it is receiving the Daily Hukamnama from Sri Darbar Sahib or completing your Nitnem with high-quality audio, Sikh AI ensures your daily practice is seamless. With Chardikala AI, the world\u2019s first dedicated AI mentor for the Sikh community, designed to answer your questions and deepen your understanding of the Panth. Join a global Sangat on our real-time meditation globe, where you can see and meditate alongside thousands of Sikhs across the world. With Sikh AI, your spiritual journey is no longer solitary; it is a shared, high-tech experience built with deep reverence for the Khalsa.',
         aiLabel: '\u2728 Spiritual AI Guide', aiTitle: 'Ask anything about Sikhi',
@@ -3141,7 +3145,7 @@
       pa: {
         heroBadge: '\u0A05\u0A71\u0A1C \u0A38\u0A3F\u0A2E\u0A30\u0A28 \u0A15\u0A30\u0A28 \u0A35\u0A3E\u0A32\u0A47 \u0A30\u0A42\u0A39\u0A3E\u0A02', heroTitle: '\u0A38\u0A3F\u0A71\u0A16\u0A3E\u0A02 \u0A28\u0A3E\u0A32 \u0A38\u0A3F\u0A2E\u0A30\u0A28 \u0A15\u0A30\u0A4B<br>', heroSikhi: '\u0A2A\u0A42\u0A30\u0A40 \u0A26\u0A41\u0A28\u0A40\u0A06 \u0A28\u0A3E\u0A32',
         heroDesc: '\u0A39\u0A30 \u0A1A\u0A2E\u0A15\u0A26\u0A3E \u0A2C\u0A3F\u0A70\u0A26\u0A42 \u0A07\u0A71\u0A15 \u0A38\u0A3F\u0A71\u0A16 \u0A39\u0A48 \u0A1C\u0A4B \u0A39\u0A41\u0A23\u0A47 \u0A38\u0A3F\u0A2E\u0A30\u0A28 \u0A15\u0A30 \u0A30\u0A3F\u0A39\u0A3E \u0A39\u0A48\u0964 \u0A38\u0A3F\u0A2E\u0A30\u0A28 \u0A36\u0A41\u0A30\u0A42 \u0A15\u0A30\u0A4B, \u0A05\u0A71\u0A16\u0A3E\u0A02 \u0A2C\u0A70\u0A26 \u0A15\u0A30\u0A4B, \u0A24\u0A47 \u0A39\u0A30 \u0A38\u0A3E\u0A39 \u0A28\u0A3E\u0A32 \u201C\u0A35\u0A3E\u0A39\u0A3F\u0A17\u0A41\u0A30\u0A42\u201D \u0A1C\u0A2A\u0A4B \u2014 \u0A24\u0A41\u0A38\u0A40\u0A02 \u0A35\u0A40 \u0A17\u0A4D\u0A32\u0A4B\u0A2C \u0A24\u0A47 \u0A26\u0A3F\u0A16\u0A4B\u0A17\u0A47\u0964',
-        statDownloads: '\u0A21\u0A3E\u0A0A\u0A28\u0A32\u0A4B\u0A21\u0A38', statRating: 'Play Store \u0A30\u0A47\u0A1F\u0A3F\u0A70\u0A17', statFree: '\u0A2E\u0A41\u0A2B\u0A3C\u0A24', statNoAds: '\u0A15\u0A4B\u0A08 \u0A07\u0A36\u0A24\u0A3F\u0A39\u0A3E\u0A30 \u0A28\u0A39\u0A40\u0A02',
+        statDownloads: '\u0A21\u0A3E\u0A0A\u0A28\u0A32\u0A4B\u0A21\u0A38', statRating: 'Play Store \u0A30\u0A47\u0A1F\u0A3F\u0A70\u0A17', statReviews: 'Play Store \u0A38\u0A2E\u0A40\u0A16\u0A3F\u0A06\u0A35\u0A3E\u0A02', statFree: '\u0A2E\u0A41\u0A2B\u0A3C\u0A24', statNoAds: '\u0A15\u0A4B\u0A08 \u0A07\u0A36\u0A24\u0A3F\u0A39\u0A3E\u0A30 \u0A28\u0A39\u0A40\u0A02',
         screenshotsLabel: '\u25C6 \u0A10\u0A2A \u0A26\u0A47\u0A16\u0A4B', screenshotsTitle: '\u0A2A\u0A3F\u0A06\u0A30 \u0A28\u0A3E\u0A32 \u0A21\u0A3F\u0A1C\u0A3C\u0A3E\u0A07\u0A28 \u0A15\u0A40\u0A24\u0A3E',
         hukamnamaLabel: '\u25C6 \u0A38\u0A4D\u0A30\u0A40 \u0A26\u0A30\u0A2C\u0A3E\u0A30 \u0A38\u0A3E\u0A39\u0A3F\u0A2C \u0A24\u0A4B\u0A02', hukamnamaTitle: '\u0A05\u0A71\u0A1C \u0A26\u0A3E \u0A39\u0A41\u0A15\u0A2E\u0A28\u0A3E\u0A2E\u0A3E',
         hukamnamaLoading: '\u0A39\u0A41\u0A15\u0A2E\u0A28\u0A3E\u0A2E\u0A3E \u0A32\u0A4B\u0A21 \u0A39\u0A4B \u0A30\u0A3F\u0A39\u0A3E \u0A39\u0A48...', hukamnamaCta: '\u0A10\u0A2A \u0A35\u0A3F\u0A71\u0A1A \u0A2A\u0A42\u0A30\u0A3E \u0A39\u0A41\u0A15\u0A2E\u0A28\u0A3E\u0A2E\u0A3E \u0A2A\u0A5C\u0A4B',
@@ -3149,7 +3153,7 @@
         featuresLabel: '\u25C6 \u0A2B\u0A3C\u0A40\u0A1A\u0A30\u0A1C\u0A3C', featuresTitle: '\u0A24\u0A41\u0A39\u0A3E\u0A21\u0A40 \u0A38\u0A3F\u0A71\u0A16\u0A40 \u0A2F\u0A3E\u0A24\u0A30\u0A3E \u0A32\u0A08<br>\u0A38\u0A2D \u0A15\u0A41\u0A1D',
         featuresSubtitle: '\u0A07\u0A71\u0A15 \u0A38\u0A4B\u0A1A-\u0A38\u0A2E\u0A1D \u0A15\u0A47 \u0A21\u0A3F\u0A1C\u0A3C\u0A3E\u0A07\u0A28 \u0A15\u0A40\u0A24\u0A40 \u0A10\u0A2A \u0A1C\u0A4B \u0A17\u0A41\u0A30\u0A2C\u0A3E\u0A23\u0A40 \u0A05\u0A24\u0A47 \u0A38\u0A3F\u0A71\u0A16 \u0A30\u0A35\u0A3E\u0A07\u0A24\u0A3E\u0A02 \u0A28\u0A42\u0A70 \u0A24\u0A41\u0A39\u0A3E\u0A21\u0A47 \u0A39\u0A71\u0A25 \u0A35\u0A3F\u0A71\u0A1A \u0A32\u0A3F\u0A06\u0A02\u0A26\u0A40 \u0A39\u0A48\u0964',
         reviewsLabel: '\u25C6 \u0A30\u0A3F\u0A35\u0A3F\u0A0A\u0A1C\u0A3C', reviewsTitle: '\u0A38\u0A70\u0A17\u0A24 \u0A26\u0A41\u0A06\u0A30\u0A3E \u0A2A\u0A3F\u0A06\u0A30\u0A3E',
-        proofText: '<span>20,000+</span> \u0A38\u0A3F\u0A71\u0A16\u0A3E\u0A02 \u0A28\u0A3E\u0A32 \u0A1C\u0A41\u0A5C\u0A4B', proofSub: '\u0A38\u0A70\u0A17\u0A24 \u0A26\u0A40 \u0A24\u0A3E\u0A15\u0A24 \u0A28\u0A3E\u0A32 \u0A39\u0A30 \u0A30\u0A4B\u0A1C\u0A3C \u0A35\u0A27 \u0A30\u0A3F\u0A39\u0A3E \u0A39\u0A48',
+        proofText: '<span>50,000+</span> \u0A38\u0A3F\u0A71\u0A16\u0A3E\u0A02 \u0A28\u0A3E\u0A32 \u0A1C\u0A41\u0A5C\u0A4B', proofSub: '\u0A38\u0A70\u0A17\u0A24 \u0A26\u0A40 \u0A24\u0A3E\u0A15\u0A24 \u0A28\u0A3E\u0A32 \u0A39\u0A30 \u0A30\u0A4B\u0A1C\u0A3C \u0A35\u0A27 \u0A30\u0A3F\u0A39\u0A3E \u0A39\u0A48',
         blogLabel: '\u25C6 \u0A38\u0A3F\u0A71\u0A16\u0A4B', blogTitle: '\u0A38\u0A3F\u0A71\u0A16\u0A40 \u0A2C\u0A3E\u0A30\u0A47 \u0A1C\u0A3E\u0A23\u0A4B', blogSubtitle: '\u0A38\u0A3F\u0A71\u0A16 \u0A30\u0A35\u0A3E\u0A07\u0A24\u0A3E\u0A02 \u0A05\u0A24\u0A47 \u0A30\u0A4B\u0A1C\u0A3C\u0A3E\u0A28\u0A3E \u0A05\u0A2D\u0A3F\u0A06\u0A38 \u0A28\u0A42\u0A70 \u0A21\u0A42\u0A70\u0A18\u0A3E \u0A38\u0A2E\u0A1D\u0A4B\u0964',
         blog1Title: '\u0A39\u0A41\u0A15\u0A2E\u0A28\u0A3E\u0A2E\u0A3E \u0A15\u0A40 \u0A39\u0A48?',
         blog2Title: '\u0A28\u0A3F\u0A24\u0A28\u0A47\u0A2E \u0A15\u0A3F\u0A35\u0A47\u0A02 \u0A15\u0A30\u0A40\u0A0F?',
@@ -3160,7 +3164,7 @@
         blog7Title: '\u0A38\u0A3F\u0A71\u0A16\u0A40 \u0A35\u0A3F\u0A71\u0A1A \u0A38\u0A47\u0A35\u0A3E \u0A15\u0A40 \u0A39\u0A48?',
         captureTitle: '\u0A1C\u0A41\u0A5C\u0A47 \u0A30\u0A39\u0A4B', captureDesc: '\u0A28\u0A35\u0A47\u0A02 \u0A2B\u0A3C\u0A40\u0A1A\u0A30 \u0A06\u0A09\u0A23 \u0A24\u0A47 \u0A38\u0A42\u0A1A\u0A28\u0A3E \u0A2A\u0A4D\u0A30\u0A3E\u0A2A\u0A24 \u0A15\u0A30\u0A4B\u0964', captureBtn: '\u0A38\u0A42\u0A1A\u0A3F\u0A24 \u0A15\u0A30\u0A4B',
         ctaTitle: '\u0A05\u0A71\u0A1C \u0A39\u0A40 \u0A06\u0A2A\u0A23\u0A40 \u0A2F\u0A3E\u0A24\u0A30\u0A3E \u0A36\u0A41\u0A30\u0A42 \u0A15\u0A30\u0A4B',
-        ctaDesc: '20,000+ \u0A38\u0A3F\u0A71\u0A16\u0A3E\u0A02 \u0A28\u0A3E\u0A32 \u0A1C\u0A41\u0A5C\u0A4B \u0A1C\u0A4B \u0A39\u0A30 \u0A30\u0A4B\u0A1C\u0A3C \u0A39\u0A41\u0A15\u0A2E\u0A28\u0A3E\u0A2E\u0A3E, \u0A17\u0A41\u0A30\u0A2C\u0A3E\u0A23\u0A40, \u0A05\u0A24\u0A47 \u0A38\u0A3F\u0A2E\u0A30\u0A28 \u0A28\u0A3E\u0A32 \u0A36\u0A41\u0A30\u0A42 \u0A15\u0A30\u0A26\u0A47 \u0A39\u0A28\u0964',
+        ctaDesc: '50,000+ \u0A38\u0A3F\u0A71\u0A16\u0A3E\u0A02 \u0A28\u0A3E\u0A32 \u0A1C\u0A41\u0A5C\u0A4B \u0A1C\u0A4B \u0A39\u0A30 \u0A30\u0A4B\u0A1C\u0A3C \u0A39\u0A41\u0A15\u0A2E\u0A28\u0A3E\u0A2E\u0A3E, \u0A17\u0A41\u0A30\u0A2C\u0A3E\u0A23\u0A40, \u0A05\u0A24\u0A47 \u0A38\u0A3F\u0A2E\u0A30\u0A28 \u0A28\u0A3E\u0A32 \u0A36\u0A41\u0A30\u0A42 \u0A15\u0A30\u0A26\u0A47 \u0A39\u0A28\u0964',
         ctaBtn: 'Google Play \u0A24\u0A4B\u0A02 \u0A21\u0A3E\u0A0A\u0A28\u0A32\u0A4B\u0A21 \u0A15\u0A30\u0A4B', qrLabel: '\u0A38\u0A15\u0A48\u0A28 \u0A15\u0A30\u0A4B',
         aboutText: '\u0A06\u0A27\u0A41\u0A28\u0A3F\u0A15 \u0A17\u0A41\u0A30\u0A38\u0A3F\u0A71\u0A16 \u0A32\u0A08 \u0A38\u0A2D \u0A24\u0A4B\u0A02 \u0A35\u0A27\u0A40\u0A06 \u0A30\u0A42\u0A39\u0A3E\u0A28\u0A40 \u0A38\u0A3E\u0A25\u0A40 \u0A16\u0A4B\u0A1C\u0A4B\u0964 \u0A38\u0A3F\u0A71\u0A16 AI \u0A17\u0A41\u0A30\u0A2C\u0A3E\u0A23\u0A40 \u0A26\u0A40 \u0A38\u0A26\u0A40\u0A35\u0A40 \u0A38\u0A3F\u0A06\u0A23\u0A2A \u0A05\u0A24\u0A47 \u0A06\u0A27\u0A41\u0A28\u0A3F\u0A15 \u0A24\u0A15\u0A28\u0A3E\u0A32\u0A4B\u0A1C\u0A40 \u0A35\u0A3F\u0A1A\u0A15\u0A3E\u0A30 \u0A2A\u0A3E\u0A5C\u0A3E \u0A2D\u0A30\u0A26\u0A3E \u0A39\u0A48 \u0A24\u0A3E\u0A02 \u0A1C\u0A4B \u0A24\u0A41\u0A39\u0A3E\u0A28\u0A42\u0A70 \u0A1C\u0A41\u0A5C\u0A47 \u0A30\u0A71\u0A16\u0A47, \u0A1C\u0A3E\u0A23\u0A15\u0A3E\u0A30\u0A40 \u0A26\u0A47\u0A35\u0A47 \u0A05\u0A24\u0A47 \u0A1C\u0A5C\u0A3E\u0A02 \u0A28\u0A3E\u0A32 \u0A1C\u0A4B\u0A5C\u0A47\u0964 \u0A1A\u0A3E\u0A39\u0A47 \u0A38\u0A4D\u0A30\u0A40 \u0A26\u0A30\u0A2C\u0A3E\u0A30 \u0A38\u0A3E\u0A39\u0A3F\u0A2C \u0A24\u0A4B\u0A02 \u0A30\u0A4B\u0A1C\u0A3C\u0A3E\u0A28\u0A3E \u0A39\u0A41\u0A15\u0A2E\u0A28\u0A3E\u0A2E\u0A3E \u0A2A\u0A4D\u0A30\u0A3E\u0A2A\u0A24 \u0A15\u0A30\u0A28\u0A3E \u0A39\u0A4B\u0A35\u0A47 \u0A1C\u0A3E\u0A02 \u0A09\u0A71\u0A1A \u0A17\u0A41\u0A23\u0A35\u0A71\u0A24\u0A3E \u0A06\u0A21\u0A3F\u0A13 \u0A28\u0A3E\u0A32 \u0A28\u0A3F\u0A24\u0A28\u0A47\u0A2E \u0A2A\u0A42\u0A30\u0A3E \u0A15\u0A30\u0A28\u0A3E, \u0A38\u0A3F\u0A71\u0A16 AI \u0A24\u0A41\u0A39\u0A3E\u0A21\u0A47 \u0A30\u0A4B\u0A1C\u0A3C\u0A3E\u0A28\u0A3E \u0A05\u0A2D\u0A3F\u0A06\u0A38 \u0A28\u0A42\u0A70 \u0A38\u0A41\u0A16\u0A3E\u0A32\u0A3E \u0A2C\u0A23\u0A3E\u0A09\u0A02\u0A26\u0A3E \u0A39\u0A48\u0964 \u0A1A\u0A5C\u0A4D\u0A39\u0A26\u0A40 \u0A15\u0A32\u0A3E AI \u0A28\u0A3E\u0A32, \u0A38\u0A3F\u0A71\u0A16 \u0A2D\u0A3E\u0A08\u0A1A\u0A3E\u0A30\u0A47 \u0A32\u0A08 \u0A26\u0A41\u0A28\u0A40\u0A06 \u0A26\u0A3E \u0A2A\u0A39\u0A3F\u0A32\u0A3E AI \u0A2E\u0A3E\u0A30\u0A17\u0A26\u0A30\u0A36\u0A15, \u0A24\u0A41\u0A39\u0A3E\u0A21\u0A47 \u0A38\u0A35\u0A3E\u0A32\u0A3E\u0A02 \u0A26\u0A47 \u0A1C\u0A35\u0A3E\u0A2C \u0A26\u0A47\u0A23 \u0A05\u0A24\u0A47 \u0A2A\u0A70\u0A25 \u0A26\u0A40 \u0A38\u0A2E\u0A1D \u0A21\u0A42\u0A70\u0A18\u0A40 \u0A15\u0A30\u0A28 \u0A32\u0A08\u0964 \u0A38\u0A3E\u0A21\u0A47 \u0A30\u0A40\u0A05\u0A32-\u0A1F\u0A3E\u0A08\u0A2E \u0A38\u0A3F\u0A2E\u0A30\u0A28 \u0A17\u0A4D\u0A32\u0A4B\u0A2C \u0A24\u0A47 \u0A35\u0A3F\u0A36\u0A35 \u0A38\u0A70\u0A17\u0A24 \u0A28\u0A3E\u0A32 \u0A1C\u0A41\u0A5C\u0A4B, \u0A1C\u0A3F\u0A71\u0A25\u0A47 \u0A24\u0A41\u0A38\u0A40\u0A02 \u0A26\u0A41\u0A28\u0A40\u0A06 \u0A2D\u0A30 \u0A26\u0A47 \u0A39\u0A1C\u0A3C\u0A3E\u0A30\u0A3E\u0A02 \u0A38\u0A3F\u0A71\u0A16\u0A3E\u0A02 \u0A28\u0A3E\u0A32 \u0A38\u0A3F\u0A2E\u0A30\u0A28 \u0A15\u0A30 \u0A38\u0A15\u0A26\u0A47 \u0A39\u0A4B\u0964 \u0A38\u0A3F\u0A71\u0A16 AI \u0A28\u0A3E\u0A32, \u0A24\u0A41\u0A39\u0A3E\u0A21\u0A3E \u0A30\u0A42\u0A39\u0A3E\u0A28\u0A40 \u0A38\u0A2B\u0A3C\u0A30 \u0A07\u0A15\u0A71\u0A32\u0A3E \u0A28\u0A39\u0A40\u0A02; \u0A07\u0A39 \u0A16\u0A3C\u0A3E\u0A32\u0A38\u0A47 \u0A2A\u0A4D\u0A30\u0A24\u0A40 \u0A21\u0A42\u0A70\u0A18\u0A47 \u0A38\u0A24\u0A3F\u0A15\u0A3E\u0A30 \u0A28\u0A3E\u0A32 \u0A2C\u0A23\u0A3F\u0A06 \u0A38\u0A3E\u0A02\u0A1D\u0A3E \u0A24\u0A1C\u0A30\u0A2C\u0A3E \u0A39\u0A48\u0964',
         aiLabel: '\u2728 \u0A30\u0A42\u0A39\u0A3E\u0A28\u0A40 AI \u0A17\u0A3E\u0A08\u0A21', aiTitle: '\u0A38\u0A3F\u0A71\u0A16\u0A40 \u0A2C\u0A3E\u0A30\u0A47 \u0A15\u0A41\u0A1D \u0A35\u0A40 \u0A2A\u0A41\u0A71\u0A1B\u0A4B',
