@@ -2481,6 +2481,237 @@
     }
     /* Clips keep the app's bottom UI chrome visible; overflow crops the top. */
     .device-screen video { object-position: center bottom; }
+    /* ── SANGAT (voices anchored to globe pins) ──
+       Cards are rendered via globe.gl htmlElementsData() and the API
+       positions them at the lat/lng's projected screen coords. We
+       give the root element width/height of 0 so the pulse + body
+       are positioned relative to the exact point. The card body is
+       offset diagonally (NE / NW / SE / SW cycled per card) so a
+       single rotation can show multiple labels without overlap, and
+       an L-bracket connector links the body back to the pin. */
+    .sangat {
+      position: relative;
+      background: var(--color-bg);
+      /* Section is exactly one viewport tall — the ScrollTrigger
+         pin (+=120% with pinSpacing) supplies the extra scroll
+         distance for one full rotation as a spacer AFTER this
+         section, so we don't need extra padding inside. The intro
+         (◆ Voices / title / subtitle) lives in the top ~25% and
+         the globe (position:fixed) fills the rest of the frame.
+         dvh tracks the mobile visible area as the address bar
+         collapses; vh fallback for older engines. */
+      height: 100vh;
+      height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .sangat-intro {
+      padding: 96px 24px 16px;
+      max-width: 1100px;
+      margin: 0 auto;
+      text-align: center;
+      position: relative;
+      z-index: 6;
+    }
+    .sangat-subtitle {
+      max-width: 540px;
+      margin: 16px auto 0;
+      color: var(--color-text-secondary);
+      font-size: 1.0rem;
+      line-height: 1.6;
+    }
+
+    /* Each .sangat-card is the root globe-gl htmlElement. globe.gl
+       sets position:absolute on it and translates it to the
+       projected lat/lng. Width/height of 0 means the (0,0) inside
+       the element corresponds exactly to the pin. The pulse + body
+       are absolutely positioned relative to that origin. */
+    .sangat-card {
+      position: absolute;
+      width: 0;
+      height: 0;
+      pointer-events: auto;
+      transition: opacity 0.45s ease;
+      will-change: opacity, transform;
+    }
+    .sangat-card-anchor {
+      position: absolute;
+      left: -5px;
+      top: -5px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--color-primary);
+      box-shadow: 0 0 14px rgba(232, 196, 74, 0.85);
+    }
+    .sangat-card-pulse {
+      position: absolute;
+      inset: -3px;
+      border: 1.5px solid var(--color-primary);
+      border-radius: 50%;
+      animation: sangatCardPulse 2.4s ease-out infinite;
+      pointer-events: none;
+    }
+    @keyframes sangatCardPulse {
+      0%   { transform: scale(1);   opacity: 0.9; }
+      80%  { transform: scale(3.6); opacity: 0;   }
+      100% { transform: scale(3.6); opacity: 0;   }
+    }
+    .sangat-card-body {
+      position: absolute;
+      width: 220px;
+      padding: 12px 14px;
+      background: rgba(14, 14, 14, 0.88);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(232, 196, 74, 0.22);
+      border-radius: 12px;
+      box-shadow: 0 12px 32px -8px rgba(0, 0, 0, 0.55);
+      color: var(--color-text);
+      font-family: var(--font-body);
+      font-size: 0.78rem;
+      line-height: 1.45;
+    }
+    /* Quadrant placement.
+       NE (default): card extends up-right; connector L-brackets
+       down-left from the card's lower-left corner to the pin. */
+    .sangat-card[data-quadrant="ne"] .sangat-card-body {
+      left: 18px;
+      bottom: 14px;
+    }
+    .sangat-card[data-quadrant="ne"] .sangat-card-body::before {
+      content: '';
+      position: absolute;
+      left: -18px;
+      bottom: -14px;
+      width: 18px;
+      height: 14px;
+      border-left: 1px solid rgba(232, 196, 74, 0.45);
+      border-bottom: 1px solid rgba(232, 196, 74, 0.45);
+      border-bottom-left-radius: 6px;
+    }
+    .sangat-card[data-quadrant="nw"] .sangat-card-body {
+      right: 18px;
+      bottom: 14px;
+    }
+    .sangat-card[data-quadrant="nw"] .sangat-card-body::before {
+      content: '';
+      position: absolute;
+      right: -18px;
+      bottom: -14px;
+      width: 18px;
+      height: 14px;
+      border-right: 1px solid rgba(232, 196, 74, 0.45);
+      border-bottom: 1px solid rgba(232, 196, 74, 0.45);
+      border-bottom-right-radius: 6px;
+    }
+    .sangat-card[data-quadrant="se"] .sangat-card-body {
+      left: 18px;
+      top: 14px;
+    }
+    .sangat-card[data-quadrant="se"] .sangat-card-body::before {
+      content: '';
+      position: absolute;
+      left: -18px;
+      top: -14px;
+      width: 18px;
+      height: 14px;
+      border-left: 1px solid rgba(232, 196, 74, 0.45);
+      border-top: 1px solid rgba(232, 196, 74, 0.45);
+      border-top-left-radius: 6px;
+    }
+    .sangat-card[data-quadrant="sw"] .sangat-card-body {
+      right: 18px;
+      top: 14px;
+    }
+    .sangat-card[data-quadrant="sw"] .sangat-card-body::before {
+      content: '';
+      position: absolute;
+      right: -18px;
+      top: -14px;
+      width: 18px;
+      height: 14px;
+      border-right: 1px solid rgba(232, 196, 74, 0.45);
+      border-top: 1px solid rgba(232, 196, 74, 0.45);
+      border-top-right-radius: 6px;
+    }
+    .sangat-card-stars {
+      color: var(--color-primary);
+      font-size: 0.62rem;
+      letter-spacing: 0.32em;
+      margin-bottom: 6px;
+    }
+    .sangat-card-text {
+      margin: 0 0 8px;
+      font-family: 'Fraunces', Georgia, serif;
+      font-style: italic;
+      font-variation-settings: 'opsz' 32, 'SOFT' 80, 'wght' 380;
+      font-size: 0.88rem;
+      line-height: 1.4;
+      color: var(--color-text);
+      /* Three-line clamp keeps every card the same vertical density
+         even when reviews vary in length. */
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .sangat-card-meta {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 8px;
+      font-size: 0.7rem;
+      color: var(--color-text-secondary);
+    }
+    .sangat-card-name {
+      color: var(--color-text);
+      font-weight: 500;
+      letter-spacing: -0.005em;
+    }
+    .sangat-card-place {
+      font-family: 'Fraunces', Georgia, serif;
+      font-style: italic;
+      font-variation-settings: 'opsz' 24, 'SOFT' 60, 'wght' 400;
+      color: var(--color-text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 110px;
+    }
+    .sangat-stage {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding-bottom: clamp(24px, 5vh, 64px);
+    }
+    .sangat-globe {
+      position: relative;
+      width: min(60vh, 74vw);
+      height: min(60vh, 74vw);
+    }
+    /* Cards extend past the planet's edge, so only the canvas is clipped round. */
+    .sangat-globe canvas { border-radius: 50%; }
+    /* globe.gl sets inline overflow on its overlay layers; cards must spill past them. */
+    .sangat-globe div { overflow: visible !important; }
+    @media (max-width: 720px) {
+      /* Mobile: cards are smaller, denser. The globe stays centered
+         but slightly dimmed to keep the text legible. */
+      .sangat-card-body { width: 180px; padding: 10px 12px; font-size: 0.72rem; }
+      .sangat-card-text { font-size: 0.78rem; -webkit-line-clamp: 2; }
+      .sangat-globe {
+        width: min(56vh, 86vw);
+        height: min(56vh, 86vw);
+      }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .sangat-card-pulse { animation: none; opacity: 0.4; }
+      .sangat-card { transition: none; }
+    }
+
   </style>
   <script>
     (function(){var t=localStorage.getItem('sikhai-theme');if(t)document.documentElement.setAttribute('data-theme',t);})();
@@ -2833,53 +3064,16 @@
     </div>
   </section>
 
-  <!-- User Reviews -->
-  <section class="reviews">
-    <div class="container">
-      <div class="section-label fade-up" data-i18n="reviewsLabel">&#9670; Reviews</div>
-      <h2 class="section-title fade-up" data-i18n="reviewsTitle">Loved by the Sangat</h2>
-      <div class="reviews-scroll">
-        <div class="review-card fade-up">
-          <div class="review-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-          <div class="review-text">Very nice app for all updates about daily gurudwara hukamanas and very good feature of Chardikala AI so that we can question everything about gurbani.</div>
-          <div class="review-author"><div class="review-avatar">G</div><div><div class="review-name">Garry Johar</div><div class="review-device">Samsung Galaxy M15 5G</div></div></div>
-        </div>
-        <div class="review-card fade-up">
-          <div class="review-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-          <div class="review-text">I don't see this type of applications at any Play Store. This is a very wonderful app. I love this app, it connects me from Waheguru.</div>
-          <div class="review-author"><div class="review-avatar">A</div><div><div class="review-name">Arti Keswani</div><div class="review-device">POCO M6 Plus 5G</div></div></div>
-        </div>
-        <div class="review-card fade-up">
-          <div class="review-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-          <div class="review-text">Best app! Waheguru Ji. Everything you need for your Sikhi journey in one place.</div>
-          <div class="review-author"><div class="review-avatar">J</div><div><div class="review-name">Jaspinder Singh Bedi</div><div class="review-device">Motorola moto e(7) power</div></div></div>
-        </div>
-        <div class="review-card fade-up">
-          <div class="review-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-          <div class="review-text">Great app for Sikhi! Beautiful design and very useful daily features. Highly recommended.</div>
-          <div class="review-author"><div class="review-avatar">J</div><div><div class="review-name">Jyoti Sachdev</div><div class="review-device">Redmi Note 14 Pro 5G</div></div></div>
-        </div>
-        <div class="review-card fade-up">
-          <div class="review-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-          <div class="review-text">Very nice app. All the features a Sikh needs in daily life.</div>
-          <div class="review-author"><div class="review-avatar">H</div><div><div class="review-name">Harwinder Singh</div><div class="review-device">Vivo Y29 5G</div></div></div>
-        </div>
-        <div class="review-card fade-up">
-          <div class="review-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-          <div class="review-text">This is an amazing app and concept. You brought everything at one place for people who want to connect and want their children to connect. This is brilliant.</div>
-          <div class="review-author"><div class="review-avatar">S</div><div><div class="review-name">Sikh AI User</div><div class="review-device">Google Pixel 9</div></div></div>
-        </div>
-        <div class="review-card fade-up">
-          <div class="review-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-          <div class="review-text">Ability to lock the phone while having the Nitnem and Live Kirtan playing in the background would be great. Otherwise, amazing app!</div>
-          <div class="review-author"><div class="review-avatar">I</div><div><div class="review-name">Inderpal Singh</div><div class="review-device">Motorola Edge 50 Pro</div></div></div>
-        </div>
-        <div class="review-card fade-up">
-          <div class="review-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-          <div class="review-text">ਬਹੁਤ ਬਹੁਤ ਵਦੀਆ ਐਪ। ਵਾਹਿਗੁਰੂ ਜੀ ਸਰਬਤ ਦਾ ਭਲਾ ਕਰਨ 🙏</div>
-          <div class="review-author"><div class="review-avatar">ਵ</div><div><div class="review-name">Waheguru Sevak</div><div class="review-device">Google Pixel 6a</div></div></div>
-        </div>
-      </div>
+  <!-- Voices from the Sangat — reviews pinned to cities on a dedicated
+       globe. Scrolling through the pinned section spins the planet once. -->
+  <section class="sangat" id="sangat">
+    <div class="container sangat-intro">
+      <div class="section-label fade-up" data-i18n="reviewsLabel">&#9670; Voices</div>
+      <h2 class="section-title fade-up" data-i18n="reviewsTitle">Voices from the Sangat</h2>
+      <p class="sangat-subtitle fade-up" data-i18n="reviewsSubtitle">Each pin is a sevadar somewhere in the world. Scroll to spin the planet.</p>
+    </div>
+    <div class="sangat-stage">
+      <div class="sangat-globe" id="sangatGlobe"></div>
     </div>
   </section>
 
@@ -3170,7 +3364,7 @@
         simranStart: 'Begin Meditation', simranStop: 'End Meditation',
         featuresLabel: '\u25C6 Features', featuresTitle: 'Everything for your<br>Sikhi journey',
         featuresSubtitle: 'A thoughtfully designed app that brings the richness of Gurbani and Sikh traditions to your fingertips.',
-        reviewsLabel: '\u25C6 Reviews', reviewsTitle: 'Loved by the Sangat',
+        reviewsLabel: '\u25C6 Voices', reviewsTitle: 'Voices from the Sangat', reviewsSubtitle: 'A growing congregation, scattered across the world, gathered around the same shabad.',
         proofText: 'Join <span>50,000+</span> Sikhs worldwide', proofSub: 'Growing every day through the power of Sangat',
         blogLabel: '\u25C6 Learn', blogTitle: 'Explore Sikhi', blogSubtitle: 'Deepen your understanding of Sikh traditions and daily practice.',
         blog1Title: 'What is Hukamnama?',
@@ -3216,7 +3410,7 @@
         simranStart: '\u0A38\u0A3F\u0A2E\u0A30\u0A28 \u0A36\u0A41\u0A30\u0A42 \u0A15\u0A30\u0A4B', simranStop: '\u0A38\u0A48\u0A36\u0A28 \u0A2C\u0A70\u0A26 \u0A15\u0A30\u0A4B',
         featuresLabel: '\u25C6 \u0A2B\u0A3C\u0A40\u0A1A\u0A30\u0A1C\u0A3C', featuresTitle: '\u0A24\u0A41\u0A39\u0A3E\u0A21\u0A40 \u0A38\u0A3F\u0A71\u0A16\u0A40 \u0A2F\u0A3E\u0A24\u0A30\u0A3E \u0A32\u0A08<br>\u0A38\u0A2D \u0A15\u0A41\u0A1D',
         featuresSubtitle: '\u0A07\u0A71\u0A15 \u0A38\u0A4B\u0A1A-\u0A38\u0A2E\u0A1D \u0A15\u0A47 \u0A21\u0A3F\u0A1C\u0A3C\u0A3E\u0A07\u0A28 \u0A15\u0A40\u0A24\u0A40 \u0A10\u0A2A \u0A1C\u0A4B \u0A17\u0A41\u0A30\u0A2C\u0A3E\u0A23\u0A40 \u0A05\u0A24\u0A47 \u0A38\u0A3F\u0A71\u0A16 \u0A30\u0A35\u0A3E\u0A07\u0A24\u0A3E\u0A02 \u0A28\u0A42\u0A70 \u0A24\u0A41\u0A39\u0A3E\u0A21\u0A47 \u0A39\u0A71\u0A25 \u0A35\u0A3F\u0A71\u0A1A \u0A32\u0A3F\u0A06\u0A02\u0A26\u0A40 \u0A39\u0A48\u0964',
-        reviewsLabel: '\u25C6 \u0A30\u0A3F\u0A35\u0A3F\u0A0A\u0A1C\u0A3C', reviewsTitle: '\u0A38\u0A70\u0A17\u0A24 \u0A26\u0A41\u0A06\u0A30\u0A3E \u0A2A\u0A3F\u0A06\u0A30\u0A3E',
+        reviewsLabel: '\u25C6 \u0A06\u0A35\u0A3E\u0A1C\u0A3C\u0A3E\u0A02', reviewsTitle: '\u0A38\u0A70\u0A17\u0A24 \u0A26\u0A40\u0A06\u0A02 \u0A06\u0A35\u0A3E\u0A1C\u0A3C\u0A3E\u0A02', reviewsSubtitle: '\u0A26\u0A41\u0A28\u0A40\u0A06\u0A02 \u0A2D\u0A30 \u0A35\u0A3F\u0A1A \u0A35\u0A38\u0A26\u0A40 \u0A38\u0A70\u0A17\u0A24, \u0A07\u0A15\u0A4B \u0A36\u0A2C\u0A26 \u0A26\u0A47 \u0A06\u0A38\u0A47-\u0A2A\u0A3E\u0A38\u0A47\u0964',
         proofText: '<span>50,000+</span> \u0A38\u0A3F\u0A71\u0A16\u0A3E\u0A02 \u0A28\u0A3E\u0A32 \u0A1C\u0A41\u0A5C\u0A4B', proofSub: '\u0A38\u0A70\u0A17\u0A24 \u0A26\u0A40 \u0A24\u0A3E\u0A15\u0A24 \u0A28\u0A3E\u0A32 \u0A39\u0A30 \u0A30\u0A4B\u0A1C\u0A3C \u0A35\u0A27 \u0A30\u0A3F\u0A39\u0A3E \u0A39\u0A48',
         blogLabel: '\u25C6 \u0A38\u0A3F\u0A71\u0A16\u0A4B', blogTitle: '\u0A38\u0A3F\u0A71\u0A16\u0A40 \u0A2C\u0A3E\u0A30\u0A47 \u0A1C\u0A3E\u0A23\u0A4B', blogSubtitle: '\u0A38\u0A3F\u0A71\u0A16 \u0A30\u0A35\u0A3E\u0A07\u0A24\u0A3E\u0A02 \u0A05\u0A24\u0A47 \u0A30\u0A4B\u0A1C\u0A3C\u0A3E\u0A28\u0A3E \u0A05\u0A2D\u0A3F\u0A06\u0A38 \u0A28\u0A42\u0A70 \u0A21\u0A42\u0A70\u0A18\u0A3E \u0A38\u0A2E\u0A1D\u0A4B\u0964',
         blog1Title: '\u0A39\u0A41\u0A15\u0A2E\u0A28\u0A3E\u0A2E\u0A3E \u0A15\u0A40 \u0A39\u0A48?',
@@ -3582,29 +3776,492 @@
       /* ═══ SCENE 5 — Gurbani Typography with Particle Convergence ═══ */
       initGurbaniParticles();
 
-      /* ═══ SCENE 6 — Reviews horizontal river ═══ */
-      const reviewsSection = document.querySelector('.reviews');
-      const reviewScroll = document.querySelector('.reviews-scroll');
-      if (reviewsSection && reviewScroll) {
-        const reviewCards = gsap.utils.toArray('.review-card');
-        reviewCards.forEach(c => { c.style.opacity = '1'; c.style.transform = 'none'; });
-        const totalReviewScroll = reviewScroll.scrollWidth - reviewsSection.offsetWidth + 60;
-        if (totalReviewScroll > 0) {
-          gsap.to(reviewScroll, {
-            x: () => -totalReviewScroll,
-            ease: 'none',
-            scrollTrigger: {
-              trigger: reviewsSection,
-              start: 'top top',
-              end: () => '+=' + totalReviewScroll * 1.5,
-              scrub: 0.5,
-              pin: true,
-              anticipatePin: 1,
-              invalidateOnRefresh: true
+      /* ═══ SCENE 6 — Voices from the Sangat ═══
+         Reviews ride on their own globe.gl instance inside #sangat,
+         created the first time the section approaches the viewport.
+         The section pins for 120vh of scroll, which maps to one full
+         turn of the planet. The hero globe is paused while this one is
+         on screen so only one WebGL scene animates at a time. */
+      (function initSangatScene() {
+        var sangatSection = document.getElementById('sangat');
+        var sangatGlobeEl = document.getElementById('sangatGlobe');
+        if (!sangatSection || !sangatGlobeEl || typeof Globe === 'undefined') return;
+
+        var sangatGlobe = null;
+        var sangatActive = false;
+
+        var SANGAT_REVIEWS = [
+          { stars: 5, text: 'Very nice app for all updates about daily Gurudwara Hukamnamas. The ChardiKala AI lets me ask anything about Gurbani.',
+            name: 'Garry Johar', place: 'Mumbai', fallbackLat: 19.07, fallbackLng: 72.87 },
+          { stars: 5, text: 'I don\u2019t see this kind of app on any Play Store. I love this app \u2014 it connects me to Waheguru.',
+            name: 'Arti Keswani', place: 'Delhi', fallbackLat: 28.61, fallbackLng: 77.21 },
+          { stars: 5, text: 'Best app. Waheguru Ji. Everything you need for your Sikhi journey, in one place.',
+            name: 'Jaspinder Singh Bedi', place: 'Amritsar', fallbackLat: 31.63, fallbackLng: 74.87 },
+          { stars: 5, text: 'An amazing app and concept. Everything in one place for people who want to connect, and want their children to connect. Brilliant.',
+            name: 'A Sevadar', place: 'San Francisco', fallbackLat: 37.77, fallbackLng: -122.42 },
+          { stars: 5, text: '\u0A2C\u0A39\u0A41\u0A24 \u0A2C\u0A39\u0A41\u0A24 \u0A35\u0A27\u0A40\u0A06 \u0A10\u0A2A\u0964 \u0A35\u0A3E\u0A39\u0A3F\u0A17\u0A41\u0A30\u0A42 \u0A1C\u0A40 \u0A38\u0A30\u0A2C\u0A71\u0A24 \u0A26\u0A3E \u0A2D\u0A32\u0A3E \u0A15\u0A30\u0A28 \uD83D\uDE4F',
+            name: 'Waheguru Sevak', place: 'Birmingham', fallbackLat: 52.49, fallbackLng: -1.90 },
+          { stars: 5, text: 'This app is a blessing. I carry the Gurbani with me everywhere I go. Waheguru Ji Ka Khalsa.',
+            name: 'Gurmeet Singh', place: 'Nairobi', fallbackLat: -1.29, fallbackLng: 36.82 },
+          { stars: 5, text: 'The daily Hukamnama every morning keeps me grounded and connected to the Guru\'s wisdom.',
+            name: 'Parveen Kaur', place: 'São Paulo', fallbackLat: -23.55, fallbackLng: -46.63 },
+          { stars: 5, text: 'Nitnem on the go has transformed my mornings. A true gift to the Sangat worldwide.',
+            name: 'Jaspreet Singh', place: 'Sydney', fallbackLat: -33.87, fallbackLng: 151.21 }
+        ];
+        var QUADRANTS = ['ne', 'nw', 'se', 'sw'];
+
+        // Fisher-Yates: pick N distinct items from `arr`.
+        function sample(arr, n) {
+          var pool = arr.slice();
+          for (var i = pool.length - 1; i > 0; i--) {
+            var j = Math.floor(Math.random() * (i + 1));
+            var t = pool[i]; pool[i] = pool[j]; pool[j] = t;
+          }
+          return pool.slice(0, n);
+        }
+
+        // Distribute one lat/lng per review around the planet so no
+        // two cards stack on screen.
+        //
+        // Earlier attempts used each review's own `fallbackLat/Lng`
+        // (its real place name). That clustered four reviews in
+        // northern India (Mumbai / Delhi / Amritsar / Chandigarh) —
+        // all within ~12° of each other — and their card bodies
+        // overlapped because they projected to nearly identical
+        // screen positions.
+        //
+        // New approach: draw anchors from a larger Sikh-diaspora
+        // pool, enforce a minimum angular separation (~22°) between
+        // picks, then snap each pick to the nearest live meditator
+        // dot within a small radius. The card's "place" label on
+        // the card stays as written (it represents the reviewer's
+        // own city); the PIN is a visual decoration, randomised
+        // around the globe each load so the Voices section reads
+        // as a planet-wide chorus rather than an India-only cluster.
+        var DIASPORA_ANCHORS = [
+          { lat:  19.07, lng:   72.87 }, // Mumbai
+          { lat:  28.61, lng:   77.21 }, // Delhi
+          { lat:  31.63, lng:   74.87 }, // Amritsar
+          { lat:  43.65, lng:  -79.38 }, // Toronto
+          { lat:  37.77, lng: -122.42 }, // San Francisco
+          { lat:  49.28, lng: -123.12 }, // Vancouver
+          { lat:  52.49, lng:   -1.90 }, // Birmingham
+          { lat:  -1.29, lng:   36.82 }, // Nairobi
+          { lat: -23.55, lng:  -46.63 }, // São Paulo
+          { lat: -33.87, lng:  151.21 }, // Sydney
+          { lat:  51.51, lng:   -0.13 }, // London
+          { lat:  40.71, lng:  -74.00 }, // NYC
+          { lat:  34.05, lng: -118.24 }, // LA
+          { lat:  41.88, lng:  -87.63 }, // Chicago
+          { lat:  29.76, lng:  -95.37 }, // Houston
+          { lat:  51.05, lng: -114.07 }, // Calgary
+          { lat:  25.20, lng:   55.27 }, // Dubai
+          { lat:   1.35, lng:  103.82 }, // Singapore
+          { lat:  13.75, lng:  100.50 }, // Bangkok
+          { lat:  -36.85, lng: 174.76 }, // Auckland
+          { lat:  35.69, lng:  139.69 }, // Tokyo
+          { lat:  48.86, lng:    2.35 }, // Paris
+          { lat:  52.52, lng:   13.40 }, // Berlin
+          { lat:   6.52, lng:    3.38 }, // Lagos
+        ];
+
+        // Angular distance (degrees), latitude-weighted so longitude
+        // separation near the poles isn't overcounted. Good enough
+        // for "are these two pins going to overlap on screen?".
+        function angDist(a, b) {
+          var dLat = a.lat - b.lat;
+          var dLng = a.lng - b.lng;
+          var k = Math.cos((a.lat + b.lat) * 0.5 * Math.PI / 180);
+          return Math.sqrt(dLat * dLat + (dLng * k) * (dLng * k));
+        }
+
+        function pickCoords() {
+          var live = (typeof globeUsers !== 'undefined' && globeUsers)
+            ? globeUsers.filter(function(u) {
+                return typeof u.lat === 'number' && typeof u.lng === 'number';
+              })
+            : [];
+
+          var MIN_SEP_DEG = 35;   // ~3900km between any two pins.
+                                  // Bumped from 22 → 35 because at
+                                  // 22° two pins on the same camera-
+                                  // facing hemisphere could still
+                                  // project to overlapping screen
+                                  // positions, and their card bodies
+                                  // (220px wide) collided even when
+                                  // the smart-quadrant logic gave
+                                  // them different extension dirs.
+                                  // 35° gives roughly screen-quarter
+                                  // separation between any two pins
+                                  // on a typical camera altitude.
+          var SNAP_DEG    = 6;    // ~660km radius to find a live dot
+
+          // Shuffle the anchor pool, then greedily pick anchors that
+          // sit at least MIN_SEP_DEG away from every already-picked
+          // anchor. If we run out of valid options (pool exhausted)
+          // we relax the constraint slightly and continue — better
+          // a near-overlap than missing reviews.
+          var pool = DIASPORA_ANCHORS.slice();
+          for (var i = pool.length - 1; i > 0; i--) {
+            var j = Math.floor(Math.random() * (i + 1));
+            var t = pool[i]; pool[i] = pool[j]; pool[j] = t;
+          }
+
+          var picks = [];
+          var minSep = MIN_SEP_DEG;
+          while (picks.length < SANGAT_REVIEWS.length) {
+            var added = false;
+            for (var p = 0; p < pool.length; p++) {
+              var cand = pool[p];
+              if (!cand) continue;
+              var ok = true;
+              for (var q = 0; q < picks.length; q++) {
+                if (angDist(cand, picks[q]) < minSep) { ok = false; break; }
+              }
+              if (ok) {
+                picks.push(cand);
+                pool[p] = null;
+                added = true;
+                if (picks.length >= SANGAT_REVIEWS.length) break;
+              }
             }
+            if (!added) {
+              // Pool exhausted at this separation — relax and retry.
+              minSep *= 0.75;
+              if (minSep < 6) break;
+            }
+          }
+
+          // Snap each anchor to the nearest unused live meditator
+          // dot within SNAP_DEG (preserves "lands on real activity"
+          // feel) — or keep the raw anchor if no live dot is close.
+          var usedLive = {};
+          return picks.map(function(anchor) {
+            var best = null;
+            var bestD = SNAP_DEG;
+            for (var k = 0; k < live.length; k++) {
+              if (usedLive[k]) continue;
+              var d = angDist(anchor, live[k]);
+              if (d < bestD) { bestD = d; best = k; }
+            }
+            if (best !== null) {
+              usedLive[best] = true;
+              return { lat: live[best].lat, lng: live[best].lng };
+            }
+            return anchor;
           });
         }
-      }
+
+        // Builds a single review card element. globe.gl will set
+        // position:absolute and translate(-50%,-50%) on it so (0,0)
+        // inside is exactly at the lat/lng. All visual chrome
+        // (pulse + body + connector) is positioned relative to that.
+        function buildCard(d) {
+          var card = document.createElement('div');
+          card.className = 'sangat-card';
+          card.setAttribute('data-quadrant', d.quadrant);
+          // Store coords on the element so the visibility rAF loop
+          // can read them without a closure over the data array.
+          card.dataset.lat = d.lat;
+          card.dataset.lng = d.lng;
+
+          var anchor = document.createElement('div');
+          anchor.className = 'sangat-card-anchor';
+          var pulse = document.createElement('span');
+          pulse.className = 'sangat-card-pulse';
+          anchor.appendChild(pulse);
+
+          var body = document.createElement('div');
+          body.className = 'sangat-card-body';
+          var stars = document.createElement('div');
+          stars.className = 'sangat-card-stars';
+          stars.textContent = Array(d.review.stars + 1).join('\u2605');
+          var text = document.createElement('blockquote');
+          text.className = 'sangat-card-text';
+          text.textContent = d.review.text;
+          var meta = document.createElement('div');
+          meta.className = 'sangat-card-meta';
+          var name = document.createElement('span');
+          name.className = 'sangat-card-name';
+          name.textContent = d.review.name;
+          var place = document.createElement('span');
+          place.className = 'sangat-card-place';
+          place.textContent = d.review.place;
+          meta.appendChild(name);
+          meta.appendChild(place);
+          body.appendChild(stars);
+          body.appendChild(text);
+          body.appendChild(meta);
+
+          card.appendChild(anchor);
+          card.appendChild(body);
+          return card;
+        }
+
+        function ensureSangatGlobe() {
+          if (sangatGlobe) return sangatGlobe;
+          var isDark = document.documentElement.getAttribute('data-theme') !== 'light';
+          sangatGlobe = Globe()
+            .globeImageUrl(isDark ? 'https://unpkg.com/three-globe/example/img/earth-night.jpg' : 'https://unpkg.com/three-globe/example/img/earth-day.jpg')
+            .bumpImageUrl('https://unpkg.com/three-globe/example/img/earth-topology.png')
+            .backgroundImageUrl('')
+            .showAtmosphere(true)
+            .atmosphereColor(isDark ? '#D4A853' : '#8B6914')
+            .atmosphereAltitude(0.18)
+            .pointLat('lat').pointLng('lng')
+            .pointAltitude('altitude').pointRadius('radius')
+            .pointColor('color')
+            .pointsMerge(true)
+            (sangatGlobeEl);
+          sangatGlobe.scene().background = new THREE.Color(isDark ? '#010101' : '#FAFAFA');
+          var mat = sangatGlobe.globeMaterial();
+          mat.bumpScale = 3;
+          mat.emissive = new THREE.Color(isDark ? '#1a1200' : '#3E2E00');
+          mat.emissiveIntensity = isDark ? 0.12 : 0.05;
+          var scene = sangatGlobe.scene();
+          scene.children.slice().forEach(function(child) {
+            if (child.isLight) scene.remove(child);
+          });
+          scene.add(new THREE.AmbientLight(isDark ? 0x443311 : 0x777777, isDark ? 1.2 : 1.5));
+          var dirLight = new THREE.DirectionalLight(isDark ? 0xD4A853 : 0x8B6914, isDark ? 0.8 : 0.6);
+          dirLight.position.set(5, 3, 5);
+          scene.add(dirLight);
+          var ctrl = sangatGlobe.controls();
+          ctrl.autoRotate = false;
+          ctrl.enableZoom = false;
+          ctrl.enableRotate = false;
+          sangatGlobe.pointOfView({ lat: 20, lng: 0, altitude: 1.8 });
+          sizeSangatGlobe();
+          window.addEventListener('resize', sizeSangatGlobe);
+          sangatGlobe.pauseAnimation();
+          return sangatGlobe;
+        }
+
+        function sizeSangatGlobe() {
+          if (!sangatGlobe) return;
+          sangatGlobe.width(sangatGlobeEl.clientWidth).height(sangatGlobeEl.clientHeight);
+        }
+
+        var populated = false;
+        function populateSangatCards() {
+          if (!sangatGlobe || populated) return;
+          if (typeof globeUsers !== 'undefined' && globeUsers.length) {
+            sangatGlobe.pointsData(globeUsers);
+          }
+          var coords = pickCoords();
+          var data = SANGAT_REVIEWS.map(function(r, i) {
+            return {
+              review: r,
+              lat: coords[i].lat,
+              lng: coords[i].lng,
+              quadrant: QUADRANTS[i % QUADRANTS.length]
+            };
+          });
+          try {
+            sangatGlobe
+              .htmlElementsData(data)
+              .htmlElement(function(d) { return buildCard(d); })
+              .htmlAltitude(0.01);
+            populated = true;
+          } catch (e) {
+            console.warn('Sangat: htmlElementsData unavailable', e);
+          }
+        }
+
+        var rafId = null;
+        function latLngToUnitVec(lat, lng) {
+          var phi = (90 - lat) * Math.PI / 180;
+          var theta = lng * Math.PI / 180;
+          return {
+            x: -Math.sin(phi) * Math.cos(theta),
+            y:  Math.cos(phi),
+            z:  Math.sin(phi) * Math.sin(theta)
+          };
+        }
+        function tickOcclusion() {
+          rafId = null;
+          var globe = sangatGlobe;
+          if (!globe || !sangatActive) return;
+          var cam;
+          try { cam = globe.camera().position; } catch (e) { cam = null; }
+          if (cam) {
+            var camLen = Math.sqrt(cam.x * cam.x + cam.y * cam.y + cam.z * cam.z) || 1;
+            var camN = { x: cam.x / camLen, y: cam.y / camLen, z: cam.z / camLen };
+            // Cache viewport dimensions per frame; used for the
+            // smart-quadrant inward-direction calculation.
+            var vw = window.innerWidth;
+            var vh = window.innerHeight;
+            // Width / height of the card body in CSS px. Used to
+            // bias the quadrant flip threshold so cards don't get
+            // clipped at viewport edges — if the pin is close
+            // enough to a side that an outward-extending card
+            // would clip, force it to extend inward EVEN if the
+            // pin hasn't crossed viewport centre yet.
+            var cardW = 220;
+            var cardH = 120;
+            var pad   = 32;
+            var cards = document.querySelectorAll('.sangat-card');
+            // First pass: visibility (opacity from camera dot) and
+            // initial edge-preferring quadrant choice for each card.
+            // We collect the visible cards' projected pin positions
+            // here so the second pass can resolve body-rect overlaps
+            // between any pair without re-reading the DOM.
+            var visibleCards = [];
+            for (var i = 0; i < cards.length; i++) {
+              var c = cards[i];
+              var lat = parseFloat(c.dataset.lat);
+              var lng = parseFloat(c.dataset.lng);
+              if (isNaN(lat) || isNaN(lng)) continue;
+              var v = latLngToUnitVec(lat, lng);
+              var dot = v.x * camN.x + v.y * camN.y + v.z * camN.z;
+              // Map dot from [-0.25, 0.35] → opacity [0, 1]. The
+              // -0.25 lower bound starts the fade slightly BEFORE
+              // the pin reaches the silhouette, so cards finish
+              // fading by the time they're on the rim instead of
+              // popping off.
+              var t = (dot + 0.25) / 0.6;
+              if (t < 0) t = 0; else if (t > 1) t = 1;
+              c.style.opacity = t.toFixed(3);
+              c.style.pointerEvents = t > 0.5 ? 'auto' : 'none';
+              if (t <= 0.05) continue;
+
+              // Edge-preferring quadrant: if the pin is within
+              // (cardW + pad) of an edge, force the body to extend
+              // away from that edge so it doesn't clip the viewport.
+              var rect = c.getBoundingClientRect();
+              var px = rect.left;
+              var py = rect.top;
+              var horiz;
+              if (px > vw - (cardW + pad)) horiz = 'w';
+              else if (px < (cardW + pad)) horiz = 'e';
+              else                          horiz = px < vw / 2 ? 'e' : 'w';
+              var vert;
+              if (py > vh - (cardH + pad)) vert = 'n';
+              else if (py < (cardH + pad)) vert = 's';
+              else                          vert = py < vh / 2 ? 's' : 'n';
+              visibleCards.push({ el: c, px: px, py: py, horiz: horiz, vert: vert });
+            }
+
+            // Second pass: screen-space collision avoidance.
+            // The MIN_SEP_DEG check in pickCoords guarantees pins
+            // don't sit on top of each other geographically, but two
+            // pins on the same hemisphere can still extend their
+            // (220x110px) card bodies into each other if both pick
+            // the same quadrant. For each colliding pair, try
+            // flipping one of them through the alternative
+            // quadrants (h-flip first, then v-flip, then both) and
+            // adopt the first variant that resolves the collision.
+            // Pins near a viewport edge had their horiz/vert forced
+            // earlier — we respect that by NOT flipping the locked
+            // axis (cards never get re-pushed into the edge they
+            // were trying to escape).
+            function bodyRect(card) {
+              // Card body is offset from the pin by ~18px in the
+              // chosen quadrant direction, with size cardW × cardH.
+              var bx = card.px + (card.horiz === 'e' ?  18 : -18 - cardW);
+              var by = card.py + (card.vert  === 's' ?  18 : -18 - cardH);
+              return { x: bx, y: by, w: cardW, h: cardH };
+            }
+            function rectsOverlap(a, b) {
+              return !(a.x + a.w < b.x || b.x + b.w < a.x ||
+                       a.y + a.h < b.y || b.y + b.h < a.y);
+            }
+            for (var a = 0; a < visibleCards.length; a++) {
+              for (var b = a + 1; b < visibleCards.length; b++) {
+                var A = visibleCards[a];
+                var B = visibleCards[b];
+                if (!rectsOverlap(bodyRect(A), bodyRect(B))) continue;
+                // Try flipping B through its 3 alternative quadrants
+                // in priority order: h-flip, v-flip, both. Skip a
+                // flip if B is already pinned to an edge on that
+                // axis (its initial quadrant was forced).
+                var BatRightEdge = B.px > vw - (cardW + pad);
+                var BatLeftEdge  = B.px < (cardW + pad);
+                var BatBotEdge   = B.py > vh - (cardH + pad);
+                var BatTopEdge   = B.py < (cardH + pad);
+                var hLocked = BatRightEdge || BatLeftEdge;
+                var vLocked = BatBotEdge   || BatTopEdge;
+                var origH = B.horiz, origV = B.vert;
+                var variants = [];
+                if (!hLocked) variants.push({ h: (origH === 'e' ? 'w' : 'e'), v: origV });
+                if (!vLocked) variants.push({ h: origH, v: (origV === 's' ? 'n' : 's') });
+                if (!hLocked && !vLocked) variants.push({ h: (origH === 'e' ? 'w' : 'e'),
+                                                          v: (origV === 's' ? 'n' : 's') });
+                for (var k = 0; k < variants.length; k++) {
+                  B.horiz = variants[k].h;
+                  B.vert  = variants[k].v;
+                  if (!rectsOverlap(bodyRect(A), bodyRect(B))) break;
+                }
+                // If none of the variants resolved (very tight pin
+                // cluster), leave B at its last-tried quadrant — the
+                // overlap is still smaller than the original.
+              }
+            }
+
+            // Third pass: write the final quadrant attribute. Only
+            // touch the DOM when the value actually changed to keep
+            // the rAF cheap.
+            for (var n = 0; n < visibleCards.length; n++) {
+              var vc = visibleCards[n];
+              var q = vc.vert + vc.horiz;
+              if (vc.el.getAttribute('data-quadrant') !== q) {
+                vc.el.setAttribute('data-quadrant', q);
+              }
+            }
+          }
+          rafId = requestAnimationFrame(tickOcclusion);
+        }
+        function startOcclusion() {
+          if (rafId) return;
+          rafId = requestAnimationFrame(tickOcclusion);
+        }
+        function stopOcclusion() {
+          if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+        }
+
+        var sangatStartLng = 0;
+        function enterSangat() {
+          ensureSangatGlobe();
+          sangatActive = true;
+          if (window._globe) window._globe.pauseAnimation();
+          sangatGlobe.resumeAnimation();
+          var pov = sangatGlobe.pointOfView();
+          sangatStartLng = (pov && typeof pov.lng === 'number') ? pov.lng : 0;
+          populateSangatCards();
+          startOcclusion();
+        }
+        function leaveSangat() {
+          sangatActive = false;
+          stopOcclusion();
+          if (sangatGlobe) sangatGlobe.pauseAnimation();
+          if (window._globe) window._globe.resumeAnimation();
+        }
+
+        ScrollTrigger.create({
+          trigger: sangatSection,
+          start: 'top bottom+=50%',
+          once: true,
+          onEnter: ensureSangatGlobe
+        });
+
+        ScrollTrigger.create({
+          trigger: sangatSection,
+          start: 'top top',
+          end: '+=120%',
+          pin: true,
+          pinSpacing: true,
+          scrub: 0.5,
+          invalidateOnRefresh: true,
+          onEnter: enterSangat,
+          onEnterBack: enterSangat,
+          onLeave: leaveSangat,
+          onLeaveBack: leaveSangat,
+          onUpdate: function(self) {
+            if (!sangatGlobe) return;
+            sangatGlobe.pointOfView({ lng: sangatStartLng + self.progress * 360 }, 0);
+          }
+        });
+      })();
 
       /* ═══ SCENE 6b — Blog cards ═══ */
       gsap.utils.toArray('.blog-card').forEach((el, i) => {
