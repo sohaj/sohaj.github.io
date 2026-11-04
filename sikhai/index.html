@@ -19,6 +19,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preload" href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" as="style">
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..700,0..100;1,9..144,300..700,0..100&display=swap" rel="stylesheet">
 
   <style>
     :root {
@@ -2438,6 +2439,48 @@
       .loader-overlay { display: none; }
       .cursor-dot { display: none; }
     }
+    /* ── Features: Y-axis flip phone ── */
+    .features-bg-text h3 {
+      font-family: 'Fraunces', Georgia, serif;
+      font-style: italic;
+      font-weight: 400;
+      font-variation-settings: 'opsz' 144, 'SOFT' 100, 'wght' 400;
+    }
+    .features-meta-slide .feature-title {
+      font-family: 'Fraunces', Georgia, serif;
+      font-weight: 600;
+      font-variation-settings: 'opsz' 96, 'SOFT' 30, 'wght' 600;
+      line-height: 1.1;
+      letter-spacing: -0.025em;
+    }
+    .features-pinned { height: 100dvh; }
+    .features-screen-img-b {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      transition: opacity 0.35s ease;
+    }
+    .features-screen-img-b.active { opacity: 1; }
+    /* Hide front-mounted parts on the back so they don't bleed through
+       while the device is rotated 180°. */
+    .device-screen,
+    .device-chamfer,
+    .device-camera,
+    .device-screen-glass,
+    .device-proximity,
+    .device-earpiece,
+    .device-front {
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+    }
+    .device-screen-back {
+      transform: translateZ(calc(var(--half-depth) * -1 - 1px)) rotateY(180deg);
+    }
+    /* Clips keep the app's bottom UI chrome visible; overflow crops the top. */
+    .device-screen video { object-position: center bottom; }
   </style>
   <script>
     (function(){var t=localStorage.getItem('sikhai-theme');if(t)document.documentElement.setAttribute('data-theme',t);})();
@@ -2669,9 +2712,9 @@
       <div class="features-layout">
         <div class="features-meta-stack" id="featuresMetaStack">
           <div class="features-meta-slide active" data-idx="0">
-            <div class="feature-tag" data-i18n="f1tag">Gurbani</div>
-            <div class="feature-title" data-i18n="f1title">Daily Hukamnama</div>
-            <div class="feature-slide-desc" data-i18n="f1desc">Receive the daily divine order from Sri Darbar Sahib, Amritsar &mdash; with Gurmukhi text, English translation, and meaning delivered every morning.</div>
+            <div class="feature-tag" data-i18n="f1tag">Live &middot; Daily</div>
+            <div class="feature-title" data-i18n="f1title">Hukamnama from Sri Darbar Sahib</div>
+            <div class="feature-slide-desc" data-i18n="f1desc">Every morning, the Granthi Singh at Sri Darbar Sahib in Amritsar opens Sri Guru Granth Sahib Ji and reads the day&rsquo;s Hukamnama. We bring it to you live &mdash; original Gurmukhi, English translation, and meaning &mdash; the moment it&rsquo;s recited.</div>
           </div>
           <div class="features-meta-slide" data-idx="1">
             <div class="feature-tag" data-i18n="f3tag">Daily Practice</div>
@@ -2716,15 +2759,36 @@
               <div class="device-depth device-depth-right"></div>
               <div class="device-depth device-depth-top"></div>
               <div class="device-depth device-depth-bottom"></div>
-              <!-- Screen -->
+              <!-- Front-face screen -->
               <div class="device-screen" id="featuresScreen">
                 <img class="features-screen-img active" data-idx="0" src="img/ss1-hukamnama.png" alt="Daily Hukamnama">
-                <img class="features-screen-img" data-idx="1" src="img/ss5-nitnem.png" alt="Nitnem with Audio">
-                <img class="features-screen-img" data-idx="2" src="img/ss4-simran.png" alt="Simran Counter">
+                <!-- Live app captures for the five feature slots where
+                     we have video footage (Nitnem/Path, Simran,
+                     Saakhi, Chardi Kala AI, Sewa). The JS slide
+                     cycler toggles `.active` on these <video> tags
+                     exactly the same way it does for the <img> tags
+                     beside them; the setActive handler also calls
+                     .play() on the newly-active clip and .pause() on
+                     the rest so only the visible feature is decoding
+                     frames at any moment. Hukamnama (0) and Kirtan
+                     (3) remain stills because we don't have clips
+                     for those screens yet. -->
+                <video class="features-screen-img" data-idx="1" src="../img/SikhAI/path.mp4" muted playsinline loop preload="metadata"></video>
+                <video class="features-screen-img" data-idx="2" src="../img/SikhAI/Simran.mp4" muted playsinline loop preload="metadata"></video>
                 <img class="features-screen-img" data-idx="3" src="img/ss2-kirtan.png" alt="Golden Temple Kirtan">
-                <img class="features-screen-img" data-idx="4" src="img/ss8-saakhi.png" alt="Nanakshahi Calendar">
-                <img class="features-screen-img" data-idx="5" src="img/ss3-ai.png" alt="Chardi Kala AI">
-                <img class="features-screen-img" data-idx="6" src="img/ss7-sewa.png" alt="Sewa Pulse">
+                <video class="features-screen-img" data-idx="4" src="../img/SikhAI/saakhi.mp4" muted playsinline loop preload="metadata"></video>
+                <video class="features-screen-img" data-idx="5" src="../img/SikhAI/AI.mp4" muted playsinline loop preload="metadata"></video>
+                <video class="features-screen-img" data-idx="6" src="../img/SikhAI/sewa.mp4" muted playsinline loop preload="metadata"></video>
+              </div>
+              <!-- Back-face screen (mirror, so the phone always shows content as it flips) -->
+              <div class="device-screen device-screen-back" id="featuresScreenBack" aria-hidden="true">
+                <img class="features-screen-img-b active" data-idx="0" src="img/ss1-hukamnama.png" alt="">
+                <video class="features-screen-img-b" data-idx="1" src="../img/SikhAI/path.mp4" muted playsinline loop preload="metadata"></video>
+                <video class="features-screen-img-b" data-idx="2" src="../img/SikhAI/Simran.mp4" muted playsinline loop preload="metadata"></video>
+                <img class="features-screen-img-b" data-idx="3" src="img/ss2-kirtan.png" alt="">
+                <video class="features-screen-img-b" data-idx="4" src="../img/SikhAI/saakhi.mp4" muted playsinline loop preload="metadata"></video>
+                <video class="features-screen-img-b" data-idx="5" src="../img/SikhAI/AI.mp4" muted playsinline loop preload="metadata"></video>
+                <video class="features-screen-img-b" data-idx="6" src="../img/SikhAI/sewa.mp4" muted playsinline loop preload="metadata"></video>
               </div>
               <div class="device-screen-glass"></div>
               <div class="device-chamfer"></div>
@@ -3133,7 +3197,7 @@
         aiGreeting: 'Sat Sri Akal! I\u2019m ChardiKala AI \u2014 your spiritual guide. Ask me anything about Gurbani, Sikh history, the Gurus, or daily practice.',
         aiChip1: 'What is Chardi Kala?', aiChip2: 'Tell me about Guru Nanak Dev Ji', aiChip3: 'Share a Shabad for peace',
         aiPlaceholder: 'Ask about Gurbani, Sikh history, or life guidance...', aiPlaceholderShort: 'Ask anything about Sikhi...',
-        f1bg: 'Hukamnama', f1tag: 'Gurbani', f1title: 'Daily Hukamnama', f1desc: 'Receive the daily divine order from Sri Darbar Sahib, Amritsar \u2014 with Gurmukhi text, English translation, and meaning delivered every morning.',
+        f1bg: 'Hukamnama', f1tag: 'Live \u00B7 Daily', f1title: 'Hukamnama from Sri Darbar Sahib', f1desc: 'Every morning, the Granthi Singh at Sri Darbar Sahib in Amritsar opens Sri Guru Granth Sahib Ji and reads the day\u2019s Hukamnama. We bring it to you live \u2014 original Gurmukhi, English translation, and meaning \u2014 the moment it\u2019s recited.',
         f2bg: 'Gurbani Quotes', f2tag: 'Wisdom', f2title: '108 Gurbani Quotes', f2desc: 'Curated verses from Sri Guru Granth Sahib Ji. Share as beautiful images or text with family, friends, and the world.',
         f3bg: 'Nitnem', f3tag: 'Daily Practice', f3title: 'Nitnem with Audio', f3desc: 'Complete Nitnem Banis with professional audio playback. Read along or listen during your daily prayers and commute.',
         f4bg: 'Simran', f4tag: 'Meditation', f4title: 'Simran Counter', f4desc: 'A meditative Simran experience with a counter, calming globe visualization showing worldwide meditators, and haptic feedback.',
@@ -3173,7 +3237,7 @@
         aiGreeting: '\u0A38\u0A24\u0A3F \u0A38\u0A4D\u0A30\u0A40 \u0A05\u0A15\u0A3E\u0A32! \u0A2E\u0A48\u0A02 \u0A1A\u0A5C\u0A4D\u0A39\u0A26\u0A40 \u0A15\u0A32\u0A3E AI \u0A39\u0A3E\u0A02 \u2014 \u0A24\u0A41\u0A39\u0A3E\u0A21\u0A3E \u0A30\u0A42\u0A39\u0A3E\u0A28\u0A40 \u0A17\u0A3E\u0A08\u0A21\u0964 \u0A17\u0A41\u0A30\u0A2C\u0A3E\u0A23\u0A40, \u0A38\u0A3F\u0A71\u0A16 \u0A07\u0A24\u0A3F\u0A39\u0A3E\u0A38, \u0A17\u0A41\u0A30\u0A42 \u0A38\u0A3E\u0A39\u0A3F\u0A2C\u0A3E\u0A28, \u0A1C\u0A3E\u0A02 \u0A30\u0A4B\u0A1C\u0A3C\u0A3E\u0A28\u0A3E \u0A05\u0A2D\u0A3F\u0A06\u0A38 \u0A2C\u0A3E\u0A30\u0A47 \u0A15\u0A41\u0A1D \u0A35\u0A40 \u0A2A\u0A41\u0A71\u0A1B\u0A4B\u0964',
         aiChip1: '\u0A1A\u0A5C\u0A4D\u0A39\u0A26\u0A40 \u0A15\u0A32\u0A3E \u0A15\u0A40 \u0A39\u0A48?', aiChip2: '\u0A17\u0A41\u0A30\u0A42 \u0A28\u0A3E\u0A28\u0A15 \u0A26\u0A47\u0A35 \u0A1C\u0A40 \u0A2C\u0A3E\u0A30\u0A47 \u0A26\u0A71\u0A38\u0A4B', aiChip3: '\u0A36\u0A3E\u0A02\u0A24\u0A40 \u0A32\u0A08 \u0A36\u0A2C\u0A26 \u0A38\u0A41\u0A23\u0A3E\u0A13',
         aiPlaceholder: '\u0A17\u0A41\u0A30\u0A2C\u0A3E\u0A23\u0A40, \u0A38\u0A3F\u0A71\u0A16 \u0A07\u0A24\u0A3F\u0A39\u0A3E\u0A38, \u0A1C\u0A3E\u0A02 \u0A1C\u0A40\u0A35\u0A28 \u0A2E\u0A3E\u0A30\u0A17\u0A26\u0A30\u0A36\u0A28 \u0A2C\u0A3E\u0A30\u0A47 \u0A2A\u0A41\u0A71\u0A1B\u0A4B...', aiPlaceholderShort: '\u0A38\u0A3F\u0A71\u0A16\u0A40 \u0A2C\u0A3E\u0A30\u0A47 \u0A15\u0A41\u0A1D \u0A35\u0A40 \u0A2A\u0A41\u0A71\u0A1B\u0A4B...',
-        f1bg: '\u0A39\u0A41\u0A15\u0A2E\u0A28\u0A3E\u0A2E\u0A3E', f1tag: '\u0A17\u0A41\u0A30\u0A2C\u0A3E\u0A23\u0A40', f1title: '\u0A30\u0A4B\u0A1C\u0A3C\u0A3E\u0A28\u0A3E \u0A39\u0A41\u0A15\u0A2E\u0A28\u0A3E\u0A2E\u0A3E', f1desc: '\u0A38\u0A4D\u0A30\u0A40 \u0A26\u0A30\u0A2C\u0A3E\u0A30 \u0A38\u0A3E\u0A39\u0A3F\u0A2C, \u0A05\u0A70\u0A2E\u0A4D\u0A30\u0A3F\u0A24\u0A38\u0A30 \u0A24\u0A4B\u0A02 \u0A30\u0A4B\u0A1C\u0A3C\u0A3E\u0A28\u0A3E \u0A39\u0A41\u0A15\u0A2E \u0A2A\u0A4D\u0A30\u0A3E\u0A2A\u0A24 \u0A15\u0A30\u0A4B \u2014 \u0A17\u0A41\u0A30\u0A2E\u0A41\u0A16\u0A40 \u0A2A\u0A3E\u0A20, \u0A05\u0A70\u0A17\u0A4D\u0A30\u0A47\u0A1C\u0A3C\u0A40 \u0A05\u0A28\u0A41\u0A35\u0A3E\u0A26 \u0A05\u0A24\u0A47 \u0A05\u0A30\u0A25 \u0A28\u0A3E\u0A32\u0964',
+        f1bg: '\u0A39\u0A41\u0A15\u0A2E\u0A28\u0A3E\u0A2E\u0A3E', f1tag: '\u0A32\u0A3E\u0A08\u0A35 \u00B7 \u0A30\u0A4B\u0A1C\u0A3C\u0A3E\u0A28\u0A3E', f1title: '\u0A38\u0A4D\u0A30\u0A40 \u0A26\u0A30\u0A2C\u0A3E\u0A30 \u0A38\u0A3E\u0A39\u0A3F\u0A2C \u0A24\u0A4B\u0A02 \u0A39\u0A41\u0A15\u0A2E\u0A28\u0A3E\u0A2E\u0A3E', f1desc: '\u0A39\u0A30 \u0A38\u0A35\u0A47\u0A30, \u0A38\u0A4D\u0A30\u0A40 \u0A26\u0A30\u0A2C\u0A3E\u0A30 \u0A38\u0A3E\u0A39\u0A3F\u0A2C, \u0A05\u0A70\u0A2E\u0A4D\u0A30\u0A3F\u0A24\u0A38\u0A30 \u0A35\u0A3F\u0A16\u0A47 \u0A17\u0A4D\u0A30\u0A70\u0A25\u0A40 \u0A38\u0A3F\u0A70\u0A18 \u0A38\u0A4D\u0A30\u0A40 \u0A17\u0A41\u0A30\u0A42 \u0A17\u0A4D\u0A30\u0A70\u0A25 \u0A38\u0A3E\u0A39\u0A3F\u0A2C \u0A1C\u0A40 \u0A26\u0A3E \u0A2A\u0A4D\u0A30\u0A15\u0A3E\u0A38\u0A3C \u0A15\u0A30\u0A15\u0A47 \u0A05\u0A71\u0A1C \u0A26\u0A3E \u0A39\u0A41\u0A15\u0A2E\u0A28\u0A3E\u0A2E\u0A3E \u0A2A\u0A5C\u0A4D\u0A39\u0A26\u0A47 \u0A39\u0A28\u0964 \u0A05\u0A38\u0A40\u0A02 \u0A09\u0A39 \u0A24\u0A41\u0A39\u0A3E\u0A21\u0A47 \u0A24\u0A71\u0A15 \u0A32\u0A3E\u0A08\u0A35 \u0A2A\u0A39\u0A41\u0A70\u0A1A\u0A3E\u0A09\u0A02\u0A26\u0A47 \u0A39\u0A3E\u0A02 \u2014 \u0A2E\u0A42\u0A32 \u0A17\u0A41\u0A30\u0A2E\u0A41\u0A16\u0A40, \u0A05\u0A70\u0A17\u0A4D\u0A30\u0A47\u0A1C\u0A3C\u0A40 \u0A05\u0A28\u0A41\u0A35\u0A3E\u0A26 \u0A05\u0A24\u0A47 \u0A05\u0A30\u0A25 \u0A28\u0A3E\u0A32 \u2014 \u0A1C\u0A3F\u0A38 \u0A2A\u0A32 \u0A09\u0A1A\u0A3E\u0A30\u0A28 \u0A39\u0A41\u0A70\u0A26\u0A3E \u0A39\u0A48\u0964',
         f2bg: '\u0A17\u0A41\u0A30\u0A2C\u0A3E\u0A23\u0A40 \u0A39\u0A35\u0A3E\u0A32\u0A47', f2tag: '\u0A38\u0A3F\u0A06\u0A23\u0A2A', f2title: '108 \u0A17\u0A41\u0A30\u0A2C\u0A3E\u0A23\u0A40 \u0A39\u0A35\u0A3E\u0A32\u0A47', f2desc: '\u0A38\u0A4D\u0A30\u0A40 \u0A17\u0A41\u0A30\u0A42 \u0A17\u0A4D\u0A30\u0A70\u0A25 \u0A38\u0A3E\u0A39\u0A3F\u0A2C \u0A1C\u0A40 \u0A26\u0A47 \u0A1A\u0A41\u0A23\u0A47 \u0A39\u0A4B\u0A0F \u0A36\u0A2C\u0A26\u0964 \u0A38\u0A41\u0A70\u0A26\u0A30 \u0A24\u0A38\u0A35\u0A40\u0A30\u0A3E\u0A02 \u0A1C\u0A3E\u0A02 \u0A2A\u0A3E\u0A20 \u0A35\u0A1C\u0A4B\u0A02 \u0A2A\u0A30\u0A3F\u0A35\u0A3E\u0A30 \u0A05\u0A24\u0A47 \u0A26\u0A41\u0A28\u0A40\u0A06 \u0A28\u0A3E\u0A32 \u0A38\u0A3E\u0A02\u0A1D\u0A47 \u0A15\u0A30\u0A4B\u0964',
         f3bg: '\u0A28\u0A3F\u0A24\u0A28\u0A47\u0A2E', f3tag: '\u0A30\u0A4B\u0A1C\u0A3C\u0A3E\u0A28\u0A3E \u0A05\u0A2D\u0A3F\u0A06\u0A38', f3title: '\u0A06\u0A21\u0A3F\u0A13 \u0A28\u0A3E\u0A32 \u0A28\u0A3F\u0A24\u0A28\u0A47\u0A2E', f3desc: '\u0A2A\u0A47\u0A36\u0A47\u0A35\u0A30 \u0A06\u0A21\u0A3F\u0A13 \u0A28\u0A3E\u0A32 \u0A2E\u0A41\u0A15\u0A70\u0A2E\u0A32 \u0A28\u0A3F\u0A24\u0A28\u0A47\u0A2E \u0A2C\u0A3E\u0A23\u0A40\u0A06\u0A02\u0964 \u0A30\u0A4B\u0A1C\u0A3C\u0A3E\u0A28\u0A3E \u0A2A\u0A3E\u0A20 \u0A26\u0A47 \u0A28\u0A3E\u0A32 \u0A2A\u0A5C\u0A4D\u0A39\u0A4B \u0A1C\u0A3E\u0A02 \u0A38\u0A2B\u0A3C\u0A30 \u0A26\u0A4C\u0A30\u0A3E\u0A28 \u0A38\u0A41\u0A23\u0A4B\u0964',
         f4bg: '\u0A38\u0A3F\u0A2E\u0A30\u0A28', f4tag: '\u0A38\u0A3F\u0A2E\u0A30\u0A28', f4title: '\u0A38\u0A3F\u0A2E\u0A30\u0A28 \u0A15\u0A3E\u0A0A\u0A02\u0A1F\u0A30', f4desc: '\u0A15\u0A3E\u0A0A\u0A02\u0A1F\u0A30, \u0A26\u0A41\u0A28\u0A40\u0A06 \u0A2D\u0A30 \u0A26\u0A47 \u0A38\u0A3F\u0A2E\u0A30\u0A28 \u0A15\u0A30\u0A28 \u0A35\u0A3E\u0A32\u0A3F\u0A06\u0A02 \u0A26\u0A3E \u0A17\u0A4D\u0A32\u0A4B\u0A2C \u0A05\u0A24\u0A47 \u0A36\u0A3E\u0A02\u0A24\u0A40 \u0A2D\u0A30\u0A2A\u0A42\u0A30 \u0A38\u0A3F\u0A2E\u0A30\u0A28 \u0A24\u0A1C\u0A30\u0A2C\u0A3E\u0964',
@@ -3406,13 +3470,18 @@
         });
       }
 
-      /* ═══ SCENE 4 — Pinned Phone with Transition Effects ═══ */
+      /* ═══ SCENE 4 — Pinned Phone with Y-axis Flip (Elva-style) ═══
+         Pure rotateY per feature: 0°, 180°, 360°, 540°, …
+         Each feature transition = a clean 180° spin around the vertical axis.
+         Screen content swaps at the 90° midpoint (edge-on = invisible),
+         and the back face mirrors the screen so the user always sees content. */
       (function() {
         var featSection = document.getElementById('features');
         var pinned = document.getElementById('featuresPinned');
         var device = document.getElementById('featuresDevice');
         var bgTextEl = document.querySelector('#featuresBgText h3');
-        var screenImgs = document.querySelectorAll('.features-screen-img');
+        var screenImgs = document.querySelectorAll('#featuresScreen .features-screen-img');
+        var screenImgsBack = document.querySelectorAll('#featuresScreenBack .features-screen-img-b');
         var metaSlides = document.querySelectorAll('.features-meta-slide');
         var progressDots = document.querySelectorAll('.features-progress-dot');
         if (!featSection || !pinned || !device || screenImgs.length === 0) return;
@@ -3420,24 +3489,47 @@
         var SLIDE_COUNT = screenImgs.length;
         var bgTexts = ['Hukamnama', 'Nitnem', 'Simran', 'Kirtan', 'Calendar', 'Chardi Kala', 'Sewa'];
 
-        var transitions = [
-          { rotateY: 0, rotateX: 0, scale: 1, y: 0, x: 0 },
-          { rotateY: 180, rotateX: 0, scale: 0.85, y: 0, x: 0 },
-          { rotateY: 0, rotateX: -90, scale: 0.8, y: 40, x: 0 },
-          { rotateY: -90, rotateX: 0, scale: 0.9, y: 0, x: 50 },
-          { rotateY: 0, rotateX: 0, scale: 0.4, y: 0, x: 0 },
-          { rotateY: 90, rotateX: 20, scale: 0.85, y: -30, x: -40 },
-          { rotateY: 0, rotateX: 90, scale: 0.8, y: -40, x: 0 }
-        ];
+        // Constant subtle X-tilt for depth; never animated.
+        var REST_TILT_X = -4; // degrees
+        // Per-feature accumulating Y rotation: 0, 180, 360, 540, ...
+        var rotations = [];
+        for (var i = 0; i < SLIDE_COUNT; i++) rotations.push(i * 180);
 
         var lastIdx = -1;
 
-        function easeIO(t) { return t < 0.5 ? 4*t*t*t : 1 - Math.pow(-2*t+2, 3)/2; }
+        // Smooth ease-in-out so the flip accelerates through the
+        // midpoint instead of crawling past the 90° edge-on frame.
+        function easeIO(t) {
+          return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+        }
 
+        // Toggle a media element's active state. For <video> we also
+        // drive playback: only the currently-visible feature should
+        // be decoding frames; everything else is paused + rewound to
+        // 0 so it starts fresh from the top whenever the user
+        // re-enters that slot.
+        function setMediaActive(el, isActive) {
+          el.classList.toggle('active', isActive);
+          if (el.tagName === 'VIDEO') {
+            if (isActive) {
+              // play() returns a promise that rejects on
+              // autoplay-gesture restrictions; swallow it because
+              // the videos are muted + playsinline so the browser
+              // should permit autoplay, but we don't want an
+              // unhandled rejection if the gesture policy bites.
+              var pr = el.play();
+              if (pr && typeof pr.catch === 'function') pr.catch(function(){});
+            } else {
+              el.pause();
+              try { el.currentTime = 0; } catch (e) {}
+            }
+          }
+        }
         function setActive(idx) {
           if (idx === lastIdx) return;
           lastIdx = idx;
-          screenImgs.forEach(function(img, i) { img.classList.toggle('active', i === idx); });
+          screenImgs.forEach(function(el, i) { setMediaActive(el, i === idx); });
+          screenImgsBack.forEach(function(el, i) { setMediaActive(el, i === idx); });
           metaSlides.forEach(function(m, i) { m.classList.toggle('active', i === idx); });
           progressDots.forEach(function(d, i) { d.classList.toggle('active', i === idx); });
           if (bgTextEl) {
@@ -3449,17 +3541,13 @@
           }
         }
 
-        function applyDeviceTransform(fromT, toT, lerp) {
-          var e = easeIO(lerp);
-          var rY = fromT.rotateY + (toT.rotateY - fromT.rotateY) * e;
-          var rX = fromT.rotateX + (toT.rotateX - fromT.rotateX) * e;
-          var sc = fromT.scale + (toT.scale - fromT.scale) * e;
-          var y = fromT.y + (toT.y - fromT.y) * e;
-          var x = fromT.x + (toT.x - fromT.x) * e;
-          device.style.transform = 'rotateY(' + rY + 'deg) rotateX(' + rX + 'deg) scale(' + sc + ') translate(' + x + 'px,' + y + 'px)';
+        function applyRotation(rY) {
+          device.style.transform =
+            'rotateX(' + REST_TILT_X + 'deg) rotateY(' + rY + 'deg)';
         }
 
-        var restPose = { rotateY: -4, rotateX: 2, scale: 1, y: 0, x: 0 };
+        // Initial pose
+        applyRotation(rotations[0]);
 
         ScrollTrigger.create({
           trigger: pinned,
@@ -3469,20 +3557,24 @@
           anticipatePin: 1,
           scrub: 0,
           onUpdate: function(self) {
+            // Map scroll progress to fractional feature index.
+            // p = 0   → feature 0
+            // p = 1   → feature N-1
+            // Between consecutive features = the 180° flip.
             var p = self.progress;
-            var totalSlots = SLIDE_COUNT;
-            var raw = p * totalSlots;
-            var idx = Math.min(Math.floor(raw), totalSlots - 1);
-            var frac = raw - idx;
-            setActive(idx);
-            var midT = transitions[idx];
-            if (frac < 0.25) {
-              applyDeviceTransform(restPose, midT, frac / 0.25);
-            } else if (frac < 0.5) {
-              applyDeviceTransform(midT, restPose, (frac - 0.25) / 0.25);
-            } else {
-              device.style.transform = 'rotateY(' + restPose.rotateY + 'deg) rotateX(' + restPose.rotateX + 'deg) scale(1)';
-            }
+            var raw = p * (SLIDE_COUNT - 1);
+            var idxFrom = Math.max(0, Math.min(SLIDE_COUNT - 2, Math.floor(raw)));
+            var frac = Math.max(0, Math.min(1, raw - idxFrom));
+
+            // Swap visible feature exactly at the 90° midpoint,
+            // when the phone is edge-on and content is invisible.
+            var visibleIdx = frac < 0.5 ? idxFrom : idxFrom + 1;
+            setActive(visibleIdx);
+
+            var rFrom = rotations[idxFrom];
+            var rTo = rotations[idxFrom + 1];
+            var rY = rFrom + (rTo - rFrom) * easeIO(frac);
+            applyRotation(rY);
           }
         });
       })();
