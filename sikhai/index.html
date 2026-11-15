@@ -57,7 +57,7 @@
       --color-bg-card: #FFFFFF;
       --color-text: #1A1A1A;
       --color-text-secondary: #666666;
-      --color-text-muted: #999999;
+      --color-text-muted: #6E6E6E;
       --color-accent: #1A1A1A;
       --color-border: #E8E8E8;
       --color-border-light: #F0F0F0;
@@ -2573,6 +2573,11 @@
       font-size: 0.78rem;
       line-height: 1.45;
     }
+    [data-theme="light"] .sangat-card-body {
+      background: rgba(255, 255, 255, 0.92);
+      border-color: rgba(122, 92, 0, 0.25);
+      box-shadow: 0 12px 32px -8px rgba(0, 0, 0, 0.18);
+    }
     /* Quadrant placement.
        NE (default): card extends up-right; connector L-brackets
        down-left from the card's lower-left corner to the pin. */
@@ -3081,11 +3086,11 @@
   <section class="social-proof fade-up">
     <div class="container">
       <div class="proof-avatars">
-        <div class="proof-avatar" style="background:#D4A03A">G</div>
+        <div class="proof-avatar" style="background:#946D20">G</div>
         <div class="proof-avatar" style="background:#8B6914">A</div>
-        <div class="proof-avatar" style="background:#B8922C">J</div>
+        <div class="proof-avatar" style="background:#8F7122">J</div>
         <div class="proof-avatar" style="background:#5C4409">M</div>
-        <div class="proof-avatar" style="background:#DAA520">H</div>
+        <div class="proof-avatar" style="background:#936F16">H</div>
         <div class="proof-avatar" style="background:#7A5C00">D</div>
       </div>
       <div class="proof-text" data-i18n="proofText">Join <span>50,000+</span> Sikhs worldwide</div>
@@ -3145,7 +3150,7 @@
       <div class="highlight-vignette"></div>
       <div class="container" style="position:relative;z-index:5;">
         <div class="highlight-card" id="highlightCard">
-          <h2 class="gurmukhi" id="gurbaniGurmukhi" style="font-weight:700;margin-bottom:16px;color:#ffffff;">100+ Gurbani Quotes</h2>
+          <h2 class="gurmukhi" id="gurbaniGurmukhi" style="font-weight:700;margin-bottom:16px;color:var(--color-text);">100+ Gurbani Quotes</h2>
           <div class="translation" id="gurbaniTranslation" style="opacity:0">Curated verses from Sri Guru Granth Sahib Ji. Share as beautiful images or text with family, friends, and the world.</div>
         </div>
       </div>
@@ -5106,10 +5111,11 @@
     }
 
     /* ── CHARDIKALA AI CHAT ── */
-    var AI_API_URL = 'https://api.groq.com/openai/v1/chat/completions';
-    var _k = ['Z3NrX1l3bGNH','VFcwZXlCZlZK','VzZIdXhmV0dk','eWIzRllCUFNp','RGxxcGVVYmlC','dEY3bGlmZTlI','aHE='];
-    var AI_API_KEY = atob(_k.join(''));
-    var AI_SYSTEM_PROMPT = 'You are ChardiKala AI, a Sikh spiritual guide on the Sikh AI website.\n\nAPP CONTEXT - Sikh AI features:\n• Hukam Tab: Daily Hukamnama from Sri Darbar Sahib with Gurmukhi, English translation, and audio\n• Saakhi Tab: Interactive Sikh stories and historical accounts with choices\n• Simran Tab: Naam Simran meditation with a 3D globe showing worldwide meditators\n• Sewa Tab: Community service news and opportunities from Sikh organizations\n• Path Tab: Nitnem banis (Japji Sahib, Rehras Sahib, etc.) and full Sri Guru Granth Sahib Ji (1430 Angs)\n\nYOUR ROLE:\n• Be warm, helpful, and promote Chardi Kala (eternal optimism)\n• Quote Gurbani with translations when relevant\n• Help users understand Sikhi, Gurbani, history, and daily spiritual practice\n• Guide users on using app features when asked\n• Provide comfort and wisdom for life\'s challenges\n• Keep responses concise but meaningful (2-4 sentences)\n• When users ask about the app, mention they can download Sikh AI from the Google Play Store';
+    var AI_API_URL = 'https://anhad-ai-proxy.vercel.app/api/chat';
+    var AI_MAX_TOKENS = 900;
+    var AI_TIMEOUT_MS = 30000;
+    var AI_RETRY_DELAYS_MS = [2000, 5000];
+    var AI_SYSTEM_PROMPT = 'You are ChardiKala AI, a Sikh spiritual guide on the Sikh AI website.\n\nAPP CONTEXT - Sikh AI features:\n• Hukam Tab: Daily Hukamnama from Sri Darbar Sahib with Gurmukhi, English translation, and audio\n• Saakhi Tab: Interactive Sikh stories and historical accounts with choices\n• Simran Tab: Naam Simran meditation with a 3D globe showing worldwide meditators\n• Sewa Tab: Community service news and opportunities from Sikh organizations\n• Path Tab: Nitnem banis (Japji Sahib, Rehras Sahib, etc.) and full Sri Guru Granth Sahib Ji (1430 Angs)\n\nYOUR ROLE:\n• Be warm, helpful, and promote Chardi Kala (eternal optimism)\n• Quote Gurbani with translations when relevant\n• Help users understand Sikhi, Gurbani, history, and daily spiritual practice\n• Guide users on using app features when asked\n• Provide comfort and wisdom for life\'s challenges\n• Keep responses concise but meaningful (2-4 sentences)\n• When users ask about the app, mention they can download Sikh AI from the Google Play Store\n\nFORMATTING RULES — follow these strictly, the website shows plain text only:\n• Use plain text. Do NOT use any markdown: no # headings, no **bold**, no > quotes, no --- dividers, no tables.\n• Use • for bullet points. Use numbered lists (1. 2. 3.) where order matters.\n• Separate sections with a blank line.';
     var AI_MAX_MESSAGES = 5;
 
     var aiStateSection = { messages: [], count: 0, loading: false };
@@ -5195,11 +5201,11 @@
       state.loading = true;
       sendBtn.disabled = true;
 
-      var controller = new AbortController();
-      var timeoutId = setTimeout(function() { controller.abort(); }, 15000);
-
-      var apiMessages = [{ role: 'system', content: AI_SYSTEM_PROMPT }].concat(state.messages.slice(-20));
-      var models = ['llama-3.3-70b-versatile', 'llama-3.1-8b-instant'];
+      var controller = null;
+      var timeoutId = null;
+      // The proxy holds the Groq key and picks the model. Keep the last
+      // 6 exchanges for context, like the iOS app.
+      var apiMessages = [{ role: 'system', content: AI_SYSTEM_PROMPT }].concat(state.messages.slice(-12));
 
       function finishAi() {
         state.loading = false;
@@ -5209,38 +5215,35 @@
         }
       }
 
-      function tryModel(idx) {
-        if (idx >= models.length) {
-          clearTimeout(timeoutId);
-          var fallback = getFallbackResponse(text);
-          state.messages.push({ role: 'assistant', content: fallback });
-          showAiReply(msgsEl, target, fallback);
-          finishAi();
-          return;
-        }
+      function useFallback() {
+        var fallback = getFallbackResponse(text);
+        state.messages.push({ role: 'assistant', content: fallback });
+        showAiReply(msgsEl, target, fallback);
+        finishAi();
+      }
+
+      function attempt(idx) {
+        controller = new AbortController();
+        timeoutId = setTimeout(function() { controller.abort(); }, AI_TIMEOUT_MS);
         fetch(AI_API_URL, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + AI_API_KEY
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            model: models[idx],
             messages: apiMessages,
             temperature: 0.7,
-            max_tokens: 512
+            max_tokens: AI_MAX_TOKENS
           }),
           signal: controller.signal
         })
         .then(function(r) {
-          if (r.status === 429) { tryModel(idx + 1); return null; }
           if (!r.ok) throw new Error('API error ' + r.status);
           return r.json();
         })
         .then(function(data) {
-          if (!data) return;
           clearTimeout(timeoutId);
-          var reply = (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) || 'I could not generate a response. Please try again.';
+          var content = data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content;
+          var reply = content ? cleanAiResponse(content) : '';
+          if (!reply) throw new Error('Empty reply');
           state.messages.push({ role: 'assistant', content: reply });
           showAiReply(msgsEl, target, reply);
           finishAi();
@@ -5248,13 +5251,30 @@
         .catch(function(err) {
           clearTimeout(timeoutId);
           console.error('ChardiKala AI error:', err);
-          var fallback = getFallbackResponse(text);
-          state.messages.push({ role: 'assistant', content: fallback });
-          showAiReply(msgsEl, target, fallback);
-          finishAi();
+          if (idx < AI_RETRY_DELAYS_MS.length) {
+            setTimeout(function() { attempt(idx + 1); }, AI_RETRY_DELAYS_MS[idx]);
+          } else {
+            useFallback();
+          }
         });
       }
-      tryModel(0);
+      attempt(0);
+    }
+
+    // Strips <think> blocks and the markdown the chat can't render
+    // (same rules as the apps' cleanResponse). The chat shows plain
+    // text, so **bold** markers are removed too.
+    function cleanAiResponse(content) {
+      var lines = content.replace(/<think>[\s\S]*?<\/think>/gi, '').split('\n').map(function(line) {
+        var t = line.replace(/^\s+/, '');
+        if (/^#{1,6}\s*/.test(t)) return t.replace(/^#{1,6}\s*/, '').trim();
+        if (t.indexOf('> ') === 0) return t.slice(2);
+        if (t === '>') return '';
+        if (t.charAt(0) === '|' && (t.slice(-1) === '|' || t.indexOf('---') !== -1)) return '';
+        if (t === '---' || t === '***' || t === '___') return '';
+        return line;
+      });
+      return lines.join('\n').replace(/\*\*(.+?)\*\*/g, '$1').replace(/\n{3,}/g, '\n\n').trim();
     }
 
     function showAiReply(msgsEl, target, reply) {
