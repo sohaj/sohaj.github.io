@@ -2000,6 +2000,7 @@
     .globe-container {
       position: relative; width: 100%; max-width: 550px;
       aspect-ratio: 1; margin: 0 auto;
+      will-change: transform;
     }
     #globeViz { width: 100%; height: 100%; border-radius: 50%; }
     .globe-aura {
@@ -4228,7 +4229,7 @@
         function enterSangat() {
           ensureSangatGlobe();
           sangatActive = true;
-          if (window._globe) window._globe.pauseAnimation();
+          if (window._setMainGlobeBlocked) window._setMainGlobeBlocked(true);
           sangatGlobe.resumeAnimation();
           var pov = sangatGlobe.pointOfView();
           sangatStartLng = (pov && typeof pov.lng === 'number') ? pov.lng : 0;
@@ -4239,7 +4240,7 @@
           sangatActive = false;
           stopOcclusion();
           if (sangatGlobe) sangatGlobe.pauseAnimation();
-          if (window._globe) window._globe.resumeAnimation();
+          if (window._setMainGlobeBlocked) window._setMainGlobeBlocked(false);
         }
 
         ScrollTrigger.create({
@@ -4386,6 +4387,7 @@
       var lastTime = 0;
       var isActive = false;
       var rafId = null;
+      var lastRenderedP = -1;
       var AUTO_SPEED = 0.025;
 
       ScrollTrigger.create({
@@ -4430,9 +4432,12 @@
       function renderDots(p) {
         for (var i = 0; i < dots.length; i++) {
           var dt = dots[i];
-          if (p < dt.spawnAt) { dt.el.style.opacity = 0; continue; }
           var localP = (p - dt.spawnAt) / 0.38;
-          if (localP > 1) { dt.el.style.opacity = 0; continue; }
+          if (localP < 0 || localP > 1) {
+            if (!dt.hidden) { dt.el.style.opacity = 0; dt.hidden = true; }
+            continue;
+          }
+          dt.hidden = false;
           var ease = localP * localP;
           var r = dt.maxR * ease * (5 + p * 12);
           var x = Math.cos(dt.angle) * r;
@@ -4448,7 +4453,11 @@
         for (var i = 0; i < quoteData.length; i++) {
           var qd = quoteData[i];
           var q = qd.el;
-          if (p < qd.depthStart) { q.style.opacity = 0; q.style.filter = 'blur(6px)'; continue; }
+          if (p < qd.depthStart) {
+            if (!qd.pending) { q.style.opacity = 0; q.style.filter = 'blur(6px)'; qd.pending = true; }
+            continue;
+          }
+          qd.pending = false;
           var localAppear = Math.min(1, (p - qd.depthStart) / 0.18);
           var fadeIn = easeIO(localAppear);
           var blur = (1 - fadeIn) * 6;
@@ -4488,10 +4497,14 @@
         if (lastTime) { autoProgress += ((time - lastTime) / 1000) * AUTO_SPEED; }
         lastTime = time;
         var p = Math.min(scrollProgress + autoProgress, 1);
-        renderRings(p);
-        renderDots(p);
-        renderQuotes(p);
-        renderCard(p);
+        // Once progress reaches 1 nothing moves; skip the style writes.
+        if (p !== lastRenderedP) {
+          lastRenderedP = p;
+          renderRings(p);
+          renderDots(p);
+          renderQuotes(p);
+          renderCard(p);
+        }
         rafId = requestAnimationFrame(tick);
       }
     }
@@ -4747,6 +4760,14 @@
     /* ── 3D GLOBE ── */
     const FIREBASE_DB_URL = 'https://shabadapp-1c8cc-default-rtdb.asia-southeast1.firebasedatabase.app';
     let globeUsers = [];
+    let lastActiveKey = null;
+
+    // Keep the current visitor's own dot / ring (added by
+    // addUserToGlobe) when the Firebase polls replace the data.
+    function withUserEntries(list, current) {
+      var own = (current || []).filter(function(d) { return d._isUser; });
+      return own.length ? list.concat(own) : list;
+    }
 
     (function initGlobe() {
       const theme = document.documentElement.getAttribute('data-theme');
@@ -4754,9 +4775,12 @@
       const bg = isDark ? '#010101' : '#FAFAFA';
       const container = document.getElementById('globeViz');
       if (!container || typeof Globe === 'undefined') return;
+      const isMobileOrTouch = window.matchMedia('(max-width: 768px)').matches
+                              || window.matchMedia('(pointer: coarse)').matches;
       const globe = Globe()
         .globeImageUrl(isDark ? 'https://unpkg.com/three-globe/example/img/earth-night.jpg' : 'https://unpkg.com/three-globe/example/img/earth-day.jpg')
-        .bumpImageUrl('https://unpkg.com/three-globe/example/img/earth-topology.png')
+        // The bump map is the most expensive texture; phones render fine without it.
+        .bumpImageUrl(isMobileOrTouch ? '' : 'https://unpkg.com/three-globe/example/img/earth-topology.png')
         .backgroundImageUrl('')
         .showAtmosphere(true)
         .atmosphereColor(isDark ? '#D4A853' : '#8B6914')
@@ -4774,6 +4798,7 @@
         .ringPropagationSpeed(2)
         .ringRepeatPeriod(1200)
         (container);
+      if (isMobileOrTouch) globe.renderer().setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
       globe.scene().background = new THREE.Color(bg);
 
       var globeMat = globe.globeMaterial();
@@ -4802,6 +4827,26 @@
       globe.controls().enableZoom = false;
       globe.pointOfView({ lat: 30, lng: 78, altitude: 1.8 });
       window._globe = globe;
+
+      // Render only while the hero globe is on screen and the Sangat
+      // globe isn't taking over; otherwise it re-renders at full frame
+      // rate behind the rest of the page.
+      var globeOnScreen = true, globeBlocked = false, globeRendering = true;
+      function syncGlobeRendering() {
+        var on = globeOnScreen && !globeBlocked;
+        if (on === globeRendering) return;
+        globeRendering = on;
+        if (on) globe.resumeAnimation(); else globe.pauseAnimation();
+      }
+      new IntersectionObserver(function(entries) {
+        globeOnScreen = entries[entries.length - 1].isIntersecting;
+        syncGlobeRendering();
+      }).observe(container);
+      window._setMainGlobeBlocked = function(blocked) {
+        globeBlocked = blocked;
+        syncGlobeRendering();
+      };
+
       function onResize() {
         const w = container.clientWidth, h = container.clientHeight;
         globe.width(w); globe.height(h);
@@ -4825,7 +4870,8 @@
               altitude: 0.01, radius: 0.3,
               color: 'rgba(232,196,74,0.9)'
             }));
-          if (window._globe) window._globe.pointsData(globeUsers);
+          lastActiveKey = null;
+          if (window._globe) window._globe.pointsData(withUserEntries(globeUsers, window._globe.pointsData()));
           updateSocialProofCount();
         })
         .catch(() => {});
@@ -4840,7 +4886,16 @@
           const rings = Object.values(data)
             .filter(u => u.lat && u.lng)
             .map(u => ({ lat: u.lat, lng: u.lng }));
-          window._globe.ringsData(rings);
+
+          // pointsMerge rebuilds one merged mesh for every dot on each
+          // pointsData() call — a long main-thread stall that showed up
+          // as the globe freezing every 10s. Only touch the globe when
+          // the set of active meditators actually changed.
+          const key = rings.map(r => r.lat.toFixed(2) + ',' + r.lng.toFixed(2)).sort().join('|');
+          if (key === lastActiveKey) return;
+          lastActiveKey = key;
+
+          window._globe.ringsData(withUserEntries(rings, window._globe.ringsData()));
 
           if (rings.length > 0) {
             const updated = globeUsers.map(dot => {
@@ -4853,7 +4908,7 @@
                 color: isActive ? 'rgba(255,196,48,1)' : 'rgba(255,212,74,0.95)'
               };
             });
-            window._globe.pointsData(updated);
+            window._globe.pointsData(withUserEntries(updated, window._globe.pointsData()));
           }
         })
         .catch(() => {});
@@ -5000,7 +5055,7 @@
     }
 
     /* ── BREATHING PARTICLES ── */
-    let breathingActive = false, breathRafId = null, breathParticles = [];
+    let breathingActive = false, breathRafId = null, breathParticles = [], breathCenterTimer = null;
     const BREATH_INHALE = 3000, BREATH_HOLD_IN = 600, BREATH_EXHALE = 3200, BREATH_HOLD_OUT = 400;
     const BREATH_CYCLE = BREATH_INHALE + BREATH_HOLD_IN + BREATH_EXHALE + BREATH_HOLD_OUT;
     const PARTICLE_COUNT = 90;
@@ -5030,23 +5085,27 @@
         el.style.height = size + 'px';
         var angle = (i / PARTICLE_COUNT) * Math.PI * 2 + (Math.random() - 0.5) * 0.8;
         var maxR = 20 + Math.random() * 45;
+        el.style.left = '0';
+        el.style.top = '0';
         hero.appendChild(el);
         breathParticles.push({ el: el, angle: angle, maxR: maxR, phase: Math.random() * 0.4, size: size });
       }
       var startTime = performance.now();
-      var globeRect, heroRect, cx, cy;
+      var globeRect, heroRect, cx, cy, pxX, pxY;
       function updateCenter() {
         if (!globeEl || !hero) return;
         globeRect = globeEl.getBoundingClientRect();
         heroRect = hero.getBoundingClientRect();
         cx = ((globeRect.left + globeRect.width / 2) - heroRect.left) / heroRect.width * 100;
         cy = ((globeRect.top + globeRect.height / 2) - heroRect.top) / heroRect.height * 100;
+        pxX = heroRect.width / 100;
+        pxY = heroRect.height / 100;
       }
       updateCenter();
-      var resizeTimer = setInterval(updateCenter, 1000);
+      breathCenterTimer = setInterval(updateCenter, 1000);
 
       function tick(now) {
-        if (!breathingActive) { clearInterval(resizeTimer); return; }
+        if (!breathingActive) return;
         var elapsed = now - startTime;
         var avgR = 0;
         for (var i = 0; i < breathParticles.length; i++) {
@@ -5068,10 +5127,9 @@
           var y = cy + Math.sin(bp.angle) * r;
           var closeness = 1 - r / bp.maxR;
           var opacity = (state.phase === 'hold-in' || state.phase === 'hold-out') ? 0.15 : 0.1 + 0.75 * closeness;
-          bp.el.style.left = x + '%';
-          bp.el.style.top = y + '%';
+          // transform only: moving left/top forced a layout every frame.
           bp.el.style.opacity = opacity;
-          bp.el.style.transform = 'translate(-50%,-50%) scale(' + (0.5 + 1.0 * closeness) + ')';
+          bp.el.style.transform = 'translate(' + (x * pxX).toFixed(1) + 'px,' + (y * pxY).toFixed(1) + 'px) translate(-50%,-50%) scale(' + (0.5 + 1.0 * closeness) + ')';
         }
         avgR /= breathParticles.length;
         if (globeEl) {
@@ -5088,6 +5146,7 @@
     function stopBreathing() {
       breathingActive = false;
       if (breathRafId) { cancelAnimationFrame(breathRafId); breathRafId = null; }
+      if (breathCenterTimer) { clearInterval(breathCenterTimer); breathCenterTimer = null; }
       for (var i = 0; i < breathParticles.length; i++) {
         breathParticles[i].el.remove();
       }
@@ -5454,18 +5513,18 @@
     (function() {
       const dot = document.getElementById('cursorDot');
       if (!dot || window.matchMedia('(pointer: coarse)').matches) return;
-      let mx = 0, my = 0, dx = 0, dy = 0;
+      let mx = 0, my = 0, dx = 0, dy = 0, cursorRaf = null;
       document.addEventListener('mousemove', function(e) {
         mx = e.clientX; my = e.clientY;
         if (!dot.classList.contains('visible')) dot.classList.add('visible');
+        if (cursorRaf === null) cursorRaf = requestAnimationFrame(loop);
       });
-      (function loop() {
+      function loop() {
         dx += (mx - dx) * 0.15;
         dy += (my - dy) * 0.15;
-        dot.style.left = dx + 'px';
-        dot.style.top = dy + 'px';
-        requestAnimationFrame(loop);
-      })();
+        dot.style.transform = 'translate(' + dx + 'px,' + dy + 'px) translate(-50%, -50%)';
+        cursorRaf = (Math.abs(mx - dx) + Math.abs(my - dy) > 0.1) ? requestAnimationFrame(loop) : null;
+      }
       document.querySelectorAll('a, button, .feature-card, .review-card, .phone-frame, .blog-card').forEach(function(el) {
         el.addEventListener('mouseenter', function() { dot.classList.add('hover'); });
         el.addEventListener('mouseleave', function() { dot.classList.remove('hover'); });
